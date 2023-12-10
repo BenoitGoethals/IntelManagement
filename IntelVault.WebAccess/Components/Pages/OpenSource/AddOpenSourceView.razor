@@ -1,0 +1,147 @@
+﻿
+@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<OpenSourceInt> Logger
+@inject IIntelService<OpenSourceInt> Service;
+
+@if (OpenSourceIntData != null)
+{
+    <EditForm Model="@OpenSourceIntData" OnValidSubmit="Submit" FormName="AddCybIntel">
+        <AntiforgeryToken />
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <div class="form-row">
+           
+            <div class="form-group col-md-6">
+                <label class="form-label">SourceName</label>
+                <SfTextBox @bind-Value="OpenSourceIntData.SourceName" Placeholder="SourceName" class="form-control" />
+                <ValidationMessage For="() => OpenSourceIntData.SourceName" />
+            </div>
+            
+            <div class="form-group col-md-6">
+                <label class="form-label">SourceName</label>
+                <SfTextBox @bind-Value="OpenSourceIntData.SourceType" Placeholder="SourceType" class="form-control" />
+                <ValidationMessage For="() => OpenSourceIntData.SourceType" />
+            </div>
+            
+            <div class="form-group col-md-6">
+                <label class="form-label">SourceURL</label>
+                <SfTextBox @bind-Value="OpenSourceIntData.SourceURL" Placeholder="SourceURL" class="form-control" />
+                <ValidationMessage For="() => OpenSourceIntData.SourceURL" />
+            </div>
+            <div class="form-group col-md-6">
+                <label class="form-label">TargetName</label>
+                <SfTextBox @bind-Value="OpenSourceIntData.TargetName" Placeholder="TargetName" class="form-control" />
+                <ValidationMessage For="() => OpenSourceIntData.TargetName" />
+            </div>
+            <div class="form-group col-md-6">
+                <label class="form-label">TargetLocation</label>
+                <SfTextBox @bind-Value="OpenSourceIntData.TargetLocation" Placeholder="TargetLocation" class="form-control" />
+                <ValidationMessage For="() => OpenSourceIntData.TargetLocation" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">ReportDate</label>
+                <SfDateTimePicker TValue="DateTime?" @bind-Value="@OpenSourceIntData.ReportDate" Format="dd-MMM-yy HH:mm" Max="DateTime.Now"></SfDateTimePicker>
+                <ValidationMessage For="() => OpenSourceIntData.ReportDate" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Analysis</label>
+                <BigTextItem InputText="@OpenSourceIntData.Analysis" BindingValueChanged="OnImpactAnalysisChanged"></BigTextItem>
+            </div>
+        
+            <div class="form-group col-md-6">
+                <label class="form-label">Implications</label>
+                <BigTextItem InputText="@OpenSourceIntData.Implications" BindingValueChanged="OnImplicationsChanged"></BigTextItem>
+            </div>
+        
+            <SfAccordion>
+                <AccordionItems>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Gathered Information</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="Gathered Informations" Items="OpenSourceIntData.GatheredInformation"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Recommendations</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="Recommendations" Items="OpenSourceIntData.Recommendations"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                  
+                </AccordionItems>
+            </SfAccordion>
+        </div>
+        <div class="form-group col-md-6">
+            <MatButton Raised="true" type="submit">Add</MatButton>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+    <div class="form-group col-md-6">
+        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+    </div>
+}
+@code {
+    [Parameter]
+    public EventCallback OnIntelChanged { get; set; }
+
+    public OpenSourceInt? OpenSourceIntData { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+
+
+    
+    public TypeOfCybInt Incident { get; set; } 
+    public string[] IncidentItems = Enum.GetNames(typeof(TypeOfCybInt));
+
+    protected override Task OnInitializedAsync()
+    {
+        OpenSourceIntData = new OpenSourceInt();
+        return Task.CompletedTask;
+    }
+
+
+
+    private SfButton? _cancelBtn;
+
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnIntelChanged.InvokeAsync();
+    }
+    private async Task Submit()
+    {
+        if (OpenSourceIntData != null)
+        {
+          
+            if (await _fluentValidationValidator!.ValidateAsync())
+            {
+                Logger.LogInformation("add OpenSourceIntData Id = {Id}", OpenSourceIntData?.Id);
+                Service?.Add(OpenSourceIntData);
+                await OnIntelChanged.InvokeAsync();
+            }
+        }
+    }
+
+
+    private Task OnImpactAnalysisChanged(string obj)
+    {
+        if (OpenSourceIntData != null) OpenSourceIntData.Analysis = obj;
+        return Task.CompletedTask;
+    }
+
+    private Task OnImplicationsChanged(string arg)
+    {
+        if (OpenSourceIntData != null) OpenSourceIntData.Implications = arg;
+        return Task.CompletedTask;
+    }
+
+}

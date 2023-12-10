@@ -1,0 +1,104 @@
+﻿@page "/PersonInterest"
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Timers
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@inject IIntelService<PersonOfInterest> Service;
+<PageTitle>Person Of Interest</PageTitle>
+
+<h1>Person Of Interest</h1>
+
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (_flag == Crud.List)
+    {
+        <div class="grid">
+            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(PersonOfInterest.Name) HeaderText="HumIntType" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(PersonOfInterest.PoliticalGroup) HeaderText="PoliticalGroup" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(PersonOfInterest.Nationality) HeaderText="Nationality" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as PersonOfInterest);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+            
+        </div>
+
+        <div class="btn-sm">
+            <MatButton Raised="true" @onclick="AddPerson">Add Person of Interest</MatButton>
+        </div>
+    }
+    else if (_flag == Crud.Add)
+    {
+        <AddPersonOfIntrest OnPersonChanged="PersonChanged"></AddPersonOfIntrest>
+    }
+    else if (_flag == Crud.Update)
+    {
+        <EditPersonOfIntrest Interest="PersonOfInterest" OnPersonChanged="PersonChanged"></EditPersonOfIntrest>
+    }
+
+
+}
+
+@code {
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+    private Crud _flag = Crud.List;
+
+    private IList<PersonOfInterest?>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = (await Service.GetAll()).ToList();
+    }
+
+    protected async Task PersonChanged()
+    {
+        _flag = Crud.List;
+        _items = (await Service.GetAll()).ToList();
+        NavigationManager.NavigateTo("PersonInterest");
+    }
+
+    public void AddPerson()
+    {
+       _flag = Crud.Add;
+        NavigationManager.NavigateTo("PersonInterest");
+    }
+  
+    private PersonOfInterest? PersonOfInterest { get; set; } = new PersonOfInterest();
+
+    private async Task Delete(MouseEventArgs args, PersonOfInterest? context)
+    {
+        PersonOfInterest = context;
+        await Service.Delete(context);
+        await PersonChanged();
+
+    }
+
+    private Task Edit(MouseEventArgs args, PersonOfInterest? context)
+    {
+        PersonOfInterest = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+
+
+}

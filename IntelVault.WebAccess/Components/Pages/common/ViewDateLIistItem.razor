@@ -1,0 +1,51 @@
+﻿@using Microsoft.IdentityModel.Tokens
+@using IntelVault.ApplicationCore.IntelData
+
+
+<div class="row-cols-2">
+    <br />
+    <SfCard CssClass="row-cols-2">
+        <CardHeader />
+        <CardContent>
+            <p>
+                @if (Items != null)
+                {
+                    foreach (var ti in Items)
+                    {
+                    <p>
+                            @*    <SfButton @onclick="@()=>OnDelete(ti)">Delete</SfButton> *@
+                        <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
+                            @ti.Dtg
+                    </p>
+                    }
+                }
+            </p>
+            <SfDateTimePicker TValue="DateTime?" @bind-Value="@ItemToAdd"></SfDateTimePicker>
+            <p>
+                <SfButton Type="button" IsToggle="false " IsPrimary="true" @onclick="OnClickAdd">Add</SfButton>
+            </p>
+        </CardContent>
+    </SfCard>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnListChanged { get; set; }
+
+    [Parameter]
+    public List<ListItemDate>? Items { get; set; } = new();
+
+
+    private DateTime? ItemToAdd { get; set; } = DateTime.Now;
+    private void OnClickAdd()
+    {
+        Items?.Add(new ListItemDate() { Id = Items.Count != 0 ? Items.Last().Id + 1 : 1, Dtg = ItemToAdd });
+    }
+
+    private void OnDelete(ListItemDate listItem)
+    {
+        Items?.Remove(listItem);
+    }
+
+}

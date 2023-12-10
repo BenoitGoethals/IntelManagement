@@ -1,0 +1,60 @@
+﻿@using Microsoft.IdentityModel.Tokens
+@using IntelVault.ApplicationCore.IntelData
+
+
+<div class="row-cols-2">
+    <br />
+    <SfCard CssClass="col-md-6">
+        <CardHeader Title="@Description" />
+        <CardContent>
+
+            @if (Items != null)
+            {
+
+                foreach (var ti in Items)
+                {
+                    <p>
+                        @*    <SfButton @onclick="@()=>OnDelete(ti)">Delete</SfButton> *@
+                        <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
+                        @ti.Text
+                    </p>
+                }
+
+            }
+
+            <div class="form-group col-md-6">
+                <SfTextBox @bind-Value="@ItemToAdd"></SfTextBox>
+            </div>
+            <br />
+            <div class="form-group col-md-6">
+                <SfButton Type="button" IsToggle="false " IsPrimary="true" @onclick="OnClickAdd">Add @Description</SfButton>
+                </div>
+
+            </CardContent>
+        </SfCard>
+    </div>
+
+
+    @code {
+    [Parameter]
+    public EventCallback OnListChanged { get; set; }
+
+    [Parameter]
+    public List<ListItem>? Items { get; set; } = new List<ListItem>();
+
+    [Parameter]
+    public string? Description { get; set; }
+
+    private string? ItemToAdd { get; set; }
+    private void OnClickAdd()
+    {
+        if (!Description.IsNullOrEmpty())
+            Items?.Add(new ListItem() { Id = Items.Count != 0 ? Items.Last().Id + 1 : 1, Text = ItemToAdd });
+    }
+
+    private void OnDelete(ListItem listItem)
+    {
+        Items?.Remove(listItem);
+    }
+
+}

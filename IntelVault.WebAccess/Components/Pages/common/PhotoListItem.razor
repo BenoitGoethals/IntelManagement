@@ -1,0 +1,78 @@
+﻿@using Microsoft.IdentityModel.Tokens
+@using System.Text
+@using System.Text.Json
+@using IntelVault.ApplicationCore.IntelData
+
+
+<div class="row-cols-2">
+    <br />
+    <SfCard CssClass="col-md-6">
+        <CardHeader Title="Pictures" />
+        <CardContent>
+
+            @if (Items != null)
+            {
+
+                foreach (var ti in Items)
+                {
+                    <p>
+                        @if (ti.Picture != null)
+                        {
+                            <div class="form-group col-md-6">
+                                <img Width="200" Height="200" src="data:image/png;base64, @Convert.ToBase64String(ti.Picture)" />
+                                <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
+                            </div>
+                        }
+                        @ti.Text
+                    </p>
+                }
+            }
+            <br />
+            <div class="form-group col-md-6">
+                <SfUploader AutoUpload="true"  >
+                    <UploaderEvents ValueChange="@OnChange" OnRemove="@Remove"></UploaderEvents>
+                </SfUploader>
+            </div>
+
+        </CardContent>
+    </SfCard>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnListChanged { get; set; }
+
+    [Parameter]
+    public List<ListItemPhoto>? Items { get; set; } = new List<ListItemPhoto>();
+
+  
+    private string? ItemToAdd { get; set; }
+  
+   
+   
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+
+        foreach (var file in args.Files)
+        {
+            var path = @"" + file.FileInfo.Name;
+            using MemoryStream memoryStream = new MemoryStream();
+            await file.File.OpenReadStream(long.MaxValue).CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            Items?.Add(new ListItemPhoto() {FileName = path, Picture = bytes, Text = file.FileInfo.Name});
+            memoryStream.Close();
+        }
+    }
+
+    private Task Remove(RemovingEventArgs arg)
+    {
+        var obj=Items?.Find(c=>c.FileName != null && c.FileName.Equals(arg.FilesData[0].Name));
+        if (obj != null) Items?.Remove(obj);
+        return Task.CompletedTask;
+    }
+    private void OnDelete(ListItemPhoto listItem)
+    {
+        Items?.Remove(listItem);
+    }
+}

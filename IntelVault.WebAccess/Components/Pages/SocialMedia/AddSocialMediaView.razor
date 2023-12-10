@@ -1,0 +1,164 @@
+﻿@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Lists
+<h4>Add Report</h4>
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<SocialMedia> Logger
+@inject IIntelService<SocialMedia> Service;
+
+@if (SocialMediaItem != null)
+{
+    <EditForm Model="@SocialMediaItem" OnValidSubmit="Submit" class="row g-2" FormName="Add">
+        <AntiforgeryToken />
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="form-label">Platform</label>
+                <SfTextBox @bind-Value="SocialMediaItem.Platform" Placeholder="Platform" class="form-control" />
+                <ValidationMessage For="() => SocialMediaItem.Platform" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Name</label>
+                <SfTextBox @bind-Value="SocialMediaItem.DisplayName" Placeholder="IncidentDescription" class="form-control" />
+                <ValidationMessage For="() => SocialMediaItem.DisplayName" />
+            </div>
+
+
+
+            <div class="form-group col-md-6">
+                <label class="form-label">TwoFactor Authentication</label>
+                <SfCheckBox @bind-Checked="@SocialMediaItem.TwoFactorAuthentication">Checkbox: @SocialMediaItem.TwoFactorAuthentication</SfCheckBox>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Private Account</label>
+                    <SfCheckBox @bind-Checked="@SocialMediaItem.PrivateAccount">Checkbox: @SocialMediaItem.PrivateAccount</SfCheckBox>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Username</label>
+                    <SfTextBox @bind-Value="SocialMediaItem.Username" Placeholder="Username" class="form-control" />
+                    <ValidationMessage For="() => SocialMediaItem.Username" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Bio</label>
+                    <SfTextBox @bind-Value="SocialMediaItem.Bio" Placeholder="bio" class="form-control" />
+                    <ValidationMessage For="() => SocialMediaItem.Bio" />
+                </div>
+            </div>
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">EngagementRate</label>
+                    <SfTextBox @bind-Value="SocialMediaItem.EngagementRate" Placeholder="EngagementRate" class="form-control" />
+                    <ValidationMessage For="() => SocialMediaItem.EngagementRate" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Account CreationDate</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@SocialMediaItem.AccountCreationDate" Format="dd-MMM-yy HH:mm" Max="DateTime.Now"></SfDateTimePicker>
+                    <ValidationMessage For="() => SocialMediaItem.AccountCreationDate" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">FollowersCount</label>
+                    <SfNumericTextBox TValue="int" @bind-Value="@SocialMediaItem.FollowersCount" Placeholder="FollowersCount" class="form-control" />
+                    <ValidationMessage For="() => SocialMediaItem.FollowersCount" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Following Count</label>
+                    <SfNumericTextBox TValue="int" @bind-Value="@SocialMediaItem.FollowingCount" Placeholder="FollowingCount" class="form-control" />
+                    <ValidationMessage For="() => SocialMediaItem.FollowingCount" />
+                </div>
+
+            </div>
+         
+                <div class="form-group col-md-6">
+                    <label class="form-label"></label>
+                    <BigTextItem InputText="@SocialMediaItem.SentimentAnalysis" BindingValueChanged="OnSentimentAnalysisChanged"></BigTextItem>
+                </div>
+           
+            <div class="form-row">
+                <SfAccordion>
+                    <AccordionItems>
+                        <AccordionItem>
+                            <HeaderTemplate>
+                                <div>Recent Posts</div>
+                            </HeaderTemplate>
+                            <ContentTemplate>
+                                <ViewListItem Description="Recent Posts" Items="SocialMediaItem.RecentPosts"></ViewListItem>
+                            </ContentTemplate>
+                        </AccordionItem>
+                    </AccordionItems>
+                </SfAccordion>
+            </div>
+            <div class="form-group col-md-6">
+                <SfButton IsPrimary="true" CssClass="btn btn-primary">Add</SfButton>
+            </div>
+            <ValidationSummary />
+
+        </EditForm>
+    <div class="form-group col-md-6">
+        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+    </div>
+}
+@code {
+    [Parameter]
+    public EventCallback OnIntelChanged { get; set; }
+
+    public SocialMedia? SocialMediaItem { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+
+
+    public TypeIntel TypeIntelChosen { get; set; }
+    public string[] TypeIntelItems = Enum.GetNames(typeof(TypeIntel));
+    private SfButton? _cancelBtn;
+
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnIntelChanged.InvokeAsync();
+    // NavigationManager.NavigateTo("SocialMedia");
+    }
+    protected override Task OnInitializedAsync()
+    {
+        SocialMediaItem = new();
+        return Task.CompletedTask;
+    }
+
+
+
+    private async Task Submit()
+    {
+        if (SocialMediaItem != null)
+        {
+            if (await _fluentValidationValidator!.ValidateAsync())
+            {
+                Logger.LogInformation("Id = {Id}", SocialMediaItem?.Id);
+                Service?.Add(SocialMediaItem);
+                await OnIntelChanged.InvokeAsync();
+              
+            }
+        }
+    }
+
+
+
+
+    private Task OnSentimentAnalysisChanged(string arg)
+    {
+        if (SocialMediaItem != null) SocialMediaItem.SentimentAnalysis = arg;
+        return Task.CompletedTask;
+    }
+
+
+ 
+
+}

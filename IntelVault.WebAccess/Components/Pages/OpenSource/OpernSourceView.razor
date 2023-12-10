@@ -1,0 +1,108 @@
+﻿@page "/OpenSource"
+@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Timers
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@inject IIntelService<OpenSourceInt> Service;
+<PageTitle>OpenSource Intel</PageTitle>
+<h3>OpenSource Intel Report</h3>
+
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (_flag == Crud.List)
+    {
+        <div class="grid">
+            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(OpenSourceInt.SourceName) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(OpenSourceInt.ReportDate) HeaderText="ReportDate" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as OpenSourceInt);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+
+        <div class="btn-sm">
+            <MatButton Raised="true" @onclick="AddPerson">Add OpenSource Intel</MatButton>
+        </div>
+    }
+    else if (_flag == Crud.Add)
+    {
+      
+        <AddOpenSourceView OnIntelChanged="IntelChanged"></AddOpenSourceView>
+    }
+    else if (_flag == Crud.Update)
+    {
+       <EditOpenSourceView OpenSourceIntData="OpenSourceInt" OnIntelChanged="IntelChanged"></EditOpenSourceView> 
+    }
+
+}
+@code {
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+
+    Crud _flag = Crud.List;
+
+    List<OpenSourceInt?>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = (await Service.GetAll()).ToList();
+
+    }
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        _items = (await Service.GetAll()).ToList();
+        NavigationManager.NavigateTo("OpenSource");
+    }
+
+    public void AddPerson()
+    {
+
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("OpenSource");
+    }
+
+
+    private OpenSourceInt? OpenSourceInt { get; set; } = new OpenSourceInt();
+
+
+    private async Task Delete(MouseEventArgs args, OpenSourceInt? context)
+    {
+        OpenSourceInt = context;
+        await Service.Delete(OpenSourceInt);
+        await IntelChanged();
+
+    }
+
+    private Task Edit(MouseEventArgs args, OpenSourceInt? context)
+    {
+        OpenSourceInt = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+}
+
+
+
+

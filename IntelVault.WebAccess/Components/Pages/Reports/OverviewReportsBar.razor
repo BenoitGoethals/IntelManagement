@@ -1,0 +1,26 @@
+﻿@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@inject IReportService ReportService
+<h3>Overview Reports Bar</h3>
+@if (_data == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <SfChart Title="Reports">
+        <ChartPrimaryXAxis Title="Orders" ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@_data" XName="Description" YName="Count" Type="ChartSeriesType.Column"></ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+}
+@code {
+    private List<ReportData>? _data;
+    protected override async Task OnInitializedAsync()
+    {
+        _data=await ReportService.IntelReportCount();
+       
+    }
+
+}

@@ -1,0 +1,101 @@
+﻿@page "/GeneralIntelView"
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Interfaces
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IIntelService<GeneralIntel> Service;
+<PageTitle>General Intel</PageTitle>
+<h3>General Intel</h3>
+
+
+@if (Items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    switch (_flag)
+    {
+        case Crud.List:
+            <SfGrid DataSource="@Items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as GeneralIntel);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(GeneralIntel.Name) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(GeneralIntel.ReportDate) HeaderText="ReportDate" TextAlign="@TextAlign.Left" Type="ColumnType.Date" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(GeneralIntel.Findings) HeaderText="Findings" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(GeneralIntel.HumanSource) HeaderText="HumanSource" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+            <div class="btn-sm">
+                <MatButton Raised="true" @onclick="AddPerson">Add General Intel</MatButton>
+            </div>
+            break;
+        case Crud.Add:
+            <AddGeneralIntelView OnIntelChanged="IntelChanged"></AddGeneralIntelView>
+            break;
+        case Crud.Update:
+            <EditGeneralIntelView GeneralIntelItem="Intel" OnIntelChanged="IntelChanged"></EditGeneralIntelView>
+            break;
+    }
+}
+
+
+@code {
+    private GeneralIntel? Intel { get; set; } = new GeneralIntel();
+
+    private Crud _flag = Crud.List;
+
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+    public List<GeneralIntel?>? Items { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        Items = (await Service.GetAll()).ToList();
+    }
+
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        Items = (await Service.GetAll()).ToList();
+        NavigationManager.NavigateTo("GeneralIntelView");
+    }
+
+    public void AddPerson()
+    {
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("GeneralIntelView");
+    }
+
+
+
+    private async Task Delete(MouseEventArgs args, GeneralIntel? context)
+    {
+        Intel = context;
+        await Service.Delete(context);
+        await IntelChanged();
+    }
+
+    private Task Edit(MouseEventArgs args, GeneralIntel? context)
+    {
+        Intel = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+
+    
+
+}

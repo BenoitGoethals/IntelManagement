@@ -1,0 +1,100 @@
+﻿@page "/HumanIntel"
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.ApplicationCore.Interfaces
+<PageTitle>HumanIntel</PageTitle>
+<h3>Human Intel Report</h3>
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IIntelService<HumInt> Service;
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (_flag == Crud.List)
+    {
+        <div class="grid">
+            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(HumInt.HumIntType) HeaderText="HumIntType" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(HumInt.ContactName) HeaderText="ContactName" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as HumInt);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+
+        <div class="btn-sm">
+            <MatButton Raised="true" @onclick="AddPerson">Add HumInt</MatButton>
+        </div>
+    }
+    else if (_flag == Crud.Add)
+    {
+        <AddHumanIntel OnIntelChanged="IntelChanged"></AddHumanIntel>
+    }
+    else if (_flag == Crud.Update)
+    {
+        <EditHumanIntel HumIntIntel="HumInt" OnIntelChanged="IntelChanged"></EditHumanIntel>
+    }
+
+
+}
+
+@code {
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+
+    Crud _flag = Crud.List;
+
+
+    List<HumInt?>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = (await Service.GetAll()).ToList();
+
+    }
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        _items = (await Service.GetAll()).ToList();
+        HumInt = new HumInt();
+        NavigationManager.NavigateTo("HumanIntel");
+    }
+
+    public void AddPerson()
+    {
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("HumanIntel");
+    }
+
+    private HumInt? HumInt { get; set; } = new HumInt();
+
+    private async Task Delete(MouseEventArgs args, HumInt? context)
+    {
+        HumInt = context;
+        await Service.Delete(HumInt);
+        await IntelChanged();
+
+    }
+
+    private Task Edit(MouseEventArgs args, HumInt? context)
+    {
+        HumInt = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+}

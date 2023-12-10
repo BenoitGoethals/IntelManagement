@@ -1,0 +1,146 @@
+﻿@using Syncfusion.Blazor.RichTextEditor
+<div class="control-section">
+    <div class="control-wrapper">
+        <div class="">
+            <SfRichTextEditor ShowCharCount="true"  SaveInterval="5000" AutoSaveOnIdle="true" Value="@InputText"  ValueChanged="SetAsync">
+              @*   <RichTextEditorToolbarSettings Items="@_tools" />
+                <RichTextEditorQuickToolbarSettings Table="@_tableQuickToolbarItems" /> *@
+            </SfRichTextEditor>
+        </div>
+    </div>
+</div>
+<style>
+    .e-code-mirror::before {
+        content: '\e345';
+    }
+    .e-html-preview::before {
+        content: '\e350';
+    }
+    .e-richtexteditor.e-rte-full-screen {
+        top: 48px;
+    }
+    .CodeMirror-linenumber,
+    .CodeMirror-gutters {
+        display: none;
+    }
+    .sb-header {
+        z-index: 100;
+    }
+    .fabric-dark .cm-s-default .cm-tag,
+    .bootstrap5-dark .cm-s-default .cm-tag,
+    .material-dark .cm-s-default .cm-tag,
+    .tailwind-dark .cm-s-default .cm-tag,
+    .highcontrast .cm-s-default .cm-tag {
+        color: #00ff00;
+    }
+    .fabric-dark .cm-s-default .cm-string,
+    .bootstrap5-dark .cm-s-default .cm-string,
+    .material-dark .cm-s-default .cm-string,
+    .tailwind-dark .cm-s-default .cm-string {
+        color: blue;
+    }
+    .highcontrast .cm-s-default .cm-string {
+        color: #ffd939;
+    }
+    .fabric-dark .cm-s-default .cm-attribute,
+    .bootstrap5-dark .cm-s-default .cm-attribute,
+    .material-dark .cm-s-default .cm-attribute,
+    .tailwind-dark .cm-s-default .cm-attribute,
+    .highcontrast .cm-s-default .cm-attribute {
+        color: #f00;
+    }
+    .fabric-dark .CodeMirror,
+    .bootstrap5-dark .CodeMirror,
+    .material-dark .CodeMirror,
+    .tailwind-dark .CodeMirror {
+        background:  #303030;
+    }
+    .highcontrast .CodeMirror {
+        background: black;
+    }
+    .e-richtexteditor .e-rte-content .e-content pre {
+        padding: 10px;
+        background: #F4F5F7;
+    }
+    .fabric-dark .e-richtexteditor .e-rte-content .e-content pre,
+    .bootstrap5-dark .e-richtexteditor .e-rte-content .e-content pre,
+    .material-dark .e-richtexteditor .e-rte-content .e-content pre,
+    .tailwind-dark .e-richtexteditor .e-rte-content .e-content pre,
+    .highcontrast .e-richtexteditor .e-rte-content .e-content pre,
+    .fluent-dark .e-richtexteditor .e-rte-content .e-content pre,
+    .material3-dark .e-richtexteditor .e-rte-content .e-content pre,
+    {        padding: 10px;
+        background: #303030;
+    }
+    @@media print {
+        a, a:visited {
+            color: blue !important;
+            text-decoration: underline;
+        }
+        a[href^="javascript:"]:after, a[href^="#"]:after {
+            content: "";
+        }
+        a[href]:after {
+            content: "";
+        }
+    }
+</style>
+@code {
+    [Parameter] 
+    public string? InputText { get; set; }
+    [Parameter]
+    public EventCallback<string> BindingValueChanged { get; set; }
+
+    public async Task SetAsync(string value)=> await BindingValueChanged.InvokeAsync(value);
+
+    private List<ToolbarItemModel> _tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.LowerCase },
+        new ToolbarItemModel() { Command = ToolbarCommand.UpperCase },
+        new ToolbarItemModel() { Command = ToolbarCommand.SuperScript },
+        new ToolbarItemModel() { Command = ToolbarCommand.SubScript },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.NumberFormatList },
+        new ToolbarItemModel() { Command = ToolbarCommand.BulletFormatList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Outdent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Indent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel() { Command = ToolbarCommand.Image },
+        new ToolbarItemModel() { Command = ToolbarCommand.Audio },
+        new ToolbarItemModel() { Command = ToolbarCommand.Video },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateTable },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.ClearFormat },
+        new ToolbarItemModel() { Command = ToolbarCommand.Print },
+        new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
+        new ToolbarItemModel() { Command = ToolbarCommand.FullScreen },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo }
+    };
+    private List<TableToolbarItemModel> _tableQuickToolbarItems = new List<TableToolbarItemModel>()
+    {
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableHeader },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableRows },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableColumns },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableCell },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.HorizontalSeparator },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableRemove },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.BackgroundColor },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.TableCellVerticalAlign },
+        new TableToolbarItemModel() { Command = TableToolbarCommand.Styles }
+    };
+
+   
+}

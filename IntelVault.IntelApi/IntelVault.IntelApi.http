@@ -1,0 +1,6 @@
+@IntelVault.IntelApi_HostAddress = http://localhost:5124
+
+GET {{IntelVault.IntelApi_HostAddress}}/CybIntController/
+Accept: application/json
+
+###

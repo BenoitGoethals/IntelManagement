@@ -1,0 +1,109 @@
+﻿@page "/CybIntel"
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Timers
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+
+@inject IIntelService<CybInt> Service;
+<PageTitle>Cyber Intel</PageTitle>
+<h3>Cyber Intel Report</h3>
+
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (_flag == Crud.List)
+    {
+        <div class="grid">
+            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(CyberIntel.IncidentType) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(CyberIntel.IncidentDescription) HeaderText="ReportDate" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as CybInt);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+
+        </div>
+
+        <div class="btn-sm">
+            <MatButton Raised="true" @onclick="AddPerson">Add Cyber Intel</MatButton>
+        </div>
+    }
+    else if (_flag == Crud.Add)
+    {
+        <AddCyIbnt OnIntelChanged="IntelChanged"></AddCyIbnt>
+    }
+    else if (_flag == Crud.Update)
+    {
+        <EditCybInt CyberIntel="CyberIntel" OnIntelChanged="IntelChanged"></EditCybInt>
+    }
+
+}
+@code {
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+
+    Crud _flag = Crud.List;
+
+    List<CybInt?>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = (await Service.GetAll()).ToList();
+
+    }
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        _items = (await Service.GetAll()).ToList();
+        NavigationManager.NavigateTo("CybIntel");
+    }
+
+    public void AddPerson()
+    {
+
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("CybIntel");
+    }
+
+
+    private CybInt? CyberIntel { get; set; } = new CybInt();
+
+
+    private async Task Delete(MouseEventArgs args, CybInt? context)
+    {
+        CyberIntel = context;
+        await Service.Delete(CyberIntel);
+        await IntelChanged();
+
+    }
+
+    private Task Edit(MouseEventArgs args, CybInt? context)
+    {
+        CyberIntel = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+}
+
+
+
+

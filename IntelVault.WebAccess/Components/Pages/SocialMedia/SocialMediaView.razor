@@ -1,0 +1,97 @@
+﻿@page "/SocialMedia"
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Interfaces
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IIntelService<SocialMedia> Service;
+<PageTitle>Social Medial</PageTitle>
+<h3>SocialMediaView</h3>
+
+
+@if (Items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    switch (_flag)
+    {
+        case Crud.List:
+            <SfGrid DataSource="@Items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as SocialMedia);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(SocialMedia.DisplayName) HeaderText="DisplayName" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(SocialMedia.Username) HeaderText="Username" TextAlign="@TextAlign.Left" Type="ColumnType.Date" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(SocialMedia.Platform) HeaderText="Platform" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(SocialMedia.Location) HeaderText="Location" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+            <div class="btn-sm">
+                <MatButton Raised="true" @onclick="AddPerson">Add SocialMedia Intel</MatButton>
+            </div>
+            break;
+        case Crud.Add:
+            <AddSocialMediaView OnIntelChanged="IntelChanged"></AddSocialMediaView>
+            break;
+        case Crud.Update:
+            <EditSocialMediaView SocialMediaItem="Intel" OnIntelChanged="IntelChanged"></EditSocialMediaView>
+            break;
+    }
+}
+
+@code {
+    private SocialMedia? Intel { get; set; } = new();
+
+    private Crud _flag = Crud.List;
+
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+    public List<SocialMedia?>? Items { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        Items = (await Service.GetAll()).ToList();
+    }
+
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        Items = (await Service.GetAll()).ToList();
+        NavigationManager.NavigateTo("SocialMedia");
+    }
+
+    public void AddPerson()
+    {
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("SocialMedia");
+    }
+
+    private async Task Delete(MouseEventArgs args, SocialMedia? context)
+    {
+        Intel = context;
+        await Service.Delete(Intel);
+        await IntelChanged();
+    }
+
+    private Task Edit(MouseEventArgs args, SocialMedia? context)
+    {
+        Intel = context;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+
+
+}

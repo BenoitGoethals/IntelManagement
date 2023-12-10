@@ -1,0 +1,216 @@
+﻿<h3>EditGeneralIntelView</h3>
+@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Lists
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<GeneralIntel> Logger
+@inject IIntelService<GeneralIntel> Service;
+
+@if (GeneralIntelItem != null)
+{
+    <EditForm Model="@GeneralIntelItem" OnValidSubmit="Submit" class="row g-2" FormName="Add">
+        <AntiforgeryToken />
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <div class="form-group col-md-6">
+                    <label class="form-label">Name</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.Name" Placeholder="IncidentDescription" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.Name" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Type Intel</label>
+                    <SfDropDownList TValue="TypeIntel" @bind-Value="@TypeIntelChosen" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " DataSource="@TypeIntelItems"></SfDropDownList>
+                </div>
+
+
+            </div>
+            <div class="form-group col-md-6">
+                <label class="form-label">Human source</label>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Name</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.HumanSource.Name" Placeholder="HumanSource Name" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.HumanSource.Name" />
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">ForName</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.HumanSource.ForName" Placeholder="ForName" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.HumanSource.ForName" />
+                </div>
+
+                <div class="form-group col-md-6">
+
+                    <ViewListItem Description="AdditionalInfo" Items="GeneralIntelItem.IntelligenceSources"></ViewListItem>
+                    <ValidationMessage For="() => GeneralIntelItem.HumanSource.AdditionalInfo" />
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <div class="form-group col-md-6">
+                    <label class="form-label">IncidentLocation</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.IncidentLocation" Placeholder="IncidentLocation" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.IncidentLocation" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">ReportTitle</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.ReportTitle" Placeholder="ReportTitle" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.ReportTitle" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">ReportDate</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@GeneralIntelItem.ReportDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                    <ValidationMessage For="() => ReportDate" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">ReportingAgency</label>
+                    <SfTextBox @bind-Value="GeneralIntelItem.ReportingAgency" Placeholder="ReportingAgency" class="form-control" />
+                    <ValidationMessage For="() => GeneralIntelItem.ReportingAgency" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Dtg Injected</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@GeneralIntelItem.DtgInjected" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                    <ValidationMessage For="() => GeneralIntelItem.DtgInjected" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">DtgOccurrence</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@GeneralIntelItem.DtgOccurrence" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                    <ValidationMessage For="() => GeneralIntelItem.DtgOccurrence" />
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <div class="form-group col-md-6">
+                    <label class="form-label">Malware Analysis</label>
+                    <BigTextItem InputText="@GeneralIntelItem.Findings" BindingValueChanged="OnFindingChanged"></BigTextItem>
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Analysis</label>
+                    <BigTextItem InputText="@GeneralIntelItem.Analysis" BindingValueChanged="OnAnalysisChanged"></BigTextItem>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <SfAccordion>
+                    <AccordionItems>
+                        <AccordionItem>
+                            <HeaderTemplate>
+                                <div>Exploited Vulnerabilities</div>
+                            </HeaderTemplate>
+                            <ContentTemplate>
+                                <ViewListItem Description="Exploited Vulnerabilities" Items="GeneralIntelItem.IntelligenceSources"></ViewListItem>
+                            </ContentTemplate>
+                        </AccordionItem>
+                        <AccordionItem>
+                            <HeaderTemplate>
+                                <div>Indicators Of Compromise</div>
+                            </HeaderTemplate>
+                            <ContentTemplate>
+                                <ViewListItem Description="IndicatorsOfCompromise" Items="GeneralIntelItem.AdditionalInfo"></ViewListItem>
+                            </ContentTemplate>
+                        </AccordionItem>
+                        <AccordionItem>
+                            <HeaderTemplate>
+                                <div>Mitigation Recommendations</div>
+                            </HeaderTemplate>
+                            <ContentTemplate>
+                                <ViewListItem Description="MitigationRecommendations" Items="GeneralIntelItem.KeyPlayers"></ViewListItem>
+                            </ContentTemplate>
+                        </AccordionItem>
+                        <AccordionItem>
+                            <HeaderTemplate>
+                                <div>TtPs</div>
+                            </HeaderTemplate>
+                            <ContentTemplate>
+                                <ViewListItem Description="TtPs" Items="GeneralIntelItem.Recommendations"></ViewListItem>
+                            </ContentTemplate>
+                        </AccordionItem>
+
+                    </AccordionItems>
+                </SfAccordion>
+            </div>
+            <div class="form-group col-md-6">
+                <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+            </div>
+            <ValidationSummary />
+        </div>
+    </EditForm>
+
+    <div class="form-group col-md-6">
+        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+    </div>
+}
+@code {
+    [Parameter]
+    public EventCallback OnIntelChanged { get; set; }
+    [Parameter]
+    public GeneralIntel? GeneralIntelItem { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+
+
+    public DateTime? ReportDate { get; set; } = DateTime.Now;
+    public DateTime? DtgInjected { get; set; } = DateTime.Now;
+    public DateTime? DtgOccurrence { get; set; } = DateTime.Now;
+
+    public TypeIntel TypeIntelChosen { get; set; }
+    public string[] TypeIntelItems = Enum.GetNames(typeof(TypeIntel));
+
+
+    private SfButton? _cancelBtn;
+
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnIntelChanged.InvokeAsync();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        if (GeneralIntelItem != null) TypeIntelChosen = GeneralIntelItem.IncidentType;
+        return Task.CompletedTask;
+    }
+
+
+
+    private async Task Submit()
+    {
+        if (GeneralIntelItem != null)
+        {
+            GeneralIntelItem.IncidentType = TypeIntelChosen;
+            if (await _fluentValidationValidator!.ValidateAsync())
+            {
+                Logger.LogInformation("update -Id = {Id}", GeneralIntelItem?.Id);
+                Service?.Update(GeneralIntelItem);
+                await OnIntelChanged.InvokeAsync();
+               
+            }
+        }
+    }
+
+
+
+
+    private Task OnAnalysisChanged(string arg)
+    {
+        if (GeneralIntelItem != null) GeneralIntelItem.Analysis = arg;
+        return Task.CompletedTask;
+    }
+
+    private Task OnFindingChanged(string arg)
+    {
+        if (GeneralIntelItem != null) GeneralIntelItem.Findings = arg;
+        return Task.CompletedTask;
+    }
+
+}

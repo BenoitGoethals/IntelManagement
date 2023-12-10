@@ -1,0 +1,164 @@
+﻿@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.IntelData
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Lists
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<CybInt> Logger
+@inject IIntelService<CybInt> Service;
+
+@if (CyberIntel != null)
+{
+    <EditForm Model="@CyberIntel" OnValidSubmit="Submit" FormName="AddCybIntel">
+        <AntiforgeryToken />
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="form-label">Name</label>
+                <SfDropDownList TValue="TypeOfCybInt" @bind-Value="@Incident" Width="300px" TItem="string" class="form-control"  Placeholder="Select a Type Incident" DataSource="@IncidentItems"></SfDropDownList>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Incident Description</label>
+                <SfTextBox @bind-Value="CyberIntel.IncidentDescription" Placeholder="IncidentDescription" class="form-control" />
+                <ValidationMessage For="() => CyberIntel.IncidentDescription" />
+            </div>
+            <div class="form-group col-md-6">
+                <label class="form-label">Impact Assessment</label>
+                <BigTextItem InputText="@CyberIntel.ImpactAssessment" BindingValueChanged="OnImpactAssessmentChanged"></BigTextItem>
+            </div>
+        
+            <div class="form-group col-md-6">
+                <label class="form-label">Malware Analysis</label>
+                <BigTextItem InputText="@CyberIntel.MalwareAnalysis" BindingValueChanged="OnAnalysisChanged"></BigTextItem>
+            </div>
+        
+            <SfAccordion>
+                <AccordionItems>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Exploited Vulnerabilities</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="Exploited Vulnerabilities" Items="CyberIntel.ExploitedVulnerabilities"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Indicators Of Compromise</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="IndicatorsOfCompromise" Items="CyberIntel.IndicatorsOfCompromise"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Mitigation Recommendations</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="MitigationRecommendations" Items="CyberIntel.MitigationRecommendations"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>TtPs</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="TtPs" Items="CyberIntel.TtPs"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Prevention Recommendations</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="Exploited Vulnerabilities" Items="CyberIntel.PreventionRecommendations"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>Indicators Of Compromise</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewListItem Description="IndicatorsOfCompromise" Items="CyberIntel.IndicatorsOfCompromise"></ViewListItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                    <AccordionItem>
+                        <HeaderTemplate>
+                            <div>TimeLine</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <ViewDateLIistItem Items="CyberIntel.Timeline"></ViewDateLIistItem>
+                        </ContentTemplate>
+                    </AccordionItem>
+                </AccordionItems>
+            </SfAccordion>
+        </div>
+        <div class="form-group col-md-6">
+            <MatButton Raised="true" type="submit">Add</MatButton>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+    <div class="form-group col-md-6">
+        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+    </div>
+}
+@code {
+    [Parameter]
+    public EventCallback OnIntelChanged { get; set; }
+
+    public CybInt? CyberIntel { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+
+
+    
+    public TypeOfCybInt Incident { get; set; } 
+    public string[] IncidentItems = Enum.GetNames(typeof(TypeOfCybInt));
+
+    protected override Task OnInitializedAsync()
+    {
+        CyberIntel = new CybInt();
+        return Task.CompletedTask;
+    }
+
+
+
+    private SfButton? _cancelBtn;
+
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnIntelChanged.InvokeAsync();
+    }
+    private async Task Submit()
+    {
+        if (CyberIntel != null)
+        {
+            CyberIntel.IncidentType = Incident;
+            if (await _fluentValidationValidator!.ValidateAsync())
+            {
+                Logger.LogInformation("add cybintel Id = {Id}", CyberIntel?.Id);
+                Service?.Add(CyberIntel);
+                await OnIntelChanged.InvokeAsync();
+            }
+        }
+    }
+
+
+    private Task OnImpactAssessmentChanged(string obj)
+    {
+        if (CyberIntel != null) CyberIntel.ImpactAssessment = obj;
+        return Task.CompletedTask;
+    }
+
+    private Task OnAnalysisChanged(string arg)
+    {
+        if (CyberIntel != null) CyberIntel.MalwareAnalysis = arg;
+        return Task.CompletedTask;
+    }
+
+}
