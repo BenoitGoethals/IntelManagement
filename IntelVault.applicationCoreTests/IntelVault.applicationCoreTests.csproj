@@ -30,7 +30,6 @@
 </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntelVault.IntelApi\IntelVault.IntelApi.csproj" />
-    <ProjectReference Include="..\IntelVault.Sharewdtest\IntelVault.Sharewdtest.csproj" />
   </ItemGroup>
 
   <ItemGroup>

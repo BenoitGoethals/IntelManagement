@@ -12,7 +12,6 @@ using MongoDB.Driver.Core.Configuration;
 using MongoDB.Driver;
 using NLog.Extensions.Logging;
 using Syncfusion.Blazor;
-using Humanizer;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.ApplicationCore.Services;
