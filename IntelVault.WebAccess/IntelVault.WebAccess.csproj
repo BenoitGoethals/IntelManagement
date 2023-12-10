@@ -19,6 +19,9 @@
     <Content Remove="wwwroot\icons\Docx.png" />
     <Content Remove="wwwroot\icons\pdf.png" />
   </ItemGroup>
+  <PropertyGroup>
+  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+</PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\icons\PDF.png">

@@ -13,6 +13,9 @@
     <None Remove="Pensioenen.pdf" />
   </ItemGroup>
 
+<PropertyGroup>
+  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="FluentValidation" Version="11.8.1" />

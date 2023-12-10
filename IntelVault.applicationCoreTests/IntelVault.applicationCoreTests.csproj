@@ -25,7 +25,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
+<PropertyGroup>
+  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+</PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntelVault.IntelApi\IntelVault.IntelApi.csproj" />
     <ProjectReference Include="..\IntelVault.Sharewdtest\IntelVault.Sharewdtest.csproj" />
