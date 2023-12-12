@@ -81,7 +81,6 @@ builder.Services.AddSingleton<ServiceCountry>();
 builder.Services.AddScoped<IIntelService<SocialMedia>, IntelService<SocialMedia>>(n => new IntelService<SocialMedia>(n.GetRequiredService<IMongoDbRepository<SocialMedia>>(), n.GetRequiredService<SocialMediaValidator>()));
 builder.Services.AddScoped<IIntelService<OpenSourceInt>, IntelService<OpenSourceInt>>(n => new IntelService<OpenSourceInt>(n.GetRequiredService<IMongoDbRepository<OpenSourceInt>>(), n.GetRequiredService<OpenSourceIntelValidator>()));
 
-
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddMatBlazor();
@@ -89,11 +88,11 @@ builder.Services.AddMatBlazor();
 builder.Services.AddLogging(loggingBuilder =>
 {
     loggingBuilder.ClearProviders(); // Clear other logging providers
-    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+    loggingBuilder.SetMinimumLevel(LogLevel.Debug);
     loggingBuilder.AddNLog(builder.Configuration);
     loggingBuilder.AddConsole();
 });
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(x => x.DetailedErrors = true); ;
 builder.Services.AddSyncfusionBlazor();
 var app = builder.Build();
 

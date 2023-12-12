@@ -1,0 +1,318 @@
+﻿@page "/IntelInvestigation"
+@using IntelVault.WebAccess.Components.Pages.OpenSource
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Navigations
+@using IntelVault.ApplicationCore.Model
+@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.Interfaces
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<IntelInvestigationFile> Logger
+@inject IIntelService<PersonOfInterest> ServicePersonIntelService
+@inject IDocumentService IntelService
+
+<SfTab>
+    <TabItems>
+
+        <TabItem>
+            <HeaderTemplate>Common</HeaderTemplate>
+            <ContentTemplate>
+                <style>
+                    .multiline {
+                        margin-top: 60px;
+                        width: 20%;
+                    }
+
+                    #Card {
+                        width: 300px;
+                    }
+                </style>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="AddCommon">
+                    <AntiforgeryToken />
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <SfTextBox @bind-Value="IntelInvest.CaseNumber" Placeholder="Case Number" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.CaseNumber" />
+                        </div>
+                        <div class="form-group col-md-6">
+
+                            <SfTextBox @bind-Value="IntelInvest.Description" Multiline="true" Placeholder="Description" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.Description" />
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <SfDateTimePicker TValue="DateTime?" Placeholder="Started DateTimeDate" Value="@IntelInvest.StartedDateTimeDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <SfDateTimePicker TValue="DateTime?" Placeholder="Ended DateTimeDate" Value="@IntelInvest.EndedDateTimeDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                        </div>
+
+
+                        <div class="form-group col-md-3">
+                            <SfTextBox @bind-Value="IntelInvest.InvestigatorName" Placeholder="Name" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.InvestigatorName" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <SfTextBox @bind-Value="IntelInvest.InvestigatorBadgeNumber" Placeholder="Alias" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.InvestigatorBadgeNumber" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <SfTextBox @bind-Value="IntelInvest.InvestigatorNote" Placeholder="Name" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.InvestigatorNote" />
+                        </div>
+
+
+
+                        <div class="form-group col-md-6">
+                            <MatButton Raised="true" type="submit">Add</MatButton>
+                        </div>
+
+                        <ValidationSummary />
+                    </div>
+                </EditForm>
+                <div class="form-group col-md-6">
+                    <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+                </div>
+
+            </ContentTemplate>
+
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>Long Description</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="Addlong">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" bind-Value="@IntelInvest?.LongDescription" />
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>Conclusion</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="Conclusion">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" bind-Value="@IntelInvest?.Conclusion" />
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>PersonOfInterests</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="PersonOfInterests">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+                    @if (IntelInvest?.PersonOfInterests != null)
+                    {
+                        <div class="row">
+                        @foreach (var val in IntelInvest?.PersonOfInterests)
+                        {
+                          
+                                <div class="col-sm-3">
+                                 
+
+                                        <SfCard ID="Card" CssClass="width: 200px;">
+                                            <CardHeader Title="@val.Name" />
+                                            <CardContent>
+                                                <div>
+                                                    @val.Nationality
+                                                </div>
+                                                <div>
+                                                    @val.PoliticalGroup
+                                                </div>
+                                                <div>
+
+                                                    @if (val?.Pictures.Count>0 && val.Pictures[0]!=null)
+                                                    {
+                                                        <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)"/>
+                                                    }
+
+
+                                                </div>
+                                            </CardContent>
+                                        </SfCard>
+                                   
+                                </div>
+                           
+                            }
+                            </div>
+                    }
+
+
+                    <style>
+                        #Card {
+                            width: 300px;
+                        }
+                    </style>
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>IntelDocuments</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="IntelDocuments">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+                    @if (IntelInvest?.IntelDocuments != null)
+                    {
+                        <div class="row">
+                            @foreach (var val in IntelInvest?.IntelDocuments)
+                            {
+                          
+                                <div class="col-sm-3">
+                                 
+
+                                    <SfCard ID="Card" CssClass="width: 200px;">
+                                        <CardHeader Title="@val.Description" />
+                                        <CardContent>
+                                            <div>
+                                                @val.DocumentType
+                                            </div>
+                                            <div>
+                                                @val.TypeIntel
+                                            </div>
+                                            <div>
+                                                @val.TimeCreated
+                                            </div>
+                                        </CardContent>
+                                    </SfCard>
+                                   
+                                </div>
+                           
+                            }
+                        </div>
+                    }
+
+
+                    <style>
+                        #Card {
+                            width: 300px;
+                        }
+                    </style>
+
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>EvidenceCollected</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="EvidenceCollected">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+
+                    @if (IntelInvest?.IntelDocuments != null)
+                    {
+                        <div class="row">
+                            @foreach (var val in IntelInvest?.IntelDocuments)
+                            {
+                          
+                                <div class="col-sm-3">
+                                 
+
+                                    <SfCard ID="Card" CssClass="width: 200px;">
+                                        <CardHeader Title="@val.Description" />
+                                        <CardContent>
+                                            <div>
+                                                @val.DocumentType
+                                            </div>
+                                            <div>
+                                                @val.TypeIntel
+                                            </div>
+                                            <div>
+                                                @val.TimeCreated
+                                            </div>
+                                        </CardContent>
+                                    </SfCard>
+                                   
+                                </div>
+                           
+                            }
+                        </div>
+                    }
+
+
+                    <style>
+                        #Card {
+                            width: 300px;
+                        }
+                    </style>
+
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <HeaderTemplate>ExpertOpinions</HeaderTemplate>
+            <ContentTemplate>
+                <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="ExpertOpinions">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <AntiforgeryToken />
+
+
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    </div>
+                </EditForm>
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+@code {
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IntelInvest = new IntelInvestigationFile();
+        IntelInvest.PersonOfInterests = (List<PersonOfInterest>) await ServicePersonIntelService.GetAll();
+        IntelInvest.IntelDocuments = (List<IntelDocument>) await IntelService.GetAll();
+
+    }
+
+    public EventCallback OnFileInvestChanged { get; set; }
+
+
+    private IntelInvestigationFile? IntelInvest { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    private SfButton? _cancelBtn;
+
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnFileInvestChanged.InvokeAsync();
+    }
+    private async Task Submit()
+    {
+
+    }
+    protected void Changed()
+    {
+        NavigationManager.NavigateTo("IntelInvestigation");
+    }
+}
