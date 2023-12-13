@@ -6,11 +6,39 @@
 @using IntelVault.ApplicationCore.Model
 @using Blazored.FluentValidation
 @using IntelVault.ApplicationCore.Interfaces
+@using SelectionType = Syncfusion.Blazor.Grids.SelectionType
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject ILogger<IntelInvestigationFile> Logger
 @inject IIntelService<PersonOfInterest> ServicePersonIntelService
 @inject IDocumentService IntelService
+
+
+<SfDialog @bind-Visible="@IsDialogVisible" Width="700px">
+    
+    <DialogTemplates>
+        <Content>
+            
+            <SfGrid @ref="GridPersonOfInterests" DataSource="@_personOfInterests" AllowSelection="true" AllowPaging="true" AllowSorting="true" AllowFiltering="true" TValue="PersonOfInterest">
+                <GridSelectionSettings Type="SelectionType.Multiple"></GridSelectionSettings>
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(PersonOfInterest.Name) HeaderText="HumIntType" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(PersonOfInterest.PoliticalGroup) HeaderText="PoliticalGroup" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(PersonOfInterest.Nationality) HeaderText="Nationality" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+                <GridPageSettings PageSize="5"></GridPageSettings>
+
+            </SfGrid>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="OK" IsPrimary="true" OnClick="@CloseDialog" />
+        <DialogButton Content="Cancel" OnClick="@CancelDialog" />
+    </DialogButtons>
+</SfDialog>
+
+
 
 <SfTab>
     <TabItems>
@@ -165,6 +193,9 @@
                     <div class="form-group col-md-6">
                         <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
                     </div>
+                    <div class="form-group col-md-6">
+                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick="OpenDialog">search</SfButton>
+                    </div>
                 </EditForm>
             </ContentTemplate>
         </TabItem>
@@ -285,12 +316,43 @@
 </SfTab>
 
 @code {
+    private List<PersonOfInterest> _personOfInterests;
+    bool IsDialogVisible { get; set; } = false;
+    SfGrid<PersonOfInterest> GridPersonOfInterests;
 
+    [Obsolete("Obsolete")]
+    async Task CloseDialog()
+    {
+        var selectedRecords = await GridPersonOfInterests.GetSelectedRecords();
+        foreach (var sel in selectedRecords)
+        {
+            if(IntelInvest?.PersonOfInterests != null && IntelInvest != null && !IntelInvest.PersonOfInterests.Exists(s=>s.Equals(sel)))
+            {
+                IntelInvest?.PersonOfInterests?.Add(sel);
+            }
+           
+        }
+       
 
+    // Process the selected records as needed
+
+        IsDialogVisible = false;
+        StateHasChanged();
+    }
+
+    void CancelDialog()
+    {
+        IsDialogVisible = false;
+    }
+   
+    void OpenDialog()
+    {
+        IsDialogVisible = true;
+    }
     protected override async Task OnInitializedAsync()
     {
         IntelInvest = new IntelInvestigationFile();
-        IntelInvest.PersonOfInterests = (List<PersonOfInterest>) await ServicePersonIntelService.GetAll();
+        _personOfInterests = (List<PersonOfInterest>) await ServicePersonIntelService.GetAll();
         IntelInvest.IntelDocuments = (List<IntelDocument>) await IntelService.GetAll();
 
     }
