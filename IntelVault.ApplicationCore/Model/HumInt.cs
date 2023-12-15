@@ -57,5 +57,6 @@ public class HumInt : BaseIntel
     {
         // Initialize lists
         IntelligenceDetails = new List<ListItem>();
+        base.IntelType = TypeIntel.Humint;
     }
 }

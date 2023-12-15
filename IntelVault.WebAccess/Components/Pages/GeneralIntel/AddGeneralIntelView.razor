@@ -184,8 +184,8 @@
     {
         if (GeneralIntelItem != null)
         {
-            GeneralIntelItem.IncidentType = TypeIntelChosen;
-
+            GeneralIntelItem.IntelType = TypeIntelChosen;
+            GeneralIntelItem.ShortContent = GeneralIntelItem.Name;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
                 Logger.LogInformation("Id = {Id}", GeneralIntelItem?.Id);

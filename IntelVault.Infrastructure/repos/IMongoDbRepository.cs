@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace IntelVault.Infrastructure.repos;
 
-public interface IMongoDbRepository<T> where T : BaseIntel?
+public interface IMongoDbRepository<T> where T : MongoEntity?
 {
     Task<IEnumerable<T?>> GetAllAsync();
     Task<T> GetByIdAsync(ObjectId id);

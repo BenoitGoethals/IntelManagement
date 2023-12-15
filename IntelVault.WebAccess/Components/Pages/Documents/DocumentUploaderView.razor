@@ -57,7 +57,8 @@ else
                 </div>
 
                 <div class="form-group col-md-6">
-                    <SfUploader AutoUpload="true" @ref="_uploadObj" Enabled="!string.IsNullOrEmpty(_document.LongDescription)">
+                    <SfUploader AutoUpload="true" @ref="_uploadObj" Enabled="!string.IsNullOrEmpty(_document.LongDescription)" ShowProgressBar="true" ShowFileList="true"
+                                 AllowedExtensions=".doc, .docx, .xls, .xlsx, .pdf">
                         <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
                     </SfUploader>
                 </div>
@@ -112,7 +113,7 @@ else
                 _document.Content = bytes;
                 _document.DocumentType = documentType;
                 _document.TimeCreated = DateTime.Now;
-                _document.TypeIntel = TypeIntelChosen;
+                _document.IntelType = TypeIntelChosen;
                 NewItemDocuments?.Add(_document);
             }
         }

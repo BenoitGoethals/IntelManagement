@@ -40,5 +40,6 @@ public class CounterInt
         IntelligenceSources = new List<string>();
         Countermeasures = new List<string>();
         Recommendations = new List<string>();
+        
     }
 }

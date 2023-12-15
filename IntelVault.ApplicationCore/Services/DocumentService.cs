@@ -6,7 +6,7 @@ using IntelVault.Infrastructure.repos;
 
 namespace IntelVault.ApplicationCore.Services;
 
-public class DocumentService(IMongoDbRepository<IntelDocument?> mongodbDbRepository,
+public class DocumentService(IMongoDbRepository<IntelDocument> mongodbDbRepository,
     AbstractValidator<IntelDocument> validator) : IntelService<IntelDocument>(mongodbDbRepository: mongodbDbRepository, validator), IDocumentService
 {
     private IReader? _reader;

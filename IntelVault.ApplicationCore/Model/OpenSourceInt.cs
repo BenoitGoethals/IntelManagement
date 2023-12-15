@@ -27,5 +27,8 @@ public class OpenSourceInt : BaseIntel
     // Recommendations
     public List<ListItem>? Recommendations { get; set; } = new List<ListItem>();
 
-
+    public OpenSourceInt()
+    {
+        base.IntelType = TypeIntel.OpenSource;
+    }
 }

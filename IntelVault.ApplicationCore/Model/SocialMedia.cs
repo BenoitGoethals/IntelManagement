@@ -33,6 +33,10 @@ public class SocialMedia : BaseIntel
     public bool PrivateAccount { get; set; }
     public bool TwoFactorAuthentication { get; set; }
 
+    public SocialMedia()
+    {
+        base.IntelType = TypeIntel.SocialMedia;
+    }
 
     public override string ToString()
     {

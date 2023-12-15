@@ -5,21 +5,25 @@
 @using Syncfusion.Blazor.Navigations
 @using IntelVault.ApplicationCore.Model
 @using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.IntelData
 @using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.Infrastructure.repos
 @using SelectionType = Syncfusion.Blazor.Grids.SelectionType
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject ILogger<IntelInvestigationFile> Logger
 @inject IIntelService<PersonOfInterest> ServicePersonIntelService
+@inject IGlobalService GlobalService
 @inject IDocumentService IntelService
 
 
-<SfDialog @bind-Visible="@IsDialogVisible" Width="700px">
-    
+<SfDialog @bind-Visible="@IsDialogVisible" Width="700px" ID="GridPersonOfInterestsGrid">
+
     <DialogTemplates>
         <Content>
-            
-            <SfGrid @ref="GridPersonOfInterests" DataSource="@_personOfInterests" AllowSelection="true" AllowPaging="true" AllowSorting="true" AllowFiltering="true" TValue="PersonOfInterest">
+
+            <SfGrid @ref="_gridPersonOfInterests" DataSource="@_personOfInterests" AllowSelection="true" AllowPaging="true" AllowSorting="true" AllowFiltering="true" TValue="PersonOfInterest">
                 <GridSelectionSettings Type="SelectionType.Multiple"></GridSelectionSettings>
                 <GridPageSettings PageSize="6"></GridPageSettings>
                 <GridColumns>
@@ -33,11 +37,60 @@
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="OK" IsPrimary="true" OnClick="@CloseDialog" />
+        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("person")' />
         <DialogButton Content="Cancel" OnClick="@CancelDialog" />
     </DialogButtons>
 </SfDialog>
 
+<SfDialog @bind-Visible="@IsDialogIntelDocumentsVisible" Width="700px" ID="GridIntelDocuments">
+
+    <DialogTemplates>
+        <Content>
+
+            <SfGrid @ref="_intelDocumentRef" DataSource="@_intelDocuments" AllowSelection="true" AllowPaging="true" AllowSorting="true" AllowFiltering="true" TValue="IntelDocument">
+                <GridSelectionSettings Type="SelectionType.Multiple"></GridSelectionSettings>
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(IntelDocument.IntelType) HeaderText="TypeIntel" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.DocumentType) HeaderText="DocumentType" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.TimeCreated) HeaderText="TimeCreated" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+                <GridPageSettings PageSize="5"></GridPageSettings>
+
+            </SfGrid>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("intel")' />
+        <DialogButton Content="Cancel" OnClick="@CancelDialog" />
+    </DialogButtons>
+</SfDialog>
+
+<SfDialog @bind-Visible="@IsDialogBaseLineVisible" Width="700px" ID="GridBaseLine">
+
+    <DialogTemplates>
+        <Content>
+
+            <SfGrid @ref="_baseIntelRef" DataSource="@_evidenceCollected" AllowSelection="true" AllowPaging="true" AllowSorting="true" AllowFiltering="true" TValue="BaseIntel">
+                <GridSelectionSettings Type="SelectionType.Multiple"></GridSelectionSettings>
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(BaseIntel.IntelType) HeaderText="TypeIntel" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+
+                    <GridColumn Field=@nameof(BaseIntel.ShortContent) HeaderText="Description" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(MongoEntity.CreatedDtg) HeaderText="TimeCreated" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+                <GridPageSettings PageSize="5"></GridPageSettings>
+
+            </SfGrid>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("collect")' />
+        <DialogButton Content="Cancel" OnClick="@CancelDialog" />
+    </DialogButtons>
+</SfDialog>
 
 
 <SfTab>
@@ -151,37 +204,37 @@
                     @if (IntelInvest?.PersonOfInterests != null)
                     {
                         <div class="row">
-                        @foreach (var val in IntelInvest?.PersonOfInterests)
-                        {
-                          
+                            @foreach (var val in IntelInvest?.PersonOfInterests)
+                            {
+
                                 <div class="col-sm-3">
-                                 
-
-                                        <SfCard ID="Card" CssClass="width: 200px;">
-                                            <CardHeader Title="@val.Name" />
-                                            <CardContent>
-                                                <div>
-                                                    @val.Nationality
-                                                </div>
-                                                <div>
-                                                    @val.PoliticalGroup
-                                                </div>
-                                                <div>
-
-                                                    @if (val?.Pictures.Count>0 && val.Pictures[0]!=null)
-                                                    {
-                                                        <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)"/>
-                                                    }
 
 
-                                                </div>
-                                            </CardContent>
-                                        </SfCard>
-                                   
+                                    <SfCard ID="Card" CssClass="width: 200px;">
+                                        <CardHeader Title="@val.Name" />
+                                        <CardContent>
+                                            <div>
+                                                @val.Nationality
+                                            </div>
+                                            <div>
+                                                @val.PoliticalGroup
+                                            </div>
+                                            <div>
+
+                                                @if (val?.Pictures.Count > 0 && val.Pictures[0] != null)
+                                                {
+                                                    <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)" />
+                                                }
+
+
+                                            </div>
+                                        </CardContent>
+                                    </SfCard>
+
                                 </div>
-                           
+
                             }
-                            </div>
+                        </div>
                     }
 
 
@@ -191,11 +244,9 @@
                         }
                     </style>
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("person")'>search</SfButton>
                     </div>
-                    <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick="OpenDialog">search</SfButton>
-                    </div>
+
                 </EditForm>
             </ContentTemplate>
         </TabItem>
@@ -210,9 +261,9 @@
                         <div class="row">
                             @foreach (var val in IntelInvest?.IntelDocuments)
                             {
-                          
+
                                 <div class="col-sm-3">
-                                 
+
 
                                     <SfCard ID="Card" CssClass="width: 200px;">
                                         <CardHeader Title="@val.Description" />
@@ -221,16 +272,16 @@
                                                 @val.DocumentType
                                             </div>
                                             <div>
-                                                @val.TypeIntel
+                                                @val.IntelType
                                             </div>
                                             <div>
                                                 @val.TimeCreated
                                             </div>
                                         </CardContent>
                                     </SfCard>
-                                   
+
                                 </div>
-                           
+
                             }
                         </div>
                     }
@@ -243,7 +294,7 @@
                     </style>
 
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("intel")'>search</SfButton>
                     </div>
                 </EditForm>
             </ContentTemplate>
@@ -255,32 +306,28 @@
                     <FluentValidationValidator @ref="_fluentValidationValidator" />
                     <AntiforgeryToken />
 
-                    @if (IntelInvest?.IntelDocuments != null)
+                    @if (IntelInvest?.EvidenceCollected != null)
                     {
                         <div class="row">
-                            @foreach (var val in IntelInvest?.IntelDocuments)
+                            @foreach (var val in IntelInvest?.EvidenceCollected)
                             {
-                          
+
                                 <div class="col-sm-3">
-                                 
+
 
                                     <SfCard ID="Card" CssClass="width: 200px;">
-                                        <CardHeader Title="@val.Description" />
+
+                                        <CardHeader Title="@val.IntelType.ToString()" />
                                         <CardContent>
                                             <div>
-                                                @val.DocumentType
+                                                @val.IntelType.ToString()
                                             </div>
-                                            <div>
-                                                @val.TypeIntel
-                                            </div>
-                                            <div>
-                                                @val.TimeCreated
-                                            </div>
+
                                         </CardContent>
                                     </SfCard>
-                                   
+
                                 </div>
-                           
+
                             }
                         </div>
                     }
@@ -293,7 +340,7 @@
                     </style>
 
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("collect")'>search</SfButton>
                     </div>
                 </EditForm>
             </ContentTemplate>
@@ -304,59 +351,20 @@
                 <EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="ExpertOpinions">
                     <FluentValidationValidator @ref="_fluentValidationValidator" />
                     <AntiforgeryToken />
-
-
-                    <div class="form-group col-md-6">
-                        <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                    <div class="form-row">
+                        
                     </div>
                 </EditForm>
+
             </ContentTemplate>
         </TabItem>
     </TabItems>
 </SfTab>
 
 @code {
-    private List<PersonOfInterest> _personOfInterests;
-    bool IsDialogVisible { get; set; } = false;
-    SfGrid<PersonOfInterest> GridPersonOfInterests;
-
-    [Obsolete("Obsolete")]
-    async Task CloseDialog()
-    {
-        var selectedRecords = await GridPersonOfInterests.GetSelectedRecords();
-        foreach (var sel in selectedRecords)
-        {
-            if(IntelInvest?.PersonOfInterests != null && IntelInvest != null && !IntelInvest.PersonOfInterests.Exists(s=>s.Equals(sel)))
-            {
-                IntelInvest?.PersonOfInterests?.Add(sel);
-            }
-           
-        }
-       
-
-    // Process the selected records as needed
-
-        IsDialogVisible = false;
-        StateHasChanged();
-    }
-
-    void CancelDialog()
-    {
-        IsDialogVisible = false;
-    }
-   
-    void OpenDialog()
-    {
-        IsDialogVisible = true;
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        IntelInvest = new IntelInvestigationFile();
-        _personOfInterests = (List<PersonOfInterest>) await ServicePersonIntelService.GetAll();
-        IntelInvest.IntelDocuments = (List<IntelDocument>) await IntelService.GetAll();
-
-    }
-
+    private List<PersonOfInterest>? _personOfInterests;
+    private List<IntelDocument>? _intelDocuments;
+    private List<BaseIntel>? _evidenceCollected;
     public EventCallback OnFileInvestChanged { get; set; }
 
 
@@ -364,6 +372,100 @@
     private FluentValidationValidator? _fluentValidationValidator;
 
     private SfButton? _cancelBtn;
+    private SfGrid<PersonOfInterest>? _gridPersonOfInterests;
+    private SfGrid<IntelDocument>? _intelDocumentRef;
+    private SfGrid<BaseIntel>? _baseIntelRef;
+
+
+    bool IsDialogBaseLineVisible { get; set; } = false;
+    bool IsDialogVisible { get; set; } = false;
+    bool IsDialogIntelDocumentsVisible { get; set; } = false;
+
+
+    [Obsolete("Obsolete")]
+    async Task CloseDialog(string dialog)
+    {
+        switch (dialog)
+        {
+            case "person":
+                var selectedRecords = await _gridPersonOfInterests.GetSelectedRecords();
+                foreach (var sel in selectedRecords)
+                {
+                    if (IntelInvest?.PersonOfInterests != null && IntelInvest != null && !IntelInvest.PersonOfInterests.Exists(s => s.Equals(sel)))
+                    {
+                        IntelInvest?.PersonOfInterests?.Add(sel);
+                    }
+
+                }
+                await _gridPersonOfInterests.Refresh();
+                IsDialogVisible = false;
+                break;
+
+            case "intel":
+                var selectedRecordsIntelDocumentRef = await _intelDocumentRef.GetSelectedRecords();
+                foreach (var sel in selectedRecordsIntelDocumentRef)
+                {
+                    if (IntelInvest?.IntelDocuments != null && IntelInvest != null && !IntelInvest.IntelDocuments.Exists(s => s.Equals(sel)))
+                    {
+                        IntelInvest?.IntelDocuments?.Add(sel);
+                    }
+
+                }
+
+                await _intelDocumentRef.Refresh();
+                IsDialogIntelDocumentsVisible = false;
+                break;
+            case "collect":
+                var selectedBaseIntelRef = await _baseIntelRef.GetSelectedRecords();
+                foreach (var sel in selectedBaseIntelRef)
+                {
+                    if (IntelInvest?.EvidenceCollected != null && IntelInvest != null && !IntelInvest.EvidenceCollected.Exists(s => s.Equals(sel)))
+                    {
+                        IntelInvest?.EvidenceCollected?.Add(sel);
+                    }
+
+                }
+
+                await _baseIntelRef.Refresh();
+                IsDialogBaseLineVisible = false;
+                break;
+        }
+        StateHasChanged();
+    }
+
+    void CancelDialog()
+    {
+        IsDialogVisible = false;
+        IsDialogIntelDocumentsVisible = false;
+        IsDialogBaseLineVisible = false;
+    }
+
+
+    void OpenDialog(string dialog)
+    {
+        switch (dialog)
+        {
+            case "person":
+                IsDialogVisible = true;
+                break;
+            case "intel":
+                IsDialogIntelDocumentsVisible = true;
+                break;
+            case "collect":
+                IsDialogBaseLineVisible = true;
+                break;
+        }
+
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        IntelInvest = new IntelInvestigationFile();
+        _personOfInterests = (List<PersonOfInterest>)await ServicePersonIntelService.GetAll();
+        _intelDocuments = (List<IntelDocument>)await IntelService.GetAll();
+        _evidenceCollected = (List<BaseIntel>)await GlobalService.GetAll();
+    }
+
+
 
     private async Task Cancel(MouseEventArgs args)
     {

@@ -138,6 +138,7 @@
         if (CyberIntel != null)
         {
             CyberIntel.IncidentType = Incident;
+            CyberIntel.ShortContent = CyberIntel.IncidentDescription;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
                 Logger.LogInformation("add cybintel Id = {Id}", CyberIntel?.Id);

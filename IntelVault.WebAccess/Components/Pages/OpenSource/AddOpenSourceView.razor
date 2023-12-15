@@ -121,7 +121,7 @@
     {
         if (OpenSourceIntData != null)
         {
-          
+            OpenSourceIntData.ShortContent = OpenSourceIntData.SourceName;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
                 Logger.LogInformation("add OpenSourceIntData Id = {Id}", OpenSourceIntData?.Id);

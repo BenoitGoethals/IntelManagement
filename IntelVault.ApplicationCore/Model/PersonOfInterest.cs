@@ -43,6 +43,6 @@ public class PersonOfInterest : BaseIntel
     // Constructor
     public PersonOfInterest()
     {
-        // Default constructor
+        base.IntelType = TypeIntel.Other;
     }
 }

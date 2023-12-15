@@ -7,7 +7,7 @@ using MongoDB.Driver.Core.Configuration;
 
 namespace IntelVault.Sharewdtest;
 
-public class MongoDbTestBase<T> : IDisposable where T : BaseIntel
+public class MongoDbTestBase<T> : IDisposable where T : MongoEntity
 {
     protected readonly IMongoDatabase Database;
 

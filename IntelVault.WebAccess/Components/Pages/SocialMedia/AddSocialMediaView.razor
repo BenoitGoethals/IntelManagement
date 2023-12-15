@@ -138,6 +138,7 @@
     {
         if (SocialMediaItem != null)
         {
+            SocialMediaItem.ShortContent = SocialMediaItem.Username;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
                 Logger.LogInformation("Id = {Id}", SocialMediaItem?.Id);

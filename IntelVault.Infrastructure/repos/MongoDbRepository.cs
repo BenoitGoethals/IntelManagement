@@ -8,7 +8,7 @@ using MongoDB.Driver;
 using System.Collections;
 using System.Linq.Expressions;
 
-public class MongoDbRepository<T> : IMongoDbRepository<T> where T : BaseIntel
+public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
 {
     private readonly IMongoCollection<T> _collection;
     private readonly ILogger<IMongoDbRepository<T>> _logger;

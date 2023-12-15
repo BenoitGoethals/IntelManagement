@@ -2,6 +2,7 @@
 using IntelVault.Infrastructure.repos;
 
 namespace IntelVault.ApplicationCore.Model;
+
 /// <summary>
 /// Base Class
 /// </summary>
@@ -23,8 +24,7 @@ public class GeneralIntel : BaseIntel
     public DateTime? ReportDate { get; set; }
     public string ReportingAgency { get; set; }
 
-    // Incident Details
-    public TypeIntel IncidentType { get; set; }
+
     public string IncidentLocation { get; set; }
     public DateTime? IncidentDateTime { get; set; }
 
@@ -48,7 +48,8 @@ public class GeneralIntel : BaseIntel
         KeyPlayers = new List<ListItem>();
         IntelligenceSources = new List<ListItem>();
         Recommendations = new List<ListItem>();
+        base.IntelType = TypeIntel.Other;
+
+
     }
-
-
 }

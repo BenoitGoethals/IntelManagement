@@ -14,4 +14,6 @@ public enum TypeIntel
     OpenSource,   // Open Source Intelligence
     Insum,    // Intelligence Summary
     Other     // Other or un
+    ,
+    SocialMedia
 }

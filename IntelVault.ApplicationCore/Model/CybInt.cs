@@ -44,5 +44,8 @@ public class CybInt : BaseIntel
     public List<ListItem> PreventionRecommendations { get; set; } = new();
 
 
-
+    public CybInt()
+    {
+        base.IntelType = TypeIntel.CyberInt;
+    }
 }

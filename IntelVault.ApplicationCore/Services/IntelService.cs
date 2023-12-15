@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using IntelVault.ApplicationCore.Constants;
+using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.Infrastructure.repos;
 

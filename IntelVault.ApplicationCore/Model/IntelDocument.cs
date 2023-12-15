@@ -1,4 +1,5 @@
-﻿using IntelVault.Infrastructure.repos;
+﻿using IntelVault.ApplicationCore.IntelData;
+using IntelVault.Infrastructure.repos;
 using MongoDB.Bson;
 
 namespace IntelVault.ApplicationCore.Model;
@@ -11,8 +12,7 @@ public class IntelDocument:BaseIntel
 
     public string? LongDescription { get; set; }
 
-    public TypeIntel? TypeIntel { get; set; }
-
+  
     public byte[]? Content { get; set; }
 
     public DateTime? TimeCreated { get; set; }

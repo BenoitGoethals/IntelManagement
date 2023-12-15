@@ -176,7 +176,7 @@
 
     protected override Task OnInitializedAsync()
     {
-        if (GeneralIntelItem != null) TypeIntelChosen = GeneralIntelItem.IncidentType;
+        if (GeneralIntelItem != null) TypeIntelChosen = GeneralIntelItem.IntelType;
         return Task.CompletedTask;
     }
 
@@ -186,7 +186,7 @@
     {
         if (GeneralIntelItem != null)
         {
-            GeneralIntelItem.IncidentType = TypeIntelChosen;
+            GeneralIntelItem.IntelType = TypeIntelChosen;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
                 Logger.LogInformation("update -Id = {Id}", GeneralIntelItem?.Id);

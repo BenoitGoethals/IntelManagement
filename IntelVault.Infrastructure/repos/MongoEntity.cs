@@ -2,15 +2,16 @@
 
 namespace IntelVault.Infrastructure.repos;
 
-public abstract class BaseIntel
+public class MongoEntity
 {
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
-    protected DateTime CreatedDtg { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedDtg { get; set; } = DateTime.UtcNow;
 
     public string? IntelVaultUser { get; set; }
 
-    protected bool Equals(BaseIntel other)
+
+    protected bool Equals(MongoEntity other)
     {
         return Id.Equals(other.Id);
     }
@@ -20,7 +21,7 @@ public abstract class BaseIntel
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != GetType()) return false;
-        return Equals((BaseIntel)obj);
+        return Equals((MongoEntity)obj);
     }
 
     public override int GetHashCode()

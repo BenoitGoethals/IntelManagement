@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using IntelVault.ApplicationCore.IntelData;
 using IntelVault.Infrastructure;
 using IntelVault.WebAccess.Components;
 using IntelVault.WebAccess.Components.Account;
@@ -18,6 +19,7 @@ using IntelVault.ApplicationCore.Services;
 using IntelVault.ApplicationCore.validation;
 using IntelVault.Infrastructure.repos;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8 / V1NHaF1cWGhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEZiWH1dcXZURmBUUEd2Wg ==");
 // Add services to the container.
@@ -70,7 +72,6 @@ builder.Services.AddSingleton<IMongoDbRepository<OpenSourceInt>, MongoDbReposito
 builder.Services.AddSingleton<IMongoDbRepository<IntelDocument>, MongoDbRepository<IntelDocument>>(n => new MongoDbRepository<IntelDocument>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelDocument>>>(), "IntelVault"));
 
 builder.Services.AddScoped<IDocumentService, DocumentService>(n => new DocumentService(mongodbDbRepository: n.GetRequiredService<IMongoDbRepository<IntelDocument>>(), n.GetRequiredService<IntelDocumentValidator>()));
-
 builder.Services.AddScoped<IIntelService<PersonOfInterest>, IntelService<PersonOfInterest>>(n => new IntelService<PersonOfInterest>(n.GetRequiredService<IMongoDbRepository<PersonOfInterest>>(), n.GetRequiredService<PersonOfInterestValidator>()));
 builder.Services.AddScoped<IIntelService<HumInt>, IntelService<HumInt>>(n => new IntelService<HumInt>(n.GetRequiredService<IMongoDbRepository<HumInt>>(), n.GetRequiredService<HumIntValidator>()));
 builder.Services.AddScoped<IIntelService<CybInt>, IntelService<CybInt>>(n => new IntelService<CybInt>(n.GetRequiredService<IMongoDbRepository<CybInt>>(), n.GetRequiredService<CybIntValidator>()));
@@ -80,6 +81,18 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddSingleton<ServiceCountry>();
 builder.Services.AddScoped<IIntelService<SocialMedia>, IntelService<SocialMedia>>(n => new IntelService<SocialMedia>(n.GetRequiredService<IMongoDbRepository<SocialMedia>>(), n.GetRequiredService<SocialMediaValidator>()));
 builder.Services.AddScoped<IIntelService<OpenSourceInt>, IntelService<OpenSourceInt>>(n => new IntelService<OpenSourceInt>(n.GetRequiredService<IMongoDbRepository<OpenSourceInt>>(), n.GetRequiredService<OpenSourceIntelValidator>()));
+
+
+
+
+
+builder.Services.AddScoped<IGlobalService, GlobalService>(x => new GlobalService(x.GetRequiredService<IIntelService<SocialMedia>>()
+    , x.GetRequiredService<IIntelService<PersonOfInterest>>(), x.GetRequiredService<IIntelService<HumInt>>(),
+    x.GetRequiredService<IIntelService<CybInt>>(), x.GetRequiredService<IIntelService<GeneralIntel>>(),
+    x.GetRequiredService<IIntelService<OpenSourceInt>>()));
+
+
+
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
@@ -95,6 +108,7 @@ builder.Services.AddLogging(loggingBuilder =>
 builder.Services.AddServerSideBlazor().AddCircuitOptions(x => x.DetailedErrors = true); ;
 builder.Services.AddSyncfusionBlazor();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -120,3 +134,4 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
+

@@ -181,6 +181,7 @@
     {
         if (HumIntIntel != null)
         {
+            HumIntIntel.ShortContent = HumIntIntel.ContactName;
             HumIntIntel.HumIntType = HumIntTypeSelect;
             if (await _fluentValidationValidator!.ValidateAsync())
             {
