@@ -1,0 +1,80 @@
+﻿@using Microsoft.IdentityModel.Tokens
+@using IntelVault.ApplicationCore.IntelData
+
+
+<div class="row-cols-2">
+    <br />
+    <SfCard CssClass="col-md-6">
+        
+        <CardContent>
+            @if (Items != null)
+            {
+                foreach (var ti in Items)
+                {
+                    <p>
+                        @ti.Text?.Substring(0, ti.Text.Length-1)
+                        <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
+                        <button Type="button" @onclick="@(() => OnEdit(ti))" class="btn-primary">Edit</button>
+                    </p>
+                }
+
+            }
+            <div class="form-group col-md-6">
+                <BigTextItem InputText="@SelectedListItem.Text" BindingValueChanged="OnUpdateText" Size="500"> </BigTextItem>
+               
+            </div>
+            <br />
+            <div class="form-group col-md-6">
+                <SfButton Type="button" IsToggle="false " IsPrimary="true" @onclick="OnClickAdd">Add</SfButton>
+                <SfButton Type="button" IsToggle="false " IsPrimary="true" @onclick="OnClickUpdate">Update</SfButton>
+            </div>
+
+        </CardContent>
+    </SfCard>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnListChanged { get; set; }
+
+    [Parameter]
+    public List<ListItem>? Items { get; set; } = new List<ListItem>();
+
+    [Parameter] public ListItem SelectedListItem { get; set; } = new ListItem() {Text = "Expert name : "};
+
+    private void OnClickAdd()
+    {
+        if (!SelectedListItem.Text.IsNullOrEmpty())
+        {
+            Items?.Add(new ListItem() { Id = Items.Count != 0 ? Items.Last().Id + 1 : 1, Text = SelectedListItem.Text });
+            SelectedListItem.Text = "Expert name : ";
+        }
+            
+    }
+
+    private void OnDelete(ListItem listItem)
+    {
+        Items?.Remove(listItem);
+    }
+
+    private void OnEdit(ListItem listItem)
+    {
+        SelectedListItem = listItem;
+    }
+
+    private void OnUpdateText(string arg)
+    {
+        SelectedListItem.Text = arg;
+    }
+
+    private void OnClickUpdate()
+    {
+        if (Items != null)
+        {
+            var data=Items.Find(x => x.Id.Equals(SelectedListItem.Id));
+            if (data != null) data.Text = SelectedListItem.Text;
+        }
+    }
+
+}

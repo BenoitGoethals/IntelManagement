@@ -10,18 +10,14 @@
 
             @if (Items != null)
             {
-
                 foreach (var ti in Items)
                 {
                     <p>
-                        @*    <SfButton @onclick="@()=>OnDelete(ti)">Delete</SfButton> *@
                         <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
                         @ti.Text
                     </p>
                 }
-
             }
-
             <div class="form-group col-md-6">
                 <SfTextBox @bind-Value="@ItemToAdd"></SfTextBox>
             </div>

@@ -70,12 +70,14 @@ builder.Services.AddSingleton<IMongoDbRepository<PersonOfInterest>, MongoDbRepos
 builder.Services.AddSingleton<IMongoDbRepository<GeneralIntel>, MongoDbRepository<GeneralIntel>>(n => new MongoDbRepository<GeneralIntel>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<GeneralIntel>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<OpenSourceInt>, MongoDbRepository<OpenSourceInt>>(n => new MongoDbRepository<OpenSourceInt>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<OpenSourceInt>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<IntelDocument>, MongoDbRepository<IntelDocument>>(n => new MongoDbRepository<IntelDocument>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelDocument>>>(), "IntelVault"));
+builder.Services.AddSingleton<IMongoDbRepository<IntelInvestigationFile>, MongoDbRepository<IntelInvestigationFile>>(n => new MongoDbRepository<IntelInvestigationFile>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelInvestigationFile>>>(), "IntelVault"));
 
 builder.Services.AddScoped<IDocumentService, DocumentService>(n => new DocumentService(mongodbDbRepository: n.GetRequiredService<IMongoDbRepository<IntelDocument>>(), n.GetRequiredService<IntelDocumentValidator>()));
 builder.Services.AddScoped<IIntelService<PersonOfInterest>, IntelService<PersonOfInterest>>(n => new IntelService<PersonOfInterest>(n.GetRequiredService<IMongoDbRepository<PersonOfInterest>>(), n.GetRequiredService<PersonOfInterestValidator>()));
 builder.Services.AddScoped<IIntelService<HumInt>, IntelService<HumInt>>(n => new IntelService<HumInt>(n.GetRequiredService<IMongoDbRepository<HumInt>>(), n.GetRequiredService<HumIntValidator>()));
 builder.Services.AddScoped<IIntelService<CybInt>, IntelService<CybInt>>(n => new IntelService<CybInt>(n.GetRequiredService<IMongoDbRepository<CybInt>>(), n.GetRequiredService<CybIntValidator>()));
-    
+builder.Services.AddScoped<IIntelService<IntelInvestigationFile>, IntelService<IntelInvestigationFile>>(n => new IntelService<IntelInvestigationFile>(n.GetRequiredService<IMongoDbRepository<IntelInvestigationFile>>(), n.GetRequiredService<IntelInvestigationFileValidator>()));
+
 builder.Services.AddScoped<IIntelService<GeneralIntel>, IntelService<GeneralIntel>>(n => new IntelService<GeneralIntel>(n.GetRequiredService<IMongoDbRepository<GeneralIntel>>(), n.GetRequiredService<GeneralIntelValidator>()));
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddSingleton<ServiceCountry>();

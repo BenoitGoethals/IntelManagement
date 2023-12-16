@@ -2,7 +2,7 @@
 <div class="control-section">
     <div class="control-wrapper">
         <div class="">
-            <SfRichTextEditor ShowCharCount="true"  SaveInterval="5000" AutoSaveOnIdle="true" Value="@InputText"  ValueChanged="SetAsync">
+            <SfRichTextEditor ShowCharCount="true"  SaveInterval="5000" AutoSaveOnIdle="true" Value="@InputText"  ValueChanged="SetAsync" Height="@Size.ToString()" EnableHtmlEncode="false" >
             
             </SfRichTextEditor>
         </div>
@@ -89,6 +89,9 @@
     public string? InputText { get; set; }
     [Parameter]
     public EventCallback<string> BindingValueChanged { get; set; }
+
+    [Parameter] 
+    public int Size { get; set; } = 100;
 
     public async Task SetAsync(string value)=> await BindingValueChanged.InvokeAsync(value);
 
