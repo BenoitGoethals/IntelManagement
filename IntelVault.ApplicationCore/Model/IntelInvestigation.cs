@@ -27,7 +27,7 @@ public class IntelInvestigationFile:BaseIntel
     public List<ListItem>? ExpertOpinions { get; set; } = new List<ListItem>();
 
     // Status and Conclusion
-    public string? InvestigationStatus { get; set; }
+    public InvestigationStatus? InvestigationStatus { get; set; } = Model.InvestigationStatus.Init;
     public string? Conclusion { get; set; }
 
     // Methods for Additional Actions (e.g., data validation, processing)

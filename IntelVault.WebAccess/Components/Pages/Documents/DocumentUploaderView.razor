@@ -31,7 +31,7 @@ else
                         }
                     </Template>
                 </GridColumn>
-                <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="SelectedListItem" Width="520"></GridColumn>
+                <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" Width="520"></GridColumn>
                 <GridColumn Field=@nameof(IntelDocument.DocumentType) HeaderText="Document Type" Width="70"></GridColumn>
                 <GridColumn Field=@nameof(IntelDocument.TimeCreated) HeaderText=" TimeCreated" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
             </GridColumns>
@@ -42,7 +42,7 @@ else
             <FluentValidationValidator @ref="_fluentValidationValidator" />
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label class="form-label">SelectedListItem</label>
+                     <label class="form-label">Description</label>
                     <SfTextBox @bind-Value="@_document.Description"></SfTextBox>
                     <ValidationMessage For="() => _document.Description" />
                 </div>
@@ -143,7 +143,7 @@ else
             _document = new IntelDocument();
             NewItemDocuments?.Clear();
             StateHasChanged();
-        //    NavigationManager.NavigateTo("DocumentUploaderView", true);
+            NavigationManager.NavigateTo("DocumentUploaderView", true);
 
         }
         catch (Exception ex)

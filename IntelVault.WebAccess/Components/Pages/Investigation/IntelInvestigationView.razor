@@ -119,8 +119,9 @@
                             <ValidationMessage For="() => IntelInvest.CaseNumber" />
                         </div>
                         <div class="form-group col-md-3">
-                            <SfTextBox @bind-Value="IntelInvest.InvestigationStatus" Placeholder="InvestigationStatus" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.InvestigationStatus" />
+                            <SfDropDownList TValue="InvestigationStatus?" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " @bind-Value="IntelInvest.InvestigationStatus" DataSource="@InvestigationStatusItems">
+                                @* <DropDownListEvents TValue="InvestigationStatus" ValueChange="OnDropDownListValueChange"></DropDownListEvents> *@
+                            </SfDropDownList>
                         </div>
                         <div class="form-group col-md-6">
 
@@ -373,7 +374,7 @@
     private List<BaseIntel>? _evidenceCollected;
 
     public List<ListItem> ExpertOpinionsList = new List<ListItem>();
-
+    public string[] InvestigationStatusItems = Enum.GetNames(typeof(InvestigationStatus));
 
     private FluentValidationValidator? _fluentValidationValidator;
     private SfButton? _deleteBtn;
@@ -501,6 +502,8 @@
         }
 
         await OnFileInvestChanged.InvokeAsync();
+        //NavigationManager.NavigateTo("overviewIntelInvestigationFile");
+        
     }
     protected void Changed()
     {
