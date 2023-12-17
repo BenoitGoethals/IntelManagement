@@ -11,8 +11,4 @@ public abstract class BaseIntel:MongoEntity
 
     public string?  ShortContent{ get; set; }
 
-    public static explicit operator BaseIntel(IntelService<SocialMedia> v)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using FluentValidation;
 using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.ApplicationCore.Model;
@@ -18,7 +19,7 @@ public class GlobalService(
 {
     private readonly IIntelService<SocialMedia>? _socialMediaService = socialMediaService;
     private readonly IIntelService<PersonOfInterest>? _personOfInterestService = personOfInterestService;
-    private readonly IIntelService<HumInt>? _humIntService = humIntService;
+    private readonly IIntelService<HumInt?>? _humIntService = humIntService;
     private readonly IIntelService<CybInt>? _cybIntServiceService = cybIntServiceService;
     private readonly IIntelService<GeneralIntel>? _generalIntelService = generalIntelService;
     private readonly IIntelService<OpenSourceInt>? _openSourceService = openSourceService;
@@ -51,15 +52,22 @@ public class GlobalService(
 
     public async Task<IEnumerable<BaseIntel>> GetAll()
     {
-        List<BaseIntel> baseIntels=
-        [
-            .. await _humIntService?.GetAll(),
-            .. await _socialMediaService?.GetAll(),
-           
-            .. await _cybIntServiceService?.GetAll(),
-            .. await _generalIntelService?.GetAll(),
-            .. await _openSourceService?.GetAll(),
-        ];
+       
+            List<BaseIntel> baseIntels = new List<BaseIntel>();
+
+            var humit = await _humIntService?.GetAll();
+            baseIntels.AddRange(humit);
+            var soc = await _socialMediaService?.GetAll();
+            baseIntels.AddRange(soc);
+            var pers = await _personOfInterestService?.GetAll();
+            baseIntels.AddRange(pers);
+            var cyb = await _cybIntServiceService?.GetAll();
+            baseIntels.AddRange(cyb);
+            var gen = await _generalIntelService?.GetAll();
+            baseIntels.AddRange(gen);
+            var op = await _openSourceService?.GetAll();
+            baseIntels.AddRange(op);
+
         return baseIntels;
     }
 }
