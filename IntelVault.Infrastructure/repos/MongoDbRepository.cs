@@ -4,6 +4,7 @@ namespace IntelVault.Infrastructure.repos;
 
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System.Collections;
 using System.Linq.Expressions;
@@ -20,6 +21,7 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
 
         _database = client.GetDatabase(databaseName);
         var cl = client;
+     //   BsonClassMap.RegisterClassMap<T>();
         _collection = _database.GetCollection<T>(typeof(T).Name);
         _logger = logger;
     }

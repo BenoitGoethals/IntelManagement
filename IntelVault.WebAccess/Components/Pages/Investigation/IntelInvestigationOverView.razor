@@ -1,0 +1,89 @@
+﻿@page "/overviewIntelInvestigationFile"
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@inject IIntelService<IntelInvestigationFile> IntelInvestigationFileService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    switch (_flag)
+    {
+        case Crud.List:
+            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Width="50">
+                        <Template>
+                            @{
+                                var ticket = (context as IntelInvestigationFile);
+                            }
+                            <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                            <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(IntelInvestigationFile.CaseNumber) HeaderText="CaseNumber" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelInvestigationFile.StartedDateTimeDate) HeaderText="StartedDateTimeDate" TextAlign="@TextAlign.Left" Type="ColumnType.Date" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelInvestigationFile.InvestigationStatus) HeaderText="InvestigationStatus" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(IntelInvestigationFile.Description) HeaderText="Description" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                  
+                </GridColumns>
+            </SfGrid>
+
+            <div class="btn-sm">
+                <SfButton IsToggle="true" IsPrimary="true" @onclick="@AddIntelInvestigationFile">Add</SfButton>
+            </div>
+            break;
+        case Crud.Add:
+            <IntelInvestigationView></IntelInvestigationView>
+            break;
+        case Crud.Update:
+            <IntelInvestigationView IntelInvest="Intel" OnFileInvestChanged="IntelChanged" Update="true"></IntelInvestigationView>
+            break;
+    }
+}
+
+@code {
+    private Crud _flag = Crud.List;
+
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+    private List<IntelInvestigationFile>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await IntelInvestigationFileService.GetAll() as List<IntelInvestigationFile>;
+    }
+
+    public void AddIntelInvestigationFile()
+    {
+        _flag = Crud.Add;
+        NavigationManager.NavigateTo("overviewIntelInvestigationFile");
+    }
+
+    private Task Edit(MouseEventArgs args, IntelInvestigationFile? ticket)
+    {
+
+        Intel = ticket;
+        _flag = Crud.Update;
+        return Task.CompletedTask;
+    }
+
+    public IntelInvestigationFile? Intel { get; set; }
+
+    private async Task Delete(MouseEventArgs args, IntelInvestigationFile? ticket)
+    {
+        await IntelInvestigationFileService.Delete(ticket);
+        await IntelChanged();
+    }
+
+    protected async Task IntelChanged()
+    {
+        _flag = Crud.List;
+        _items = await IntelInvestigationFileService.GetAll() as List<IntelInvestigationFile>;
+        NavigationManager.NavigateTo("overviewIntelInvestigationFile");
+    }
+}

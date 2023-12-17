@@ -38,7 +38,7 @@
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("person")' />
+        <DialogButton Content="OK" IsPrimary="false" @onclick='()=>CloseDialog("person")' />
         <DialogButton Content="Cancel" OnClick="@CancelDialog" />
     </DialogButtons>
 </SfDialog>
@@ -63,7 +63,7 @@
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("intel")' />
+        <DialogButton Content="OK" IsPrimary="false" @onclick='()=>CloseDialog("intel")' />
         <DialogButton Content="Cancel" OnClick="@CancelDialog" />
     </DialogButtons>
 </SfDialog>
@@ -88,12 +88,12 @@
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="OK" IsPrimary="true" OnClick='()=>CloseDialog("collect")' />
+        <DialogButton Content="OK" IsPrimary="false" @onclick='()=>CloseDialog("collect")' />
         <DialogButton Content="Cancel" OnClick="@CancelDialog" />
     </DialogButtons>
 </SfDialog>
 
-<EditForm Model="@IntelInvest" OnValidSubmit="Submit" FormName="AddCommon">
+<EditForm Model="@IntelInvest"  FormName="AddCommon">
     <AntiforgeryToken />
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <SfTab>
@@ -118,18 +118,22 @@
                             <SfTextBox @bind-Value="IntelInvest.CaseNumber" Placeholder="Case Number" class="form-control" />
                             <ValidationMessage For="() => IntelInvest.CaseNumber" />
                         </div>
+                        <div class="form-group col-md-3">
+                            <SfTextBox @bind-Value="IntelInvest.InvestigationStatus" Placeholder="InvestigationStatus" class="form-control" />
+                            <ValidationMessage For="() => IntelInvest.InvestigationStatus" />
+                        </div>
                         <div class="form-group col-md-6">
 
-                            <SfTextBox @bind-Value="IntelInvest.Description" Multiline="true" Placeholder="SelectedListItem" class="form-control" />
+                            <SfTextBox @bind-Value="IntelInvest.Description" Multiline="true" Placeholder="Description" class="form-control" />
                             <ValidationMessage For="() => IntelInvest.Description" />
                         </div>
 
                         <div class="form-group col-md-2">
-                            <SfDateTimePicker TValue="DateTime?" Placeholder="Started DateTimeDate" Value="@IntelInvest.StartedDateTimeDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                            <SfDateTimePicker TValue="DateTime?" Placeholder="Started DateTimeDate" @bind-Value="@IntelInvest.StartedDateTimeDate" Max="DateTime.Now" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
                         </div>
-
+                      
                         <div class="form-group col-md-2">
-                            <SfDateTimePicker TValue="DateTime?" Placeholder="Ended DateTimeDate" Value="@IntelInvest.EndedDateTimeDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                            <SfDateTimePicker TValue="DateTime?" Placeholder="Ended DateTimeDate" @bind-Value="@IntelInvest.EndedDateTimeDate"  Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
                         </div>
 
 
@@ -149,14 +153,22 @@
 
 
                         <div class="form-group col-md-6">
-                            <MatButton Raised="true" type="submit">Add</MatButton>
+                            @if (Update)
+                            {
+                                <SfButton IsPrimary="true" @onclick="SubmitForm">Update</SfButton>
+                            }
+                            else
+                            {
+                                <SfButton IsPrimary="true" @onclick="SubmitForm">Add</SfButton>
+                            }
+
                         </div>
 
                         <ValidationSummary />
                     </div>
 
                     <div class="form-group col-md-6">
-                        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+                        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsPrimary="false">Cancel</SfButton>
                     </div>
 
                 </ContentTemplate>
@@ -166,10 +178,10 @@
                 <HeaderTemplate>Long Description</HeaderTemplate>
                 <ContentTemplate>
 
-                  
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" bind-Value="@IntelInvest?.LongDescription" />
+                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.LongDescription" />
                         </div>
                     </div>
 
@@ -179,16 +191,14 @@
             <TabItem>
                 <HeaderTemplate>Conclusion</HeaderTemplate>
                 <ContentTemplate>
-                
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" bind-Value="@IntelInvest?.Conclusion" />
-                            </div>
-                        </div>
+
+                    <div class="form-row">
                         <div class="form-group col-md-6">
-                            <SfButton IsPrimary="true" CssClass="btn btn-primary">Update</SfButton>
+                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.Conclusion" />
                         </div>
+                    </div>
                     
+
                 </ContentTemplate>
             </TabItem>
             <TabItem>
@@ -217,10 +227,12 @@
 
                                                 @if (val?.Pictures.Count > 0 && val.Pictures[0] != null)
                                                 {
-                                                    <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)" />
+                                                    <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)" alt=""/>
                                                 }
-
-
+                                                
+                                            </div>
+                                            <div>
+                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeletePersonOfInterests(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
                                             </div>
                                         </CardContent>
                                     </SfCard>
@@ -238,7 +250,7 @@
                         }
                     </style>
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("person")'>search</SfButton>
+                        <SfButton IsPrimary="false"  CssClass="e-success" @onclick='()=>OpenDialog("person")'>search</SfButton>
                     </div>
 
 
@@ -270,6 +282,10 @@
                                             <div>
                                                 @val.TimeCreated
                                             </div>
+                                            <div>
+                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteIntelDocuments(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                                            </div>
+
                                         </CardContent>
                                     </SfCard>
                                 </div>
@@ -285,7 +301,7 @@
                     </style>
 
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("intel")'>search</SfButton>
+                        <SfButton IsPrimary="false" CssClass="e-success" @onclick='()=>OpenDialog("intel")'>search</SfButton>
                     </div>
 
                 </ContentTemplate>
@@ -310,7 +326,9 @@
                                             <div>
                                                 @val.IntelType.ToString()
                                             </div>
-
+                                            <div>
+                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteEvidenceCollected(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                                            </div>
                                         </CardContent>
                                     </SfCard>
 
@@ -326,7 +344,7 @@
                     </style>
 
                     <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="btn btn-primary" @onclick='()=>OpenDialog("collect")'>search</SfButton>
+                        <SfButton IsPrimary="false" CssClass="e-success"  @onclick='()=>OpenDialog("collect")'>search</SfButton>
                     </div>
 
                 </ContentTemplate>
@@ -334,10 +352,10 @@
             <TabItem>
                 <HeaderTemplate>ExpertOpinions</HeaderTemplate>
                 <ContentTemplate>
-                    
-                        <div class="form-row">
-                            <ViewListBigItem Items="@ExpertOpinionsList"></ViewListBigItem>
-                        </div>
+
+                    <div class="form-row">
+                        <ViewListBigItem Items="@ExpertOpinionsList"></ViewListBigItem>
+                    </div>
 
                 </ContentTemplate>
             </TabItem>
@@ -345,15 +363,20 @@
     </SfTab>
 </EditForm>
 @code {
+    [Parameter]
+    public IntelInvestigationFile? IntelInvest { get; set; }
+    [Parameter]
+    public EventCallback OnFileInvestChanged { get; set; }
+    [Parameter] public bool Update { get; set; }
     private List<PersonOfInterest>? _personOfInterests;
     private List<IntelDocument>? _intelDocuments;
     private List<BaseIntel>? _evidenceCollected;
-    public EventCallback OnFileInvestChanged { get; set; }
-    public readonly List<ListItem> ExpertOpinionsList = new List<ListItem>();
 
-    private IntelInvestigationFile? IntelInvest { get; set; }
+    public List<ListItem> ExpertOpinionsList = new List<ListItem>();
+
+
     private FluentValidationValidator? _fluentValidationValidator;
-
+    private SfButton? _deleteBtn;
     private SfButton? _cancelBtn;
     private SfGrid<PersonOfInterest>? _gridPersonOfInterests;
     private SfGrid<IntelDocument>? _intelDocumentRef;
@@ -399,7 +422,7 @@
                 IsDialogIntelDocumentsVisible = false;
                 break;
             case "collect":
-                var selectedBaseIntelRef = await _baseIntelRef.GetSelectedRecords();
+                var selectedBaseIntelRef = await _baseIntelRef?.GetSelectedRecords();
                 foreach (var sel in selectedBaseIntelRef)
                 {
                     if (IntelInvest?.EvidenceCollected != null && IntelInvest != null && !IntelInvest.EvidenceCollected.Exists(s => s.Equals(sel)))
@@ -442,7 +465,12 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        IntelInvest = new IntelInvestigationFile();
+        IntelInvest ??= new IntelInvestigationFile();
+        if (Update)
+        {
+            if (IntelInvest.ExpertOpinions != null) ExpertOpinionsList = IntelInvest.ExpertOpinions;
+        }
+
         _personOfInterests = (List<PersonOfInterest>)await ServicePersonIntelService.GetAll();
         _intelDocuments = (List<IntelDocument>)await IntelService.GetAll();
         _evidenceCollected = (List<BaseIntel>)await GlobalService.GetAll();
@@ -454,15 +482,51 @@
     {
         await OnFileInvestChanged.InvokeAsync();
     }
-    private async Task Submit()
+    private async Task SubmitForm()
     {
+        IntelInvest.ShortContent = IntelInvest.Description;
+        IntelInvest.ExpertOpinions = ExpertOpinionsList;
+        
         if (await _fluentValidationValidator!.ValidateAsync())
         {
-            await IntelInvestigationFileService.Add(IntelInvest);
+            if (Update)
+            {
+                await IntelInvestigationFileService.Update(IntelInvest);
+            }
+            else
+            {
+                await IntelInvestigationFileService.Add(IntelInvest);
+            }
+
         }
+
+        await OnFileInvestChanged.InvokeAsync();
     }
     protected void Changed()
     {
         NavigationManager.NavigateTo("IntelInvestigation");
+    }
+    private Task DeletePersonOfInterests(MouseEventArgs args, PersonOfInterest? context)
+    {
+        if (context != null) IntelInvest?.PersonOfInterests?.Remove(context);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+
+
+
+    private Task DeleteEvidenceCollected(MouseEventArgs args, BaseIntel? context)
+    {
+        if (context != null) IntelInvest?.EvidenceCollected?.Remove(context);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteIntelDocuments(MouseEventArgs args, IntelDocument? context)
+    {
+        if (context != null) IntelInvest?.IntelDocuments?.Remove(context);
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }

@@ -1,8 +1,9 @@
 ﻿using IntelVault.ApplicationCore.IntelData;
 using IntelVault.Infrastructure.repos;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace IntelVault.ApplicationCore.Model;
-
+[BsonDiscriminator("SocialMedia")]
 public class SocialMedia : BaseIntel
 {
     // User Information

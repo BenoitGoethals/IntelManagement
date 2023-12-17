@@ -20,6 +20,7 @@ using IntelVault.ApplicationCore.validation;
 using IntelVault.Infrastructure.repos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8 / V1NHaF1cWGhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEZiWH1dcXZURmBUUEd2Wg ==");
 // Add services to the container.
@@ -110,7 +111,11 @@ builder.Services.AddLogging(loggingBuilder =>
 builder.Services.AddServerSideBlazor().AddCircuitOptions(x => x.DetailedErrors = true); ;
 builder.Services.AddSyncfusionBlazor();
 var app = builder.Build();
-
+BsonClassMap.RegisterClassMap<SocialMedia>(cm =>
+{
+    cm.AutoMap();
+    cm.SetDiscriminator("SocialMedia");
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -24,7 +24,7 @@ public class IntelInvestigationFile:BaseIntel
     public string? InvestigatorName { get; set; }
     public string? InvestigatorBadgeNumber { get; set; }
     public string? InvestigatorNote { get; set; }
-    public List<string>? ExpertOpinions { get; set; } = new List<string>();
+    public List<ListItem>? ExpertOpinions { get; set; } = new List<ListItem>();
 
     // Status and Conclusion
     public string? InvestigationStatus { get; set; }
