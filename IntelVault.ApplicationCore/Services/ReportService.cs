@@ -25,7 +25,12 @@ public class ReportService(IGlobalService globalService, IDocumentService docume
             data.Add(new ReportData() { Id = ++tel, TypeBaseLine = item.Key, Count = item.Count(), Description = $"{item.Key} Int" });
         }
 
-        data.Add(new ReportData() { Id = ++tel, TypeBaseLine = TypeIntel.Other, Count = docs.Count(), Description = "Doncumnt Int" });
+        var intelDocuments = docs as IntelDocument[] ?? docs.ToArray();
+        if (intelDocuments.Any())
+        {
+            data.Add(new ReportData() { Id = ++tel, TypeBaseLine = TypeIntel.Other, Count = intelDocuments.Count(), Description = "Doncumnt Int" });
+        }
+       
 
 
         return data;

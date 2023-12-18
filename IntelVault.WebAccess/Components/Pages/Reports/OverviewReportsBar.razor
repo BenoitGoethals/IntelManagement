@@ -1,15 +1,19 @@
 ﻿@using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Services
 @inject IReportService ReportService
-<h3>Overview Reports Bar</h3>
+<h3>Intel Data Collections</h3>
 @if (_data == null)
 {
     <p><em>Loading...</em></p>
 }
+else if (_data.Count==0)
+{
+    <p><em>No Data...</em></p>
+}
 else
 {
     <SfChart Title="Reports">
-        <ChartPrimaryXAxis Title="Orders" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" ></ChartPrimaryXAxis>
+        <ChartPrimaryXAxis Title="Intel Data Collections" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" ></ChartPrimaryXAxis>
         <ChartSeriesCollection>
             <ChartSeries DataSource="@_data" XName="Description" YName="Count" Type="ChartSeriesType.Column"></ChartSeries>
         </ChartSeriesCollection>

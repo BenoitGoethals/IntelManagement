@@ -1,114 +1,71 @@
 ﻿@implements IDisposable
-
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">IntelVault</a>
-    </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
+        <MenuItems>
+            <MenuItem Text="Home" Url="/">
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        IntelInvestigation
-       @*  <div class="nav-item px-3">
-            <NavLink class="nav-link" href="IntelInvestigation">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Intel Investigation
-            </NavLink>
-        </div> *@
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="overviewIntelInvestigationFile">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>OverviewIntelInvestigationFile
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="OpenSource">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Open Source
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="DocumentUploaderView">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Document Uploader
-            </NavLink>
-        </div>
+            </MenuItem>
+            <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile">
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="SocialMedia">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Social Media
-            </NavLink>
-        </div>
+            </MenuItem>
+            <MenuItem Text="Add intel">
+                <MenuItems>
+                    <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
+                    <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
+                    <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
+                    <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
+                    <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
+                    <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
+                </MenuItems>
+            </MenuItem>
+            <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView">
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="GeneralIntelView">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> General Intel
-            </NavLink>
-        </div>
+            </MenuItem>
+            <MenuItem Text="Auth Required" Url="auth">
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="CybIntel">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cyber Intelligence
-            </NavLink>
-        </div>
+            </MenuItem>
+            <AuthorizeView>
+                <Authorized>
+                    <MenuItem Text="Account">
+                        <MenuItems>
+                            <MenuItem Text="Account/Logout"></MenuItem>
+                            <MenuItem Text="Customize"></MenuItem>
+                            <MenuItem Text="Options"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                </Authorized>
+                <NotAuthorized>
+                    <MenuItem Text="Tools">
+                        <MenuItems>
+                            <MenuItem Text="Account/Register"></MenuItem>
+                            <MenuItem Text="Account/Login"></MenuItem>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="PersonInterest">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Person Of Interest
-            </NavLink>
-        </div>
+                        </MenuItems>
+                    </MenuItem>
+                </NotAuthorized>
+            </AuthorizeView>
+            <MenuItem Text="Go"></MenuItem>
+            <MenuItem Text="Help"></MenuItem>
+        </MenuItems>
+    </SfMenu>
+    <style>
 
+        /* Styles to achieve rounder corner in menu */
+        .e-menu-container.e-rounded-menu:not(.e-menu-popup),
+        .e-menu-container.e-rounded-menu .e-menu {
+            border-radius: 20px;
+        }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="HumanIntel">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Human Intel
-            </NavLink>
-        </div>
+        /* Increased the menu component left and right padding for better rounded corner UI */
+        .e-menu-container.e-rounded-menu ul.e-menu {
+            padding: 0 14px;
+        }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
+    </style>
 
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
 
 @code {
     private string? currentUrl;

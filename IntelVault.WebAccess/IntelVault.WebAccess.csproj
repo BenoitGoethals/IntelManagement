@@ -46,17 +46,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="6.0.24" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="6.0.25" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.7" />
-    <PackageReference Include="Syncfusion.Blazor.Cards" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Charts" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.ImageEditor" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="23.2.7" />
-    <PackageReference Include="Syncfusion.Licensing" Version="23.2.7" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Charts" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.ImageEditor" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.Licensing" Version="24.1.41" />
   </ItemGroup>
 
   <ItemGroup>
