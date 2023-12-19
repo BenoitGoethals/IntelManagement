@@ -74,13 +74,14 @@ else
     {
         _flag = Crud.List;
         _items = (await Service.GetAll()).ToList();
-        NavigationManager.NavigateTo("PersonInterest");
+      
+        StateHasChanged();
     }
 
     public void AddPerson()
     {
        _flag = Crud.Add;
-        NavigationManager.NavigateTo("PersonInterest");
+       StateHasChanged();
     }
   
     private PersonOfInterest? PersonOfInterest { get; set; } = new PersonOfInterest();

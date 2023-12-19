@@ -79,12 +79,12 @@
                 </div>
 
             </div>
-         
-                <div class="form-group col-md-6">
-                    <label class="form-label"></label>
-                    <BigTextItem InputText="@SocialMediaItem.SentimentAnalysis" BindingValueChanged="OnSentimentAnalysisChanged"></BigTextItem>
-                </div>
-           
+
+            <div class="form-group col-md-6">
+                <label class="form-label"></label>
+                <BigTextItem InputText="@SocialMediaItem.SentimentAnalysis" BindingValueChanged="OnSentimentAnalysisChanged"></BigTextItem>
+            </div>
+
             <div class="form-row">
                 <SfAccordion>
                     <AccordionItems>
@@ -124,7 +124,7 @@
     private async Task Cancel(MouseEventArgs args)
     {
         await OnIntelChanged.InvokeAsync();
-    // NavigationManager.NavigateTo("SocialMedia");
+        // NavigationManager.NavigateTo("SocialMedia");
     }
     protected override Task OnInitializedAsync()
     {
@@ -144,7 +144,7 @@
                 Logger.LogInformation("Id = {Id}", SocialMediaItem?.Id);
                 Service?.Add(SocialMediaItem);
                 await OnIntelChanged.InvokeAsync();
-              
+
             }
         }
     }
@@ -159,6 +159,6 @@
     }
 
 
- 
+
 
 }

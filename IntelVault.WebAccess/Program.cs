@@ -72,6 +72,9 @@ builder.Services.AddSingleton<IMongoDbRepository<GeneralIntel>, MongoDbRepositor
 builder.Services.AddSingleton<IMongoDbRepository<OpenSourceInt>, MongoDbRepository<OpenSourceInt>>(n => new MongoDbRepository<OpenSourceInt>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<OpenSourceInt>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<IntelDocument>, MongoDbRepository<IntelDocument>>(n => new MongoDbRepository<IntelDocument>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelDocument>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<IntelInvestigationFile>, MongoDbRepository<IntelInvestigationFile>>(n => new MongoDbRepository<IntelInvestigationFile>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelInvestigationFile>>>(), "IntelVault"));
+builder.Services.AddSingleton<IMongoDbRepository<Informant>, MongoDbRepository<Informant>>(n => new MongoDbRepository<Informant>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<Informant>>>(), "IntelVault"));
+
+builder.Services.AddScoped<IIntelService<Informant>, IntelService<Informant>>(n => new IntelService<Informant>(n.GetRequiredService<IMongoDbRepository<Informant>>(), n.GetRequiredService<InformantValidator>()));
 
 builder.Services.AddScoped<IDocumentService, DocumentService>(n => new DocumentService(mongodbDbRepository: n.GetRequiredService<IMongoDbRepository<IntelDocument>>(), n.GetRequiredService<IntelDocumentValidator>()));
 builder.Services.AddScoped<IIntelService<PersonOfInterest>, IntelService<PersonOfInterest>>(n => new IntelService<PersonOfInterest>(n.GetRequiredService<IMongoDbRepository<PersonOfInterest>>(), n.GetRequiredService<PersonOfInterestValidator>()));
@@ -92,7 +95,7 @@ builder.Services.AddScoped<IIntelService<OpenSourceInt>, IntelService<OpenSource
 builder.Services.AddScoped<IGlobalService, GlobalService>(x => new GlobalService(x.GetRequiredService<IIntelService<SocialMedia>>()
     , x.GetRequiredService<IIntelService<PersonOfInterest>>(), x.GetRequiredService<IIntelService<HumInt>>(),
     x.GetRequiredService<IIntelService<CybInt>>(), x.GetRequiredService<IIntelService<GeneralIntel>>(),
-    x.GetRequiredService<IIntelService<OpenSourceInt>>()));
+    x.GetRequiredService<IIntelService<OpenSourceInt>>(),x.GetRequiredService<IIntelService<Informant>>()));
 
 
 
@@ -108,8 +111,10 @@ builder.Services.AddLogging(loggingBuilder =>
     loggingBuilder.AddNLog(builder.Configuration);
     loggingBuilder.AddConsole();
 });
+builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(x => x.DetailedErrors = true); ;
 builder.Services.AddSyncfusionBlazor();
+builder.Services.AddServerSideBlazor().AddHubOptions(o => { o.MaximumReceiveMessageSize = 102400000; });
 var app = builder.Build();
 BsonClassMap.RegisterClassMap<SocialMedia>(cm =>
 {

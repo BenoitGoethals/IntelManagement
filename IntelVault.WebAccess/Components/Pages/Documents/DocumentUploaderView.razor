@@ -1,5 +1,5 @@
 ﻿@page "/DocumentUploaderView"
-@rendermode InteractiveServer
+
 @inject NavigationManager NavigationManager
 @using IntelVault.WebAccess.Components.Pages.common
 @using Syncfusion.Blazor.Inputs
@@ -9,7 +9,10 @@
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Services
 @using MongoDB.Bson
+@using Syncfusion.Blazor.SfPdfViewer
+@using System.IO;
 @inject IDocumentService Service;
+@rendermode InteractiveServer
 
 @if (Items == null)
 {
@@ -17,59 +20,74 @@
 }
 else
 {
-    <div class="form-group ">
-        <SfGrid DataSource="@Items" AllowPaging="true" AllowReordering="true" AllowSorting=true Toolbar=@ToolbarItems @rendermode="InteractiveServer">
-            <GridPageSettings PageSize="5"></GridPageSettings>
-            <GridColumns>
-                <GridColumn TextAlign="TextAlign.Right" Width="40">
-                    <Template>
-                        @{
-                            var intel = (context as IntelDocument);
-                            <div class="image">
-                                <img src="@($"icons/{intel?.DocumentType.ToString()}.png")" alt="@intel?.DocumentType.ToString()" height="25" width="25" />
-                            </div>
-                        }
-                    </Template>
-                </GridColumn>
-                <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" Width="520"></GridColumn>
-                <GridColumn Field=@nameof(IntelDocument.DocumentType) HeaderText="Document Type" Width="70"></GridColumn>
-                <GridColumn Field=@nameof(IntelDocument.TimeCreated) HeaderText=" TimeCreated" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-            </GridColumns>
-        </SfGrid>
-    </div>
-    <div class="form-row">
-        <EditForm Enhance Model="@_document" OnValidSubmit="@HandleValidSubmit">
-            <FluentValidationValidator @ref="_fluentValidationValidator" />
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                     <label class="form-label">Description</label>
-                    <SfTextBox @bind-Value="@_document.Description"></SfTextBox>
-                    <ValidationMessage For="() => _document.Description" />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Type Intel</label>
-                    <SfDropDownList TValue="TypeIntel" @bind-Value="@TypeIntelChosen" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " DataSource="@TypeIntelItems"></SfDropDownList>
-                </div>
+    @if (IsVisible)
+    {
+        <IntelPdftViewer DocumentPath="@DocumentPath" OnChanged="OnChanged"></IntelPdftViewer>
+    }
 
-                <div class="form-group ">
-                    <label class="form-label">Long SelectedListItem</label>
-                    <BigTextItem InputText="@_document.LongDescription" BindingValueChanged="OnLongDescriptionChanged"></BigTextItem>
-                </div>
+    else
+    {
+        <div class="form-group ">
+            <SfGrid DataSource="@Items" AllowPaging="true" AllowReordering="true" AllowSorting=true Toolbar=@ToolbarItems>
+                <GridPageSettings PageSize="5"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn TextAlign="TextAlign.Right" Width="40">
+                        <Template>
+                            @{
+                                var intel = (context as IntelDocument);
+                                <div class="image">
+                                    <img src="@($"icons/{intel?.DocumentType.ToString()}.png")" alt="@intel?.DocumentType.ToString()" height="25" width="25" />
+                                </div>
+                                <div>
+                                    <SfButton Content="Show" @onclick="@((args) => Show(args, intel))"></SfButton>
+                                </div>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" Width="520"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.DocumentType) HeaderText="Document Type" Width="70"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.TimeCreated) HeaderText=" TimeCreated" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+        <div class="form-row">
+            <EditForm Enhance Model="@_document" OnValidSubmit="@HandleValidSubmit">
+                 <FluentValidationValidator @ref="_fluentValidationValidator" />
+                 <div class="form-row">
+                     <div class="form-group col-md-6">
+                         <label class="form-label">Description</label>
+                         <SfTextBox @bind-Value="@_document.Description"></SfTextBox>
+                         <ValidationMessage For="() => _document.Description" />
+                     </div>
+                     <div class="col-md-2">
+                         <label class="form-label">Type Intel</label>
+                         <SfDropDownList TValue="TypeIntel" @bind-Value="@TypeIntelChosen" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " DataSource="@TypeIntelItems"></SfDropDownList>
+                     </div>
 
-                <div class="form-group col-md-6">
-                    <SfUploader AutoUpload="true" @ref="_uploadObj" Enabled="!string.IsNullOrEmpty(_document.LongDescription)" ShowProgressBar="true" ShowFileList="true"
-                                 AllowedExtensions=".doc, .docx, .xls, .xlsx, .pdf">
-                        <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
-                    </SfUploader>
-                </div>
+                     <div class="form-group ">
+                         <label class="form-label">Long SelectedListItem</label>
+                         <BigTextItem InputText="@_document.LongDescription" BindingValueChanged="OnLongDescriptionChanged"></BigTextItem>
+                     </div>
 
-                <div class="form-group col-md-6">
-                     <SfButton IsPrimary="true" class="btn btn-primary" Disabled="string.IsNullOrEmpty(_document.Description) || NewItemDocuments?.Count==0">Submit</SfButton>
-                </div>
-            </div>
-        </EditForm>
-    </div>
+                     <div class="form-group col-md-6">
+                         <SfUploader AutoUpload="true" @ref="_uploadObj" Enabled="!string.IsNullOrEmpty(_document.LongDescription)" ShowProgressBar="true" ShowFileList="true"
+                                     AllowedExtensions=".doc, .docx, .xls, .xlsx, .pdf">
+                             <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
+                         </SfUploader>
+                     </div>
 
+                     <div class="form-group col-md-6">
+                         <SfButton IsPrimary="true" class="btn btn-primary" Disabled="string.IsNullOrEmpty(_document.Description) || NewItemDocuments?.Count==0">Submit</SfButton>
+                     </div>
+                 </div>
+             </EditForm>
+         </div>
+
+    }
+
+    
+
+   
 }
 @code {
     public List<string> ToolbarItems = new List<string>() { "Search" };
@@ -81,9 +99,10 @@ else
 
     public TypeIntel TypeIntelChosen { get; set; }
     public string[] TypeIntelItems = Enum.GetNames(typeof(TypeIntel));
+    private bool IsVisible = false;
 
-
-   private IntelDocument _document = new IntelDocument();
+    public string DocumentPath { get; set; }
+    private IntelDocument _document = new IntelDocument();
 
     private async Task OnChange(UploadChangeEventArgs args)
     {
@@ -128,6 +147,8 @@ else
         Items = (await Service.GetAll()).ToList();
     }
 
+   
+
     private async Task HandleValidSubmit()
     {
         try
@@ -136,14 +157,15 @@ else
                 foreach (var item in NewItemDocuments.Where(item => item != null))
                 {
                     await Service.Store(item);
-                  
+
                     Items?.Add(item);
-                   
+
                 }
+
             _document = new IntelDocument();
             NewItemDocuments?.Clear();
             StateHasChanged();
-            NavigationManager.NavigateTo("DocumentUploaderView", true);
+           NavigationManager.NavigateTo("DocumentUploaderView", true);
 
         }
         catch (Exception ex)
@@ -156,6 +178,25 @@ else
     private Task OnLongDescriptionChanged(string arg)
     {
         _document.LongDescription = arg;
+        return Task.CompletedTask;
+    }
+
+
+
+
+    private void Show(MouseEventArgs args, IntelDocument? intel)
+    {
+        string base64String = Convert.ToBase64String(intel.Content);
+        DocumentPath = "data:application/pdf;base64," + base64String;
+          IsVisible = !IsVisible;
+        StateHasChanged();
+      
+    }
+
+    private Task OnChanged()
+    {
+        IsVisible = false;
+        StateHasChanged();
         return Task.CompletedTask;
     }
 

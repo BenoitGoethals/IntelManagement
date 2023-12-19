@@ -70,13 +70,13 @@ else
     {
         _flag = Crud.List;
         Items = (await Service.GetAll()).ToList();
-        NavigationManager.NavigateTo("SocialMedia");
+        StateHasChanged();
     }
 
     public void AddPerson()
     {
         _flag = Crud.Add;
-        NavigationManager.NavigateTo("SocialMedia");
+       
     }
 
     private async Task Delete(MouseEventArgs args, SocialMedia? context)

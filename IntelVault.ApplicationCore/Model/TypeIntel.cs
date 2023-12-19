@@ -13,7 +13,7 @@ public enum TypeIntel
     CounterIntel, // Counterintelligence
     OpenSource,   // Open Source Intelligence
     Insum,    // Intelligence Summary
-    Other     // Other or un
-    ,
+    Other,    // Other or un
+    Informant,
     SocialMedia
 }

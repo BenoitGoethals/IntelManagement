@@ -502,12 +502,12 @@
         }
 
         await OnFileInvestChanged.InvokeAsync();
-        //NavigationManager.NavigateTo("overviewIntelInvestigationFile");
+       
         
     }
     protected void Changed()
     {
-        NavigationManager.NavigateTo("IntelInvestigation");
+        StateHasChanged();
     }
     private Task DeletePersonOfInterests(MouseEventArgs args, PersonOfInterest? context)
     {

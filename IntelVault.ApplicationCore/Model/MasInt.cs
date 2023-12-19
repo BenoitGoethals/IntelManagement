@@ -2,7 +2,9 @@
 
 /// <summary>
 /// Measurement and Signature
-/// Measurement and signature intelligence (MASINT) are gathered from an array of signatures (distinctive characteristics) of fixed or dynamic target sources. According to the Air Force Institute of Technology's Center for MASINT Studies and Research, MASINT is split into six major disciplines: electro-optical, nuclear, radar, geophysical, materials, and radiofrequency.[3]
+/// Measurement and signature intelligence (MASINT) are gathered from an array of signatures (distinctive characteristics) of fixed or dynamic target sources.
+/// According to the Air Force Institute of Technology's Center for MASINT Studies and Research,
+/// MASINT is split into six major disciplines: electro-optical, nuclear, radar, geophysical, materials, and radiofrequency.[3]
 /// </summary>
 public class MasInt
 {

@@ -1,0 +1,183 @@
+﻿@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Interfaces
+@using Blazored.FluentValidation
+
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor
+@using IntelVault.WebAccess.Components.Pages.common
+
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<Informant> Logger
+@inject IIntelService<Informant> Service;
+
+<style>
+    body {
+        padding-top: 40px;
+    }
+
+    .with-margin {
+        margin-bottom: 5px;
+    }
+
+    .spacer5 {
+        height: 5px;
+    }
+</style>
+
+
+<EditForm Model="@InformantTemp" class="row g-2" OnValidSubmit="Submit" FormName="AddInformationIntel">
+    <AntiforgeryToken />
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+   
+    <div class="form-group">
+
+        <div class="form-group col-md-3">
+            <SfTextBox @bind-Value="InformantTemp.InformantName" Placeholder="InformantName" class="form-control" />
+            <ValidationMessage For="() => InformantTemp.InformantName" />
+        </div>
+        
+        <div class="form-group col-md-3">
+            <SfTextBox @bind-Value="InformantTemp.InformantRole" Placeholder="InformantRole" class="form-control" />
+            <ValidationMessage For="() => InformantTemp.InformantRole" />
+        </div>
+        
+        <div class="form-group col-md-3">
+            <SfTextBox @bind-Value="InformantTemp.ContactNumber" Placeholder="ContactNumber" class="form-control" />
+            <ValidationMessage For="() => InformantTemp.ContactNumber" />
+        </div>
+        
+        <div class="form-group col-md-3">
+            <SfTextBox @bind-Value="InformantTemp.Address" Placeholder="Address" class="form-control" />
+            <ValidationMessage For="() => InformantTemp.Address" />
+        </div>
+
+
+        <div class="form-group col-md-3">
+            <SfTextBox @bind-Value="InformantTemp.BackgroundInfo" Placeholder="BackgroundInfo" class="form-control" />
+            <ValidationMessage For="() => InformantTemp.BackgroundInfo" />
+        </div>
+
+        <div class="form-group col-md-2">
+            <SfDropDownList TValue="Gender" @bind-Value="InformantTemp.Gender" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " DataSource="@Genders"></SfDropDownList>
+        </div>
+
+
+        <div class="form-group col-md-3">
+            <SfTextBox Type="InputType.Email" @bind-Value="InformantTemp.Email" Placeholder="email" class="form-control" />
+            <ValidationMessage For="() =>InformantTemp.Email" />
+        </div>
+
+        
+        <div class="form-group col-md-6">
+           
+            <SfCheckBox @bind-Checked="@InformantTemp.ActiveStatus">ActiveStatus</SfCheckBox>
+        </div>
+
+        <div class="form-group col-md-3">
+            <SfNumericTextBox TValue="int?" Min="1" @bind-Value="InformantTemp.Age" Placeholder="Age" class="form-control" />
+            <ValidationMessage For="() =>InformantTemp.Age" />
+        </div>
+
+
+        <div class="form-group col-md-3">
+            <SfNumericTextBox TValue="int?" Min="1" @bind-Value="InformantTemp.ReliabilityRating" Placeholder="ReliabilityRating" class="form-control" />
+            <ValidationMessage For="() =>InformantTemp.ReliabilityRating" />
+        </div>
+
+        
+
+        <div class="form-group col-md-6">
+            <SfTextBox @bind-Value="InformantTemp.AreasOfExpertise" Placeholder="Areas Of Expertise" class="form-control" />
+            <ValidationMessage For="() =>InformantTemp.AreasOfExpertise" />
+        </div>
+
+
+        <div class="form-group col-md-3">
+
+            <SfDateTimePicker TValue="DateTime?" @bind-Value="@InformantTemp.LastContactDate" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+            <ValidationMessage For="() => InformantTemp.LastContactDate" />
+        </div>
+
+        <div class="form-group col-md-6">
+            <label class="form-label"></label>
+            <BigTextItem InputText="@InformantTemp.IntelProvided" BindingValueChanged="OnChanged"></BigTextItem>
+        </div>
+        <br />
+        <div class="form-group col-md-6">
+            @if (Update)
+            {
+                <SfButton @onclick="Submit" IsPrimary="true" Content="Update"></SfButton>
+            }
+            else
+            {
+                <SfButton @onclick="Submit" IsPrimary="true" Content="Add"></SfButton>
+            }
+
+        </div>
+
+        <ValidationSummary />
+
+    </div>
+ 
+</EditForm>
+<br/>
+<div class="form-group col-md-6">
+    <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsToggle="true" IsPrimary="false">Cancel</SfButton>
+</div>
+
+@code {
+    [Parameter]
+    public bool Update { get; set; }
+    [Parameter]
+    public EventCallback OnIntelChanged { get; set; }
+    [Parameter]
+    public required Informant InformantTemp { get; set; }
+    private FluentValidationValidator? _fluentValidationValidator;
+ 
+    private SfButton? _cancelBtn;
+    public string[] Genders = Enum.GetNames(typeof(Gender));
+    private async Task Cancel(MouseEventArgs args)
+    {
+        await OnIntelChanged.InvokeAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Update)
+        {
+            InformantTemp = new Informant();
+        }
+       
+    }
+
+    private Task OnChanged(string arg)
+    {
+        InformantTemp.IntelProvided = arg;
+        return Task.CompletedTask;
+    }
+
+    private async Task Submit()
+    {
+        InformantTemp.ShortContent = InformantTemp.InformantName;
+        if (await _fluentValidationValidator!.ValidateAsync())
+        {
+            Logger.LogInformation("Id = {Id}", InformantTemp?.Id);
+            if (Update)
+            {
+                Service?.Update(InformantTemp);
+            }
+            else
+            {
+                Service?.Add(InformantTemp);
+            }
+
+            await OnIntelChanged.InvokeAsync();
+        }
+    }
+
+}

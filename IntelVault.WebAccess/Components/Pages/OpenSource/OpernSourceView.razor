@@ -73,14 +73,14 @@ else
     {
         _flag = Crud.List;
         _items = (await Service.GetAll()).ToList();
-        NavigationManager.NavigateTo("OpenSource");
+        StateHasChanged();
     }
 
     public void AddPerson()
     {
 
         _flag = Crud.Add;
-        NavigationManager.NavigateTo("OpenSource");
+        StateHasChanged();
     }
 
 

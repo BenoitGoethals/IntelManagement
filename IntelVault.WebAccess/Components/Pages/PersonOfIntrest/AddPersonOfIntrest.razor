@@ -17,73 +17,60 @@
         <FluentValidationValidator @ref="_fluentValidationValidator" />
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label class="form-label">Name</label>
                 <SfTextBox @bind-Value="Interest.Name" Placeholder="Name" class="form-control" />
                 <ValidationMessage For="() => Interest.Name" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Address</label>
                 <SfTextBox @bind-Value="Interest.Address" Placeholder="Address" class="form-control" />
                 <ValidationMessage For="() => Interest.Address" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">DateOfBirth</label>
-
-                <SfDateTimePicker TValue="DateTime?" Value="@Interest.DateOfBirth" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                <SfDateTimePicker TValue="DateTime?" Value="@Interest.DateOfBirth" Format="dd-MMM-yy HH:mm" Placeholder="DateOfBirth"></SfDateTimePicker>
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Affiliations</label>
                 <SfTextBox @bind-Value="Interest.Affiliations" Placeholder="Name" class="form-control" />
                 <ValidationMessage For="() => Interest.Affiliations" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Alias</label>
                 <SfTextBox @bind-Value="Interest.Alias" Placeholder="Alias" class="form-control" />
                 <ValidationMessage For="() => Interest.Alias" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">CriminalRecord</label>
                 <SfTextBox @bind-Value="Interest.CriminalRecord" Placeholder="Name" class="form-control" />
                 <ValidationMessage For="() => Interest.CriminalRecord" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Email</label>
                 <SfTextBox @bind-Value="Interest.Email" Placeholder="Email" class="form-control" />
                 <ValidationMessage For="() => Interest.Email" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">EyeColor</label>
                 <SfTextBox @bind-Value="Interest.EyeColor" Placeholder="EyeColor" class="form-control" />
                 <ValidationMessage For="() => Interest.EyeColor" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">HairColor</label>
                 <SfTextBox @bind-Value="Interest.HairColor" Placeholder="HairColor" class="form-control" />
                 <ValidationMessage For="() => Interest.HairColor" />
             </div>
 
 
             <div class="form-group col-md-6">
-                <label class="form-label">Height</label>
                 <SfTextBox @bind-Value="Interest.Height" Placeholder="Height" class="form-control" />
                 <ValidationMessage For="() => Interest.Height" />
             </div>
 
 
             <div class="form-group col-md-6">
-                <label class="form-label">Name</label>
                 <SfDropDownList @bind-Value="@_nationality" TValue="Country" TItem="Country" Width="300px" class="form-control" Placeholder="Select a Nationality" DataSource="@_countries">
                     <DropDownListFieldSettings Value="Name" Text="Name"></DropDownListFieldSettings>
                 </SfDropDownList>
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">PhoneNumber</label>
                 <SfTextBox @bind-Value="Interest.PhoneNumber" Placeholder="PhoneNumber" class="form-control" />
                 <ValidationMessage For="() => Interest.PhoneNumber" />
             </div>
@@ -103,19 +90,16 @@
 
 
             <div class="form-group col-md-6">
-                <label class="form-label">Relationships</label>
                 <SfTextBox @bind-Value="Interest.Relationships" Placeholder="Relationships" class="form-control" />
                 <ValidationMessage For="() => Interest.Relationships" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">PoliticalGroup</label>
                 <SfTextBox @bind-Value="Interest.PoliticalGroup" Placeholder="Political Group" class="form-control" />
                 <ValidationMessage For="() => Interest.PoliticalGroup" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Suspicious Activities</label>
                 <SfTextBox @bind-Value="Interest.SuspiciousActivities" Placeholder="Suspicious Activities" class="form-control" />
                 <ValidationMessage For="() => Interest.SuspiciousActivities" />
             </div>

@@ -71,13 +71,13 @@ else
     {
         _flag = Crud.List;
         Items = (await Service.GetAll()).ToList();
-        NavigationManager.NavigateTo("GeneralIntelView");
+        StateHasChanged();
     }
 
     public void AddPerson()
     {
         _flag = Crud.Add;
-        NavigationManager.NavigateTo("GeneralIntelView");
+        StateHasChanged();
     }
 
 

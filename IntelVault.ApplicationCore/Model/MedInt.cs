@@ -1,6 +1,7 @@
 ﻿namespace IntelVault.ApplicationCore.Model;
 /// <summary>
-/// Medical intelligence (MEDINT) – gathered from analysis of medical records and/or actual physiological examinations to determine health and/or particular ailments and allergic conditions for consideration
+/// Medical intelligence (MEDINT) – gathered from analysis of medical records and/or actual physiological examinations to determine health
+/// and/or particular ailments and allergic conditions for consideration
 /// </summary>
 public class MedInt
 {

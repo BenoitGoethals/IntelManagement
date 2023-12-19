@@ -74,14 +74,14 @@ else
     {
         _flag = Crud.List;
         _items = (await Service.GetAll()).ToList();
-        NavigationManager.NavigateTo("CybIntel");
+        StateHasChanged();
     }
 
     public void AddPerson()
     {
 
         _flag = Crud.Add;
-        NavigationManager.NavigateTo("CybIntel");
+        StateHasChanged();
     }
 
 

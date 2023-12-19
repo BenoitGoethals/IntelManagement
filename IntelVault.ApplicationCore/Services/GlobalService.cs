@@ -14,7 +14,8 @@ public class GlobalService(
     IIntelService<HumInt> humIntService,
     IIntelService<CybInt> cybIntServiceService,
     IIntelService<GeneralIntel> generalIntelService,
-    IIntelService<OpenSourceInt> openSourceService)
+    IIntelService<OpenSourceInt> openSourceService,
+    IIntelService<Informant> InformantService)
     : IGlobalService
 {
     private readonly IIntelService<SocialMedia>? _socialMediaService = socialMediaService;
@@ -23,6 +24,7 @@ public class GlobalService(
     private readonly IIntelService<CybInt>? _cybIntServiceService = cybIntServiceService;
     private readonly IIntelService<GeneralIntel>? _generalIntelService = generalIntelService;
     private readonly IIntelService<OpenSourceInt>? _openSourceService = openSourceService;
+    private readonly IIntelService<Informant>? _informantService = InformantService;
 
 
     public Task Add<T>(T entity) where T : BaseIntel
@@ -67,6 +69,8 @@ public class GlobalService(
             baseIntels.AddRange(gen);
             var op = await _openSourceService?.GetAll();
             baseIntels.AddRange(op);
+            var info = await _informantService?.GetAll();
+            baseIntels.AddRange(info);
 
         return baseIntels;
     }

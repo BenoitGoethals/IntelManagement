@@ -1,70 +1,71 @@
-﻿@implements IDisposable
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
+@using Syncfusion.Blazor.Navigations
 
+<SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
+    <MenuItems>
+        <MenuItem Text="Home" Url="/">
 
-    <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
-        <MenuItems>
-            <MenuItem Text="Home" Url="/">
+        </MenuItem>
+        <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile">
 
-            </MenuItem>
-            <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile">
+        </MenuItem>
 
-            </MenuItem>
-            <MenuItem Text="Add intel">
-                <MenuItems>
-                    <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
-                    <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
-                    <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
-                    <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
-                    <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
-                    <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
-                </MenuItems>
-            </MenuItem>
-            <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView">
+        <MenuItem Text="Add intel">
+            <MenuItems>
+                <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
+                <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
+                <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
+                <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
+                <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
+                <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
+                <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
+            </MenuItems>
+        </MenuItem>
+        <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView">
 
-            </MenuItem>
-            <MenuItem Text="Auth Required" Url="auth">
+        </MenuItem>
+        <MenuItem Text="Auth Required" Url="auth">
 
-            </MenuItem>
-            <AuthorizeView>
-                <Authorized>
-                    <MenuItem Text="Account">
-                        <MenuItems>
-                            <MenuItem Text="Account/Logout"></MenuItem>
-                            <MenuItem Text="Customize"></MenuItem>
-                            <MenuItem Text="Options"></MenuItem>
-                        </MenuItems>
-                    </MenuItem>
-                </Authorized>
-                <NotAuthorized>
-                    <MenuItem Text="Tools">
-                        <MenuItems>
-                            <MenuItem Text="Account/Register"></MenuItem>
-                            <MenuItem Text="Account/Login"></MenuItem>
+        </MenuItem>
+        <AuthorizeView>
+            <Authorized>
+                <MenuItem Text="Account">
+                    <MenuItems>
+                        <MenuItem Text="Account/Logout"></MenuItem>
+                        <MenuItem Text="Customize"></MenuItem>
+                        <MenuItem Text="Options"></MenuItem>
+                    </MenuItems>
+                </MenuItem>
+            </Authorized>
+            <NotAuthorized>
+                <MenuItem Text="Tools">
+                    <MenuItems>
+                        <MenuItem Text="Account/Register"></MenuItem>
+                        <MenuItem Text="Account/Login"></MenuItem>
 
-                        </MenuItems>
-                    </MenuItem>
-                </NotAuthorized>
-            </AuthorizeView>
-            <MenuItem Text="Go"></MenuItem>
-            <MenuItem Text="Help"></MenuItem>
-        </MenuItems>
-    </SfMenu>
-    <style>
+                    </MenuItems>
+                </MenuItem>
+            </NotAuthorized>
+        </AuthorizeView>
+        <MenuItem Text="Go"></MenuItem>
+        <MenuItem Text="Help"></MenuItem>
+    </MenuItems>
+</SfMenu>
+<style>
 
-        /* Styles to achieve rounder corner in menu */
-        .e-menu-container.e-rounded-menu:not(.e-menu-popup),
-        .e-menu-container.e-rounded-menu .e-menu {
-            border-radius: 20px;
-        }
+    /* Styles to achieve rounder corner in menu */
+    .e-menu-container.e-rounded-menu:not(.e-menu-popup),
+    .e-menu-container.e-rounded-menu .e-menu {
+        border-radius: 20px;
+    }
 
-        /* Increased the menu component left and right padding for better rounded corner UI */
-        .e-menu-container.e-rounded-menu ul.e-menu {
-            padding: 0 14px;
-        }
+    /* Increased the menu component left and right padding for better rounded corner UI */
+    .e-menu-container.e-rounded-menu ul.e-menu {
+        padding: 0 14px;
+    }
 
-    </style>
+</style>
 
 
 @code {
