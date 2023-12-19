@@ -19,7 +19,7 @@
 @inject IDocumentService IntelService
 
 
-<SfDialog @bind-Visible="@IsDialogVisible" Width="700px" ID="GridPersonOfInterestsGrid">
+<SfDialog @bind-Visible="@IsDialogVisible" ID="GridPersonOfInterestsGrid" Height="500px" Width="700px">
 
     <DialogTemplates>
         <Content>
@@ -43,7 +43,7 @@
     </DialogButtons>
 </SfDialog>
 
-<SfDialog @bind-Visible="@IsDialogIntelDocumentsVisible" Width="700px" ID="GridIntelDocuments">
+<SfDialog @bind-Visible="@IsDialogIntelDocumentsVisible" Height="500px" Width="700px" ID="GridIntelDocuments">
 
     <DialogTemplates>
         <Content>
@@ -68,7 +68,7 @@
     </DialogButtons>
 </SfDialog>
 
-<SfDialog @bind-Visible="@IsDialogBaseLineVisible" Width="700px" ID="GridBaseLine">
+<SfDialog @bind-Visible="@IsDialogBaseLineVisible" Height="500px" Width="700px"  ID="GridBaseLine">
 
     <DialogTemplates>
         <Content>
@@ -97,12 +97,12 @@
     <AntiforgeryToken />
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <SfTab>
-        <TabItems>
+    <TabItems>
 
-            <TabItem>
-                <HeaderTemplate>Common</HeaderTemplate>
-                <ContentTemplate>
-                    <style>
+    <TabItem>
+        <HeaderTemplate>Common</HeaderTemplate>
+        <ContentTemplate>
+            <style>
                         .multiline {
                             margin-top: 60px;
                             width: 20%;
@@ -113,255 +113,256 @@
                         }
                     </style>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <SfTextBox @bind-Value="IntelInvest.CaseNumber" Placeholder="Case Number" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.CaseNumber" />
-                        </div>
-                        <div class="form-group col-md-3">
-                            <SfDropDownList TValue="InvestigationStatus?" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " @bind-Value="IntelInvest.InvestigationStatus" DataSource="@InvestigationStatusItems">
-                                @* <DropDownListEvents TValue="InvestigationStatus" ValueChange="OnDropDownListValueChange"></DropDownListEvents> *@
-                            </SfDropDownList>
-                        </div>
-                        <div class="form-group col-md-6">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <SfTextBox @bind-Value="IntelInvest.CaseNumber" Placeholder="Case Number" class="form-control" />
+                    <ValidationMessage For="() => IntelInvest.CaseNumber" />
+                </div>
+                <div class="form-group col-md-3">
+                    <SfDropDownList TValue="InvestigationStatus?" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " @bind-Value="IntelInvest.InvestigationStatus" DataSource="@InvestigationStatusItems">
+                        @* <DropDownListEvents TValue="InvestigationStatus" ValueChange="OnDropDownListValueChange"></DropDownListEvents> *@
+                    </SfDropDownList>
+                </div>
+                <div class="form-group col-md-6">
 
-                            <SfTextBox @bind-Value="IntelInvest.Description" Multiline="true" Placeholder="Description" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.Description" />
-                        </div>
+                    <SfTextBox @bind-Value="IntelInvest.Description" Multiline="true" Placeholder="Description" class="form-control" />
+                    <ValidationMessage For="() => IntelInvest.Description" />
+                </div>
 
-                        <div class="form-group col-md-2">
-                            <SfDateTimePicker TValue="DateTime?" Placeholder="Started DateTimeDate" @bind-Value="@IntelInvest.StartedDateTimeDate" Max="DateTime.Now" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
-                        </div>
+                <div class="form-group col-md-2">
+                    <SfDateTimePicker TValue="DateTime?" Placeholder="Started DateTimeDate" @bind-Value="@IntelInvest.StartedDateTimeDate" Max="DateTime.Now" Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                </div>
                       
-                        <div class="form-group col-md-2">
-                            <SfDateTimePicker TValue="DateTime?" Placeholder="Ended DateTimeDate" @bind-Value="@IntelInvest.EndedDateTimeDate"  Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
-                        </div>
+                <div class="form-group col-md-2">
+                    <SfDateTimePicker TValue="DateTime?" Placeholder="Ended DateTimeDate" @bind-Value="@IntelInvest.EndedDateTimeDate"  Format="dd-MMM-yy HH:mm"></SfDateTimePicker>
+                </div>
 
 
-                        <div class="form-group col-md-3">
-                            <SfTextBox @bind-Value="IntelInvest.InvestigatorName" Placeholder="Name" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.InvestigatorName" />
-                        </div>
-                        <div class="form-group col-md-3">
-                            <SfTextBox @bind-Value="IntelInvest.InvestigatorBadgeNumber" Placeholder="Alias" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.InvestigatorBadgeNumber" />
-                        </div>
-                        <div class="form-group col-md-3">
-                            <SfTextBox @bind-Value="IntelInvest.InvestigatorNote" Placeholder="Name" class="form-control" />
-                            <ValidationMessage For="() => IntelInvest.InvestigatorNote" />
-                        </div>
+                <div class="form-group col-md-3">
+                    <SfTextBox @bind-Value="IntelInvest.InvestigatorName" Placeholder="Name" class="form-control" />
+                    <ValidationMessage For="() => IntelInvest.InvestigatorName" />
+                </div>
+                <div class="form-group col-md-3">
+                    <SfTextBox @bind-Value="IntelInvest.InvestigatorBadgeNumber" Placeholder="Alias" class="form-control" />
+                    <ValidationMessage For="() => IntelInvest.InvestigatorBadgeNumber" />
+                </div>
+                <div class="form-group col-md-3">
+                    <SfTextBox @bind-Value="IntelInvest.InvestigatorNote" Placeholder="Name" class="form-control" />
+                    <ValidationMessage For="() => IntelInvest.InvestigatorNote" />
+                </div>
 
 
 
-                        <div class="form-group col-md-6">
-                            @if (Update)
-                            {
-                                <SfButton IsPrimary="true" @onclick="SubmitForm">Update</SfButton>
-                            }
-                            else
-                            {
-                                <SfButton IsPrimary="true" @onclick="SubmitForm">Add</SfButton>
-                            }
+                      
 
-                        </div>
+                <ValidationSummary />
+            </div>
 
-                        <ValidationSummary />
-                    </div>
+            <div class="form-group col-md-6">
+                <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsPrimary="false">Cancel</SfButton>
+            </div>
 
-                    <div class="form-group col-md-6">
-                        <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsPrimary="false">Cancel</SfButton>
-                    </div>
+        </ContentTemplate>
 
-                </ContentTemplate>
-
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>Long Description</HeaderTemplate>
-                <ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>Long Description</HeaderTemplate>
+        <ContentTemplate>
 
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.LongDescription" />
-                        </div>
-                    </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.LongDescription" />
+                </div>
+            </div>
 
 
-                </ContentTemplate>
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>Conclusion</HeaderTemplate>
-                <ContentTemplate>
+        </ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>Conclusion</HeaderTemplate>
+        <ContentTemplate>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.Conclusion" />
-                        </div>
-                    </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <SfRichTextEditor ShowCharCount="true" Height="500" SaveInterval="5000" AutoSaveOnIdle="true" @bind-Value="@IntelInvest.Conclusion" />
+                </div>
+            </div>
                     
 
-                </ContentTemplate>
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>PersonOfInterests</HeaderTemplate>
-                <ContentTemplate>
+        </ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>PersonOfInterests</HeaderTemplate>
+        <ContentTemplate>
 
-                    @if (IntelInvest?.PersonOfInterests != null)
+            @if (IntelInvest?.PersonOfInterests != null)
+            {
+                <div class="row">
+                    @foreach (var val in IntelInvest?.PersonOfInterests)
                     {
-                        <div class="row">
-                            @foreach (var val in IntelInvest?.PersonOfInterests)
-                            {
 
-                                <div class="col-sm-3">
+                        <div class="col-sm-3">
 
 
-                                    <SfCard ID="Card" CssClass="width: 200px;">
-                                        <CardHeader Title="@val.Name" />
-                                        <CardContent>
-                                            <div>
-                                                @val.Nationality
-                                            </div>
-                                            <div>
-                                                @val.PoliticalGroup
-                                            </div>
-                                            <div>
+                            <SfCard ID="Card" CssClass="width: 200px;">
+                                <CardHeader Title="@val.Name" />
+                                <CardContent>
+                                    <div>
+                                        @val.Nationality
+                                    </div>
+                                    <div>
+                                        @val.PoliticalGroup
+                                    </div>
+                                    <div>
 
-                                                @if (val?.Pictures.Count > 0 && val.Pictures[0] != null)
-                                                {
-                                                    <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)" alt=""/>
-                                                }
+                                        @if (val?.Pictures.Count > 0 && val.Pictures[0] != null)
+                                        {
+                                            <img Width="100" Height="100" src="data:image/png;base64, @Convert.ToBase64String(val?.Pictures[0]?.Picture)" alt=""/>
+                                        }
                                                 
-                                            </div>
-                                            <div>
-                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeletePersonOfInterests(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
-                                            </div>
-                                        </CardContent>
-                                    </SfCard>
+                                    </div>
+                                    <div>
+                                        <SfButton @ref="_deleteBtn" @onclick="@((args) => DeletePersonOfInterests(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                                    </div>
+                                </CardContent>
+                            </SfCard>
 
-                                </div>
-
-                            }
                         </div>
+
                     }
+                </div>
+            }
 
 
-                    <style>
+            <style>
                         #Card {
                             width: 300px;
                         }
                     </style>
-                    <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false"  CssClass="e-success" @onclick='()=>OpenDialog("person")'>search</SfButton>
-                    </div>
+            <div class="form-group col-md-6">
+                <SfButton IsPrimary="false"  CssClass="e-success" @onclick='()=>OpenDialog("person")'>search</SfButton>
+            </div>
 
 
-                </ContentTemplate>
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>IntelDocuments</HeaderTemplate>
-                <ContentTemplate>
+        </ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>IntelDocuments</HeaderTemplate>
+        <ContentTemplate>
 
 
-                    @if (IntelInvest?.IntelDocuments != null)
+            @if (IntelInvest?.IntelDocuments != null)
+            {
+                <div class="row">
+                    @foreach (var val in IntelInvest?.IntelDocuments)
                     {
-                        <div class="row">
-                            @foreach (var val in IntelInvest?.IntelDocuments)
-                            {
 
-                                <div class="col-sm-3">
+                        <div class="col-sm-3">
 
 
-                                    <SfCard ID="Card" CssClass="width: 200px;">
-                                        <CardHeader Title="@val.Description" />
-                                        <CardContent>
-                                            <div>
-                                                @val.DocumentType
-                                            </div>
-                                            <div>
-                                                @val.IntelType
-                                            </div>
-                                            <div>
-                                                @val.TimeCreated
-                                            </div>
-                                            <div>
-                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteIntelDocuments(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
-                                            </div>
+                            <SfCard ID="Card" CssClass="width: 200px;">
+                                <CardHeader Title="@val.Description" />
+                                <CardContent>
+                                    <div>
+                                        @val.DocumentType
+                                    </div>
+                                    <div>
+                                        @val.IntelType
+                                    </div>
+                                    <div>
+                                        @val.TimeCreated
+                                    </div>
+                                    <div>
+                                        <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteIntelDocuments(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                                    </div>
 
-                                        </CardContent>
-                                    </SfCard>
-                                </div>
-                            }
+                                </CardContent>
+                            </SfCard>
                         </div>
                     }
+                </div>
+            }
 
 
-                    <style>
+            <style>
                         #Card {
                             width: 300px;
                         }
                     </style>
 
-                    <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="e-success" @onclick='()=>OpenDialog("intel")'>search</SfButton>
-                    </div>
+            <div class="form-group col-md-6">
+                <SfButton IsPrimary="false" CssClass="e-success" @onclick='()=>OpenDialog("intel")'>search</SfButton>
+            </div>
 
-                </ContentTemplate>
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>EvidenceCollected</HeaderTemplate>
-                <ContentTemplate>
+        </ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>EvidenceCollected</HeaderTemplate>
+        <ContentTemplate>
 
-                    @if (IntelInvest?.EvidenceCollected != null)
+            @if (IntelInvest?.EvidenceCollected != null)
+            {
+                <div class="row">
+                    @foreach (var val in IntelInvest?.EvidenceCollected)
                     {
-                        <div class="row">
-                            @foreach (var val in IntelInvest?.EvidenceCollected)
-                            {
 
-                                <div class="col-sm-3">
+                        <div class="col-sm-3">
 
 
-                                    <SfCard ID="Card" CssClass="width: 200px;">
+                            <SfCard ID="Card" CssClass="width: 200px;">
 
-                                        <CardHeader Title="@val.IntelType.ToString()" />
-                                        <CardContent>
-                                            <div>
-                                                @val.IntelType.ToString()
-                                            </div>
-                                            <div>
-                                                <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteEvidenceCollected(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
-                                            </div>
-                                        </CardContent>
-                                    </SfCard>
+                                <CardHeader Title="@val.IntelType.ToString()" />
+                                <CardContent>
+                                    <div>
+                                        @val.IntelType.ToString()
+                                    </div>
+                                    <div>
+                                        <SfButton @ref="_deleteBtn" @onclick="@((args) => DeleteEvidenceCollected(args, val))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                                    </div>
+                                </CardContent>
+                            </SfCard>
 
-                                </div>
-
-                            }
                         </div>
+
                     }
-                    <style>
+                </div>
+            }
+            <style>
                         #Card {
                             width: 300px;
                         }
                     </style>
 
-                    <div class="form-group col-md-6">
-                        <SfButton IsPrimary="false" CssClass="e-success"  @onclick='()=>OpenDialog("collect")'>search</SfButton>
-                    </div>
+            <div class="form-group col-md-6">
+                <SfButton IsPrimary="false" CssClass="e-success"  @onclick='()=>OpenDialog("collect")'>search</SfButton>
+            </div>
 
-                </ContentTemplate>
-            </TabItem>
-            <TabItem>
-                <HeaderTemplate>ExpertOpinions</HeaderTemplate>
-                <ContentTemplate>
+        </ContentTemplate>
+    </TabItem>
+    <TabItem>
+        <HeaderTemplate>ExpertOpinions</HeaderTemplate>
+        <ContentTemplate>
 
-                    <div class="form-row">
-                        <ViewListBigItem Items="@ExpertOpinionsList"></ViewListBigItem>
-                    </div>
+            <div class="form-row">
+                <ViewListBigItem Items="@ExpertOpinionsList"></ViewListBigItem>
+            </div>
 
-                </ContentTemplate>
-            </TabItem>
-        </TabItems>
+        </ContentTemplate>
+    </TabItem>
+    </TabItems>
     </SfTab>
+    <div class="form-group col-md-6">
+        @if (Update)
+        {
+            <SfButton IsPrimary="true" @onclick="SubmitForm">Update</SfButton>
+        }
+        else
+        {
+            <SfButton IsPrimary="true" @onclick="SubmitForm">Add</SfButton>
+        }
+
+    </div>
 </EditForm>
 @code {
     [Parameter]

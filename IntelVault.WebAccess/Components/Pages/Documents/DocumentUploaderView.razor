@@ -11,6 +11,10 @@
 @using MongoDB.Bson
 @using Syncfusion.Blazor.SfPdfViewer
 @using System.IO;
+@using Syncfusion.DocIO.DLS
+@using Syncfusion.DocIORenderer
+@using Syncfusion.OfficeChart
+@using Syncfusion.Pdf
 @inject IDocumentService Service;
 @rendermode InteractiveServer
 
@@ -31,16 +35,15 @@ else
             <SfGrid DataSource="@Items" AllowPaging="true" AllowReordering="true" AllowSorting=true Toolbar=@ToolbarItems>
                 <GridPageSettings PageSize="5"></GridPageSettings>
                 <GridColumns>
-                    <GridColumn TextAlign="TextAlign.Right" Width="40">
+                    <GridColumn TextAlign="TextAlign.Right" Width="100">
                         <Template>
                             @{
                                 var intel = (context as IntelDocument);
                                 <div class="image">
                                     <img src="@($"icons/{intel?.DocumentType.ToString()}.png")" alt="@intel?.DocumentType.ToString()" height="25" width="25" />
-                                </div>
-                                <div>
                                     <SfButton Content="Show" @onclick="@((args) => Show(args, intel))"></SfButton>
                                 </div>
+
                             }
                         </Template>
                     </GridColumn>
@@ -85,9 +88,9 @@ else
 
     }
 
-    
 
-   
+
+
 }
 @code {
     public List<string> ToolbarItems = new List<string>() { "Search" };
@@ -147,7 +150,7 @@ else
         Items = (await Service.GetAll()).ToList();
     }
 
-   
+
 
     private async Task HandleValidSubmit()
     {
@@ -165,7 +168,7 @@ else
             _document = new IntelDocument();
             NewItemDocuments?.Clear();
             StateHasChanged();
-           NavigationManager.NavigateTo("DocumentUploaderView", true);
+            NavigationManager.NavigateTo("DocumentUploaderView", true);
 
         }
         catch (Exception ex)
@@ -186,11 +189,45 @@ else
 
     private void Show(MouseEventArgs args, IntelDocument? intel)
     {
-        string base64String = Convert.ToBase64String(intel.Content);
-        DocumentPath = "data:application/pdf;base64," + base64String;
-          IsVisible = !IsVisible;
-        StateHasChanged();
       
+        if (intel?.DocumentType == DocumentType.PDF)
+        {
+            if (intel.Content != null)
+            {
+                string base64String = Convert.ToBase64String(intel.Content);
+                DocumentPath = "data:application/pdf;base64," + base64String;
+            }
+        }
+        else if (intel?.DocumentType == DocumentType.Docx)
+        {
+            //Open the file as Stream
+            MemoryStream stream = new MemoryStream();
+            stream.Write(intel.Content, 0, intel.Content.Length);
+            //Loads file stream into Word document
+            WordDocument wordDocument = new WordDocument(stream, Syncfusion.DocIO.FormatType.Automatic);
+            //Instantiation of DocIORenderer for Word to PDF conversion
+            DocIORenderer render = new DocIORenderer();
+            //Sets Chart rendering Options.
+            render.Settings.ChartRenderingOptions.ImageFormat = ExportImageFormat.Jpeg;
+            //Converts Word document into PDF document
+            PdfDocument pdfDocument = render.ConvertToPDF(wordDocument);
+            //Releases all resources used by the Word document and DocIO Renderer objects
+            render.Dispose();
+            wordDocument.Dispose();
+            //Saves the PDF file
+            MemoryStream outputStream = new MemoryStream();
+            pdfDocument.Save(outputStream);
+            //Closes the instance of PDF document object
+            DocumentPath = "data:application/pdf;base64,"+ Convert.ToBase64String(outputStream.ToArray());
+            pdfDocument.Close();
+        }
+        else
+        {
+            return;
+        }
+        IsVisible = !IsVisible;
+        StateHasChanged();
+
     }
 
     private Task OnChanged()

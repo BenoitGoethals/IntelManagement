@@ -57,6 +57,7 @@
     <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="24.1.41" />
     <PackageReference Include="Syncfusion.Blazor.SfPdfViewer" Version="24.1.41" />
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="24.1.41" />
     <PackageReference Include="Syncfusion.Licensing" Version="24.1.41" />
   </ItemGroup>
 
