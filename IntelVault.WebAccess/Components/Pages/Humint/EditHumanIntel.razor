@@ -19,53 +19,43 @@
         <FluentValidationValidator @ref="_fluentValidationValidator" />
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label class="form-label">Name</label>
                 <SfDropDownList TValue="HumIntType" @bind-Value="@HumIntTypeSelect" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type Humint" DataSource="@HumIntTypeItems"></SfDropDownList>
                 <ValidationMessage For="() => HumIntIntel.HumIntType"></ValidationMessage>
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Reliability Credibility</label>
                 <SfTextBox @bind-Value="HumIntIntel.ReliabilityCredibility" Placeholder="SourceName" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ReliabilityCredibility" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Contact Name</label>
                 <SfTextBox @bind-Value="HumIntIntel.ContactName" Placeholder="IncidentSelectedListItem" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ContactName" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Contact Email</label>
                 <SfTextBox @bind-Value="HumIntIntel.ContactEmail" Placeholder="ContactEmail" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ContactEmail" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Operational Status</label>
                 <SfTextBox @bind-Value="HumIntIntel.OperationalStatus" Placeholder="OperationalStatus" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.OperationalStatus" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Access Level</label>
                 <SfTextBox @bind-Value="HumIntIntel.AccessLevel" Placeholder="AccessLevel" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.AccessLevel" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Accuracy Of Details</label>
                 <SfTextBox @bind-Value="HumIntIntel.AccuracyOfDetails" Placeholder="AccuracyOfDetails" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.AccuracyOfDetails" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Assessment And Analysis</label>
                 <SfTextBox @bind-Value="HumIntIntel.AssessmentAndAnalysis" Placeholder="AssessmentAndAnalysis" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.AssessmentAndAnalysis" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Classification Handling Instructions</label>
                 <SfTextBox @bind-Value="HumIntIntel.ClassificationHandlingInstructions" Placeholder="ClassificationHandlingInstructions" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ClassificationHandlingInstructions" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Contact PhoneNumber</label>
                 <SfTextBox @bind-Value="HumIntIntel.ContactPhoneNumber" Placeholder="ContactPhoneNumber" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ContactPhoneNumber" />
             </div>
@@ -75,42 +65,35 @@
                 <ValidationMessage For="() => HumIntIntel.ContactTitle" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Context Background</label>
                 <SfTextBox @bind-Value="HumIntIntel.ContextBackground" Placeholder="ContextBackground" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.ContextBackground" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">OperationalStatus</label>
                 <SfTextBox @bind-Value="HumIntIntel.OperationalStatus" Placeholder="OperationalStatus" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.OperationalStatus" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Time Location</label>
                 <SfTextBox @bind-Value="HumIntIntel.TimeLocation" Placeholder="TimeLocation" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.TimeLocation" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Source Affiliation</label>
                 <SfTextBox @bind-Value="HumIntIntel.SourceAffiliation" Placeholder="SourceAffiliation" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.SourceAffiliation" />
             </div>
 
 
             <div class="form-group col-md-6">
-                <label class="form-label">Source Information</label>
                 <SfTextBox @bind-Value="HumIntIntel.SourceInformation" Placeholder="SourceInformation" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.SourceInformation" />
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Source Name</label>
                 <SfTextBox @bind-Value="HumIntIntel.SourceName" Placeholder="SourceName" class="form-control" />
                 <ValidationMessage For="() => HumIntIntel.SourceName" />
             </div>
             <div class="form-group col-md-6">
-                <label class="form-label">Last Contact Date</label>
                 <SfDateTimePicker TValue="DateTime?" @bind-Value="@HumIntIntel.LastContactDate"></SfDateTimePicker>
                 <ValidationMessage For="() => HumIntIntel.LastContactDate" />
             </div>
