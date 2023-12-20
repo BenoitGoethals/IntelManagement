@@ -1,4 +1,5 @@
-﻿using IntelVault.ApplicationCore.IntelData;
+﻿using FluentAssertions.Common;
+using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.ApplicationCore.Services;
@@ -65,6 +66,23 @@ namespace IntelVault.IntegrationTests
             }
             DbRepository.GetAllAsync()?.Result?.Should().HaveCount(20);
 
+            await _service.DeleteAll();
+
+            DbRepository.GetAllAsync()?.Result?.FirstOrDefault().Should().BeNull();
+        }
+
+        [Trait("Category", "Integration")]
+        [Fact()]
+        public async Task CountTest()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                await _service.Add(GetHumit());
+
+            }
+
+            DbRepository.Count().Result.Should().Be(20);
+             _service.Count().Result.Should().Be(20);
             await _service.DeleteAll();
 
             DbRepository.GetAllAsync()?.Result?.FirstOrDefault().Should().BeNull();

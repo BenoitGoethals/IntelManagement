@@ -96,7 +96,7 @@ else
 
     private async Task LoadItems()
     {
-        Count = (await Service.GetAll()).Count();
+        Count = (int) await Service.Count();
         _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
 
     }

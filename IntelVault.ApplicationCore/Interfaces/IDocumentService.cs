@@ -13,4 +13,6 @@ public interface IDocumentService
     Task DeleteAll();
     Task<IEnumerable<IntelDocument?>> GetAll();
     public Task<IEnumerable<IntelDocument?>> GetAll(int page, int pageSize);
+
+    Task<long> Count();
 }

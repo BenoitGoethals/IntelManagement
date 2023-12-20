@@ -11,6 +11,7 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
     where T : BaseIntel
 {
 
+    
 
     private readonly IValidator<T> _validator = validator;
 
@@ -37,6 +38,11 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
     public async Task DeleteAll()
     {
         await mongodbDbRepository.DeleteAllAsync();
+    }
+
+    public async Task<long> Count()
+    {
+       return await mongodbDbRepository.Count();
     }
 
     public async Task<IEnumerable<T?>> GetAll(int page, int pageSize)

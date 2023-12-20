@@ -67,6 +67,19 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
+    public async Task<long> Count()
+    {
+        try
+        {
+            return await _collection.CountAsync(FilterDefinition<T>.Empty);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new VaultException(e.Message);
+        }
+    }
+
     public async Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter)
     {
         try
