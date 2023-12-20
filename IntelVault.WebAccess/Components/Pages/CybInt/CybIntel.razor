@@ -43,7 +43,8 @@ else
         </div>
 
         <div class="btn-sm">
-            <MatButton Raised="true" @onclick="AddPerson">Add Cyber Intel</MatButton>
+           
+            <SfButton Content="Add" IsPrimary="true" @onclick="AddPerson"></SfButton>
         </div>
     }
     else if (_flag == Crud.Add)

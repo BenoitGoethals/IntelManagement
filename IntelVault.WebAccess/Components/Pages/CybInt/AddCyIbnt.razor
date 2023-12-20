@@ -23,8 +23,8 @@
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Incident SelectedListItem</label>
-                <SfTextBox @bind-Value="CyberIntel.IncidentDescription" Placeholder="IncidentSelectedListItem" class="form-control" />
+                <label class="form-label">IncidentDescription</label>
+                <SfTextBox @bind-Value="CyberIntel.IncidentDescription" Placeholder="Incident Description" class="form-control" />
                 <ValidationMessage For="() => CyberIntel.IncidentDescription" />
             </div>
             <div class="form-group col-md-6">
@@ -99,7 +99,7 @@
             </SfAccordion>
         </div>
         <div class="form-group col-md-6">
-            <MatButton Raised="true" type="submit">Add</MatButton>
+            <SfButton IsPrimary="true" Content="Add"></SfButton>
         </div>
         <ValidationSummary />
     </EditForm>

@@ -5,7 +5,7 @@ using IntelVault.Infrastructure;
 using IntelVault.WebAccess.Components;
 using IntelVault.WebAccess.Components.Account;
 using IntelVault.WebAccess.Data;
-using MatBlazor;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +102,7 @@ builder.Services.AddScoped<IGlobalService, GlobalService>(x => new GlobalService
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddMatBlazor();
+
 // Configure NLog for logging
 builder.Services.AddLogging(loggingBuilder =>
 {

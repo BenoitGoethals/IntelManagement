@@ -24,13 +24,12 @@
             </div>
 
             <div class="form-group col-md-6">
-                <label class="form-label">Incident SelectedListItem</label>
-                <SfTextBox @bind-Value="CyberIntel.IncidentDescription" Placeholder="IncidentSelectedListItem" class="form-control" />
+                <label class="form-label">Incident Description</label>
+                <SfTextBox @bind-Value="CyberIntel.IncidentDescription" Placeholder="Incident Description" class="form-control" />
                 <ValidationMessage For="() => CyberIntel.IncidentDescription" />
             </div>
             <div class="form-group col-md-6">
                 <label class="form-label">Impact Assessment</label>
-                @* <SfTextBox  @bind-Value="CyberIntel.ImpactAssessment" class="form-control" /> *@
                 <BigTextItem InputText="@CyberIntel.ImpactAssessment" BindingValueChanged="OnImpactAssessmentChanged"></BigTextItem>
             </div>
         
@@ -101,7 +100,7 @@
             </SfAccordion>
         </div>
         <div class="form-group col-md-6">
-            <MatButton Raised="true" type="submit">Update</MatButton>
+            <SfButton Content="Update" IsPrimary="true"></SfButton>
         </div>
         <ValidationSummary />
     </EditForm>
