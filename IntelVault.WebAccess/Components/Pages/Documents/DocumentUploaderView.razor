@@ -184,9 +184,7 @@ else
                 foreach (var item in NewItemDocuments.Where(item => item != null))
                 {
                     await Service.Store(item);
-
                     Items?.Add(item);
-
                 }
 
             _document = new IntelDocument();

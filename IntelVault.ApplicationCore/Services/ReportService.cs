@@ -15,9 +15,9 @@ public class ReportService(IGlobalService globalService, IDocumentService docume
     {
 
         List<ReportData> data = new List<ReportData>();
-        var dataGlobal = await globalService.GetAll();
+        var dataGlobal = await globalService.GetAllCount();
         var docs = await documentService.GetAll();
-        var rest = dataGlobal.GroupBy(x => x.IntelType);
+        IEnumerable<IGrouping<TypeIntel, Tuple<TypeIntel, long>>> rest = dataGlobal.GroupBy(x => x.Item1);
 
         int tel = 0;
         foreach (var item in rest)

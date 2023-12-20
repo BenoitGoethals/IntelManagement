@@ -74,4 +74,20 @@ public class GlobalService(
 
         return baseIntels;
     }
+
+    public async Task<IEnumerable<Tuple<TypeIntel, long>>> GetAllCount()
+    {
+        List<Tuple<TypeIntel,long>> tuples=new List<Tuple<TypeIntel, long>>
+        {
+            new Tuple<TypeIntel, long>(TypeIntel.Humint, await _humIntService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.SocialMedia, await _socialMediaService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.CyberInt, await _cybIntServiceService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.Other, await _generalIntelService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.OpenSource, await _openSourceService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.Informant, await _informantService?.Count())
+        };
+
+
+        return tuples;
+    }
 }

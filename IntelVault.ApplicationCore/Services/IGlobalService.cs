@@ -1,4 +1,5 @@
 ﻿using IntelVault.ApplicationCore.IntelData;
+using IntelVault.ApplicationCore.Model;
 
 namespace IntelVault.ApplicationCore.Services;
 
@@ -10,4 +11,5 @@ public interface IGlobalService
     public Task DeleteAll<T>();
     public Task<IEnumerable<T>> GetAll<T>() where T : BaseIntel;
     public Task<IEnumerable<BaseIntel>> GetAll();
+    public Task<IEnumerable<Tuple<TypeIntel,long>>> GetAllCount();
 }
