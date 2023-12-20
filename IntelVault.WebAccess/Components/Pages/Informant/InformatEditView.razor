@@ -146,13 +146,16 @@
         await OnIntelChanged.InvokeAsync();
     }
 
-    protected override async Task OnInitializedAsync()
+
+
+    protected override Task OnInitializedAsync()
     {
         if (!Update)
         {
             InformantTemp = new Informant();
         }
-       
+
+        return Task.CompletedTask;
     }
 
     private Task OnChanged(string arg)

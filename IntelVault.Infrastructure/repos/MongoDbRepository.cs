@@ -18,10 +18,7 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
 
     public MongoDbRepository(IMongoClient client, ILogger<IMongoDbRepository<T>> logger, string databaseName)
     {
-
         _database = client.GetDatabase(databaseName);
-        var cl = client;
-     //   BsonClassMap.RegisterClassMap<T>();
         _collection = _database.GetCollection<T>(typeof(T).Name);
         _logger = logger;
     }
@@ -37,9 +34,23 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         {
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
-
         }
+    }
 
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize)
+    {
+        try
+        {
+            IAsyncCursor<T?> cursor = await _collection.Find(FilterDefinition<T>.Empty).Skip(page)
+                .Limit(pageSize)
+                .ToCursorAsync(); ;
+            return await cursor.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new VaultException(e.Message);
+        }
     }
 
     public async Task<T> GetByIdAsync(ObjectId id)
@@ -54,7 +65,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 
     public async Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter)
@@ -68,7 +78,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 
     public async Task InsertAsync(T? entity)
@@ -82,7 +91,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 
     public async Task UpdateAsync(ObjectId id, T? entity)
@@ -97,7 +105,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 
     public async Task DeleteAsync(ObjectId id)
@@ -112,7 +119,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 
 
@@ -128,6 +134,5 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             _logger.LogError(e.Message);
             throw new VaultException(e.Message);
         }
-
     }
 }

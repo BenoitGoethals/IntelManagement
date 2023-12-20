@@ -32,7 +32,7 @@ public class DocumentService(IMongoDbRepository<IntelDocument> mongodbDbReposito
             if (output?.Length > 0)
             {
                 var user = await GetUserName();
-                IntelDocument? intelDocumentation = new IntelDocument() { Content = output, Description = description, DocumentType = AnalyseDocumentType(fileInfo.Extension.ToLower()), TimeCreated = DateTime.Now };
+                IntelDocument? intelDocumentation = new IntelDocument() {FileName =fileInfo.Name ,Content = output, Description = description, DocumentType = AnalyseDocumentType(fileInfo.Extension.ToLower()), TimeCreated = DateTime.Now };
                 await mongodbDbRepository.InsertAsync(intelDocumentation);
             }
         }
@@ -55,7 +55,7 @@ public class DocumentService(IMongoDbRepository<IntelDocument> mongodbDbReposito
             case "pdf":
                 return DocumentType.PDF;
             case "docx":
-
+            case "doc":
                 return DocumentType.Docx;
         }
         return DocumentType.Nothing;

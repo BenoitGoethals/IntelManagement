@@ -7,4 +7,6 @@ public interface IIntelService<T>
     public Task Delete(T entity);
     public Task DeleteAll();
     public Task<IEnumerable<T?>> GetAll();
+
+    public Task<IEnumerable<T?>> GetAll(int page, int pageSize);
 }

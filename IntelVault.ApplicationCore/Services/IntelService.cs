@@ -39,6 +39,11 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
         await mongodbDbRepository.DeleteAllAsync();
     }
 
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize)
+    {
+        return await mongodbDbRepository.GetAll(page,pageSize);
+    }
+
     public async Task<IEnumerable<T?>> GetAll()
     {
         return await mongodbDbRepository.GetAllAsync();

@@ -7,7 +7,7 @@ public class Informant:BaseIntel
     // Personal Information
     public string? InformantName { get; set; }
     public string? InformantCodeName { get; set; }
-    public int? Age { get; set; }
+    public int? Age { get; set; } = 20;
     public Gender Gender { get; set; } = Gender.Male;
 
     // Contact Information
@@ -20,7 +20,7 @@ public class Informant:BaseIntel
     public string? BackgroundInfo { get; set; }
 
     // Reliability and Trustworthiness
-    public int? ReliabilityRating { get; set; } // You can use a scale (e.g., 1 to 10)
+    public int? ReliabilityRating { get; set; } = 1;// You can use a scale (e.g., 1 to 10)
 
     // Intelligence Contributions
     public string? IntelProvided { get; set; }

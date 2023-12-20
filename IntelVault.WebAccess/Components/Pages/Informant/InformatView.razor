@@ -16,8 +16,11 @@ else
     switch (_flag)
     {
         case Crud.List:
-            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true" >
-                <GridPageSettings PageSize="6"></GridPageSettings>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+            </SfPager>
+           
+            <SfGrid DataSource="@_items" @ref="Grid">
+               
                 <GridColumns>
                     <GridColumn Width="50">
                         <Template>
@@ -51,22 +54,27 @@ else
 @code {
     private SfButton? _editBtn;
     private SfButton? _deleteBtn;
-
+    public int SkipValue;
+    public SfGrid<Informant> Grid { get; set; }
+    public int TakeValue = 6;
+   
+    public int Count { get; set; }
+    public SfPager Page { get; set; }
+   
     Crud _flag = Crud.List;
     Informant? _informant;
     List<Informant?>? _items;
 
     protected override async Task OnInitializedAsync()
     {
-        _items = (await Service.GetAll()).ToList();
+        await LoadItems();
 
     }
     protected async Task IntelChanged()
     {
         _flag = Crud.List;
-        _items = (await Service.GetAll()).ToList();
+        await LoadItems();
         StateHasChanged();
-      //  NavigationManager.NavigateTo("InformantView");
     }
     private void Edit(MouseEventArgs args, Informant? ticket)
     {
@@ -86,4 +94,18 @@ else
         StateHasChanged();
     }
 
+    private async Task LoadItems()
+    {
+        Count = (await Service.GetAll()).Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        StateHasChanged();
+    }
 }

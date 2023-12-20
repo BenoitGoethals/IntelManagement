@@ -12,11 +12,14 @@ public class IntelDocument:BaseIntel
 
     public string? LongDescription { get; set; }
 
+    public string? FileName { get; set; }
   
     public byte[]? Content { get; set; }
 
     public DateTime? TimeCreated { get; set; }
 
     public List<string> Keywords { get; set; } = new List<string>();
+    
+    
 
 }

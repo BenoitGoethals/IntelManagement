@@ -12,4 +12,5 @@ public interface IDocumentService
     Task Delete(IntelDocument entity);
     Task DeleteAll();
     Task<IEnumerable<IntelDocument?>> GetAll();
+    public Task<IEnumerable<IntelDocument?>> GetAll(int page, int pageSize);
 }

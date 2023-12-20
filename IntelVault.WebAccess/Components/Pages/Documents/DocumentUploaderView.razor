@@ -11,6 +11,7 @@
 @using MongoDB.Bson
 @using Syncfusion.Blazor.SfPdfViewer
 @using System.IO;
+@using IntelVault.ApplicationCore.Common
 @using Syncfusion.DocIO.DLS
 @using Syncfusion.DocIORenderer
 @using Syncfusion.OfficeChart
@@ -24,30 +25,44 @@
 }
 else
 {
-    @if (IsVisible)
+    @if (_isVisible)
     {
         <IntelPdftViewer DocumentPath="@DocumentPath" OnChanged="OnChanged"></IntelPdftViewer>
     }
-
     else
     {
         <div class="form-group ">
-            <SfGrid DataSource="@Items" AllowPaging="true" AllowReordering="true" AllowSorting=true Toolbar=@ToolbarItems>
-                <GridPageSettings PageSize="5"></GridPageSettings>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+            </SfPager>
+            <SfGrid DataSource="@Items"  Height="300">
                 <GridColumns>
-                    <GridColumn TextAlign="TextAlign.Right" Width="100">
+                    <GridColumn TextAlign="TextAlign.Left" Width="100" Field="Type">
                         <Template>
                             @{
                                 var intel = (context as IntelDocument);
-                                <div class="image">
-                                    <img src="@($"icons/{intel?.DocumentType.ToString()}.png")" alt="@intel?.DocumentType.ToString()" height="25" width="25" />
-                                    <SfButton Content="Show" @onclick="@((args) => Show(args, intel))"></SfButton>
-                                </div>
-
+                                if (intel != null && intel.DocumentType != DocumentType.Nothing)
+                                {
+                                    <div class="image">
+                                        <img src="@($"icons/{intel?.DocumentType.ToString()}.png")" alt="@intel?.DocumentType.ToString()" height="25" width="25"/>
+                                        <SfButton Content="Show" @onclick="@((args) => Show(args, intel))"></SfButton>
+                                    </div>
+                                }
                             }
                         </Template>
                     </GridColumn>
-                    <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" Width="520"></GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.FileName) HeaderText="FileName" Width="250"></GridColumn>
+
+                    <GridColumn 
+                        HeaderText="Length" Width="150">
+                        <Template>
+                            @{
+                                var intel = (context as IntelDocument);
+                                
+                                @intel?.Content?.LongLength.GetSizeInMemory();
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(IntelDocument.Description) HeaderText="Description" Width="400"></GridColumn>
                     <GridColumn Field=@nameof(IntelDocument.DocumentType) HeaderText="Document Type" Width="70"></GridColumn>
                     <GridColumn Field=@nameof(IntelDocument.TimeCreated) HeaderText=" TimeCreated" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
                 </GridColumns>
@@ -58,29 +73,26 @@ else
                  <FluentValidationValidator @ref="_fluentValidationValidator" />
                  <div class="form-row">
                      <div class="form-group col-md-6">
-                         <label class="form-label">Description</label>
-                         <SfTextBox @bind-Value="@_document.Description"></SfTextBox>
+                         <SfTextBox @bind-Value="@_document.Description" Placeholder="Description" @onfocus="ChamgeSubmit"></SfTextBox>
                          <ValidationMessage For="() => _document.Description" />
                      </div>
                      <div class="col-md-2">
-                         <label class="form-label">Type Intel</label>
                          <SfDropDownList TValue="TypeIntel" @bind-Value="@TypeIntelChosen" Width="300px" TItem="string" class="form-control" Placeholder="Select a Type " DataSource="@TypeIntelItems"></SfDropDownList>
                      </div>
 
                      <div class="form-group ">
-                         <label class="form-label">Long SelectedListItem</label>
                          <BigTextItem InputText="@_document.LongDescription" BindingValueChanged="OnLongDescriptionChanged"></BigTextItem>
                      </div>
 
                      <div class="form-group col-md-6">
-                         <SfUploader AutoUpload="true" @ref="_uploadObj" Enabled="!string.IsNullOrEmpty(_document.LongDescription)" ShowProgressBar="true" ShowFileList="true"
+                         <SfUploader AutoUpload="true" @ref="_uploadObj" ShowProgressBar="true" ShowFileList="true" AllowMultiple="false"
                                      AllowedExtensions=".doc, .docx, .xls, .xlsx, .pdf">
                              <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
                          </SfUploader>
                      </div>
 
                      <div class="form-group col-md-6">
-                         <SfButton IsPrimary="true" class="btn btn-primary" Disabled="string.IsNullOrEmpty(_document.Description) || NewItemDocuments?.Count==0">Submit</SfButton>
+                         <SfButton IsPrimary="true" class="btn btn-primary" Disabled="@IsReady">Submit</SfButton>
                      </div>
                  </div>
              </EditForm>
@@ -102,10 +114,18 @@ else
 
     public TypeIntel TypeIntelChosen { get; set; }
     public string[] TypeIntelItems = Enum.GetNames(typeof(TypeIntel));
-    private bool IsVisible = false;
+    private bool _isVisible = false;
 
-    public string DocumentPath { get; set; }
+    public string? DocumentPath { get; set; }
     private IntelDocument _document = new IntelDocument();
+
+    public SfGrid<Informant>? Grid { get; set; }
+    public int TakeValue = 6;
+    public int SkipValue;
+    public int Count { get; set; }
+    public SfPager Page { get; set; }
+
+    public bool IsReady { get; set; } = true;
 
     private async Task OnChange(UploadChangeEventArgs args)
     {
@@ -125,6 +145,7 @@ else
                         documentType = DocumentType.PDF;
                         break;
                     case ".docx":
+                    case ".doc":
                         documentType = DocumentType.Docx;
                         break;
                     default:
@@ -132,12 +153,15 @@ else
                         break;
                 }
 
+                _document.FileName = file.FileInfo.Name;
                 _document.Content = bytes;
                 _document.DocumentType = documentType;
                 _document.TimeCreated = DateTime.Now;
                 _document.IntelType = TypeIntelChosen;
                 NewItemDocuments?.Add(_document);
             }
+
+            ChamgeSubmit();
         }
         catch (Exception ex)
         {
@@ -147,7 +171,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Items = (await Service.GetAll()).ToList();
+        await LoadItems();
     }
 
 
@@ -167,8 +191,9 @@ else
 
             _document = new IntelDocument();
             NewItemDocuments?.Clear();
+            await LoadItems();
             StateHasChanged();
-            NavigationManager.NavigateTo("DocumentUploaderView", true);
+          //  NavigationManager.NavigateTo("DocumentUploaderView", true);
 
         }
         catch (Exception ex)
@@ -225,16 +250,44 @@ else
         {
             return;
         }
-        IsVisible = !IsVisible;
+        _isVisible = !_isVisible;
         StateHasChanged();
 
     }
 
-    private Task OnChanged()
+    private async Task OnChanged()
     {
-        IsVisible = false;
+        _isVisible = false;
+        await LoadItems();
         StateHasChanged();
-        return Task.CompletedTask;
+    }
+
+    private async Task LoadItems()
+    {
+        Count = (await Service.GetAll()).Count();
+        Items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        StateHasChanged();
+    }
+
+    private void ChamgeSubmit()
+    {
+        if (string.IsNullOrEmpty(_document.Description) || _document.Description.Length < 5 || _document.Content?.Length==0)
+        {
+            IsReady = true;
+        }
+        else
+        {
+            IsReady = false;
+        }
+        StateHasChanged();
     }
 
 }
