@@ -7,6 +7,7 @@ using IntelVault.ApplicationCore.validation;
 using IntelVault.Infrastructure.repos;
 using Moq;
 using IntelVault.IntelApi.Controllers;
+using System.Threading;
 
 namespace IntelVault.applicationCoreTests.Controllers
 {
@@ -15,10 +16,11 @@ namespace IntelVault.applicationCoreTests.Controllers
         [Fact()]
         public async Task CybIntControllerTest()
         {
-
+          
+         
             // Arrange
             var repositoryMock = new Mock<IMongoDbRepository<CybInt>>();
-            repositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<CybInt> { /* your sample data here */ });
+            repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<CybInt> { /* your sample data here */ });
 
             var myService = new IntelService<CybInt>(repositoryMock.Object, validator: new CybIntValidator()!);
             CybIntController controller = new CybIntController(myService);
@@ -26,7 +28,7 @@ namespace IntelVault.applicationCoreTests.Controllers
             var result = await myService.GetAll();
 
             // Assert
-            repositoryMock.Verify(s => s.GetAllAsync(), Times.Once);
+            repositoryMock.Verify(s => s.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

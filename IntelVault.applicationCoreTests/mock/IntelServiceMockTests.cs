@@ -9,13 +9,16 @@ using IntelVault.ApplicationCore.validation;
 using Moq;
 using Xunit;
 using IntelVault.Infrastructure.repos;
+using System.Threading;
 
 namespace IntelVault.applicationCoreTests.mock;
 
 public class IntelServiceMockTests
 {
+   
     public IntelServiceMockTests()
     {
+        
     }
     [Trait("Category", "Tests")]
     [Fact]
@@ -23,7 +26,7 @@ public class IntelServiceMockTests
     {
         // Arrange
         var repositoryMock = new Mock<IMongoDbRepository<HumInt>>();
-        repositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<HumInt> { /* your sample data here */ });
+        repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<HumInt> { /* your sample data here */ });
 
         var myService = new IntelService<HumInt>(repositoryMock.Object, validator: new HumIntValidator()!);
 
@@ -31,7 +34,7 @@ public class IntelServiceMockTests
         var result = await myService.GetAll();
 
         // Assert
-        repositoryMock.Verify(s => s.GetAllAsync(), Times.Once);
+        repositoryMock.Verify(s => s.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
         Assert.NotNull(result);
     }
 
@@ -42,7 +45,7 @@ public class IntelServiceMockTests
         // Arrange
         HumInt? humInt = GetHumit();
         var repositoryMock = new Mock<IMongoDbRepository<HumInt>>();
-        repositoryMock.Setup(repo => repo.UpdateAsync(humInt.Id, humInt));
+        repositoryMock.Setup(repo => repo.UpdateAsync(humInt.Id, humInt, It.IsAny<CancellationToken>()));
 
         var myService = new IntelService<HumInt>(repositoryMock.Object, validator: new HumIntValidator()!);
         humInt.ContactName = "fdsfds";
@@ -51,7 +54,7 @@ public class IntelServiceMockTests
         await myService.Update(humInt);
 
         // Assert
-        repositoryMock.Verify(s => s.UpdateAsync(humInt.Id, humInt), Times.Once);
+        repositoryMock.Verify(s => s.UpdateAsync(humInt.Id, humInt, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact()]
@@ -61,7 +64,7 @@ public class IntelServiceMockTests
         // Arrange
         HumInt? humInt = GetHumit();
         var repositoryMock = new Mock<IMongoDbRepository<HumInt>>();
-        repositoryMock.Setup(repo => repo.DeleteAsync(humInt.Id));
+        repositoryMock.Setup(repo => repo.DeleteAsync(humInt.Id, It.IsAny<CancellationToken>()));
 
         var myService = new IntelService<HumInt>(repositoryMock.Object, validator: new HumIntValidator()!);
 
@@ -69,7 +72,7 @@ public class IntelServiceMockTests
         await myService.Delete(humInt);
 
         // Assert
-        repositoryMock.Verify(s => s.DeleteAsync(humInt.Id), Times.Once);
+        repositoryMock.Verify(s => s.DeleteAsync(humInt.Id, It.IsAny<CancellationToken>()), Times.Once);
 
     }
 
@@ -80,7 +83,7 @@ public class IntelServiceMockTests
     {
         // Arrange
         var repositoryMock = new Mock<IMongoDbRepository<HumInt>>();
-        repositoryMock.Setup(repo => repo.DeleteAllAsync());
+        repositoryMock.Setup(repo => repo.DeleteAllAsync(It.IsAny<CancellationToken>()));
 
         var myService = new IntelService<HumInt>(repositoryMock.Object, validator: new HumIntValidator()!);
 
@@ -88,7 +91,7 @@ public class IntelServiceMockTests
         await myService.DeleteAll();
 
         // Assert
-        repositoryMock.Verify(s => s.DeleteAllAsync(), Times.Once);
+        repositoryMock.Verify(s => s.DeleteAllAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
 
@@ -99,14 +102,14 @@ public class IntelServiceMockTests
         // Arrange
         HumInt? humInt = GetHumit();
         var repositoryMock = new Mock<IMongoDbRepository<HumInt>>();
-        repositoryMock.Setup(repo => repo.InsertAsync(humInt));
+        repositoryMock.Setup(repo => repo.InsertAsync(humInt, It.IsAny<CancellationToken>()));
 
         var myService = new IntelService<HumInt>(repositoryMock.Object, validator: new HumIntValidator()!);
 
         // Act
         await myService.Add(humInt);
         // Assert
-        repositoryMock.Verify(s => s.InsertAsync(humInt), Times.Exactly(1));
+        repositoryMock.Verify(s => s.InsertAsync(humInt, It.IsAny<CancellationToken>()), Times.Exactly(1));
 
 
 
