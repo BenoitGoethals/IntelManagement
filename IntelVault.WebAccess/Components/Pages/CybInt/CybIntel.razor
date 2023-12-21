@@ -9,9 +9,6 @@
 
 @inject IIntelService<CybInt> Service;
 <PageTitle>Cyber Intel</PageTitle>
-<h3>Cyber Intel Report</h3>
-
-
 @if (_items == null)
 {
     <p><em>Loading...</em></p>
@@ -38,12 +35,8 @@ else
                     </GridColumn>
                 </GridColumns>
             </SfGrid>
-
-
         </div>
-
         <div class="btn-sm">
-           
             <SfButton Content="Add" IsPrimary="true" @onclick="AddPerson"></SfButton>
         </div>
     }
@@ -80,7 +73,6 @@ else
 
     public void AddPerson()
     {
-
         _flag = Crud.Add;
         StateHasChanged();
     }
@@ -94,7 +86,6 @@ else
         CyberIntel = context;
         await Service.Delete(CyberIntel);
         await IntelChanged();
-
     }
 
     private Task Edit(MouseEventArgs args, CybInt? context)

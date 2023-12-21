@@ -23,12 +23,12 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         _logger = logger;
     }
 
-    public async Task<IEnumerable<T?>> GetAllAsync()
+    public async Task<IEnumerable<T?>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             IAsyncCursor<T?> cursor = await _collection.FindAsync(FilterDefinition<T>.Empty);
-            return await cursor.ToListAsync();
+            return await cursor.ToListAsync(cancellationToken);
         }
         catch (Exception e)
         {
@@ -37,14 +37,14 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize)
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize, CancellationToken cancellationToken = default)
     {
         try
         {
             IAsyncCursor<T?> cursor = await _collection.Find(FilterDefinition<T>.Empty).Skip(page)
                 .Limit(pageSize)
                 .ToCursorAsync(); ;
-            return await cursor.ToListAsync();
+            return await cursor.ToListAsync(cancellationToken);
         }
         catch (Exception e)
         {
@@ -53,12 +53,12 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task<T> GetByIdAsync(ObjectId id)
+    public async Task<T> GetByIdAsync(ObjectId id, CancellationToken cancellationToken = default)
     {
         try
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", id);
-            return await _collection!.Find(filter).FirstOrDefaultAsync();
+            return await _collection!.Find(filter).FirstOrDefaultAsync(cancellationToken);
         }
         catch (Exception e)
         {
@@ -71,7 +71,7 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
     {
         try
         {
-            return await _collection.CountAsync(FilterDefinition<T>.Empty);
+            return await _collection.CountDocumentsAsync(new BsonDocument());
         }
         catch (Exception e)
         {
@@ -80,11 +80,11 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter)
+    public async Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter, CancellationToken cancellationToken = default)
     {
         try
         {
-            return await _collection.Find(filter!).ToListAsync();
+            return await _collection.Find(filter!).ToListAsync(cancellationToken);
         }
         catch (Exception e)
         {
@@ -93,11 +93,11 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task InsertAsync(T? entity)
+    public async Task InsertAsync(T? entity, CancellationToken cancellationToken = default)
     {
         try
         {
-            if (entity != null) await _collection.InsertOneAsync(entity);
+            if (entity != null) await _collection.InsertOneAsync(entity,null,cancellationToken);
         }
         catch (Exception e)
         {
@@ -106,26 +106,26 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task UpdateAsync(ObjectId id, T? entity)
-    {
-        try
-        {
-            FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", id);
-            if (entity != null) await _collection.ReplaceOneAsync(filter!, entity);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            throw new VaultException(e.Message);
-        }
-    }
-
-    public async Task DeleteAsync(ObjectId id)
+    public async Task UpdateAsync(ObjectId id, T? entity, CancellationToken cancellationToken = default)
     {
         try
         {
             FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", id);
-            await _collection.DeleteOneAsync(filter!);
+            if (entity != null) await _collection.ReplaceOneAsync(filter, entity, cancellationToken: cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new VaultException(e.Message);
+        }
+    }
+
+    public async Task DeleteAsync(ObjectId id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            FilterDefinition<T> filter = Builders<T>.Filter.Eq("_id", id);
+            await _collection.DeleteOneAsync(filter!, cancellationToken);
         }
         catch (Exception e)
         {
@@ -136,11 +136,11 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
 
 
 
-    public async Task DeleteAllAsync()
+    public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            await _database.DropCollectionAsync(typeof(T).Name);
+            await _database.DropCollectionAsync(typeof(T).Name, cancellationToken);
         }
         catch (Exception e)
         {

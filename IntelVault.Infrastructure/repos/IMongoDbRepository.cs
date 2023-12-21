@@ -5,15 +5,15 @@ namespace IntelVault.Infrastructure.repos;
 
 public interface IMongoDbRepository<T> where T : MongoEntity?
 {
-    Task<IEnumerable<T?>> GetAllAsync();
-    Task<IEnumerable<T?>> GetAll(int page, int pageSize);
-    Task<T> GetByIdAsync(ObjectId id);
+    Task<IEnumerable<T?>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<T?>> GetAll(int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<T> GetByIdAsync(ObjectId id, CancellationToken cancellationToken = default);
 
     Task<long> Count();
-    Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter);
-    Task InsertAsync(T entity);
-    Task UpdateAsync(ObjectId id, T entity);
-    Task DeleteAsync(ObjectId id);
+    Task<IEnumerable<T>?> FindAsync(Expression<Func<T?, bool>> filter, CancellationToken cancellationToken = default);
+    Task InsertAsync(T entity, CancellationToken cancellationToken = default);
+    Task UpdateAsync(ObjectId id, T entity, CancellationToken cancellationToken = default);
+    Task DeleteAsync(ObjectId id, CancellationToken cancellationToken = default);
 
-    Task DeleteAllAsync();
+    Task DeleteAllAsync(CancellationToken cancellationToken = default);
 }

@@ -6,8 +6,6 @@ public static class Converters
 {
     public static string GetSizeInMemory(this long bytesize)
     {
-
-
         string[] sizes = { "B", "KB", "MB", "GB", "TB" };
         double len = Convert.ToDouble(bytesize);
         int order = 0;

@@ -17,12 +17,13 @@ public class ReportService(IGlobalService globalService, IDocumentService docume
         List<ReportData> data = new List<ReportData>();
         var dataGlobal = await globalService.GetAllCount();
         var docs = await documentService.GetAll();
-        IEnumerable<IGrouping<TypeIntel, Tuple<TypeIntel, long>>> rest = dataGlobal.GroupBy(x => x.Item1);
+       var rest = dataGlobal.GroupBy(x => x.Item1).Select(group => group.ToList())
+            .ToList();
 
         int tel = 0;
         foreach (var item in rest)
         {
-            data.Add(new ReportData() { Id = ++tel, TypeBaseLine = item.Key, Count = item.Count(), Description = $"{item.Key} Int" });
+            data.Add(new ReportData() { Id = ++tel, TypeBaseLine = item[0].Item1, Count = item[0].Item2, Description = $"{item[0].Item1} lomg" });
         }
 
         var intelDocuments = docs as IntelDocument[] ?? docs.ToArray();
