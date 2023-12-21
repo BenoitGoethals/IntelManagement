@@ -17,9 +17,12 @@ else
 {
     switch (_flag)
     {
+
         case Crud.List:
-            <SfGrid DataSource="@Items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
-                <GridPageSettings PageSize="6"></GridPageSettings>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+            </SfPager>
+
+            <SfGrid DataSource="@Items" @ref="Grid">
                 <GridColumns>
                     <GridColumn Width="50">
                         <Template>
@@ -59,18 +62,24 @@ else
     private SfButton? _editBtn;
     private SfButton? _deleteBtn;
     public List<SocialMedia?>? Items { get; set; }
+    public int SkipValue;
+    public required SfGrid<SocialMedia> Grid { get; set; }
+    public int TakeValue = 6;
+    public int Count { get; set; }
+    public required SfPager Page { get; set; }
+
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        Items = (await Service.GetAll()).ToList();
+        await LoadItems();
     }
 
 
     protected async Task IntelChanged()
     {
         _flag = Crud.List;
-        Items = (await Service.GetAll()).ToList();
+        await LoadItems();
         StateHasChanged();
     }
 
@@ -93,6 +102,19 @@ else
         _flag = Crud.Update;
         return Task.CompletedTask;
     }
+    private async Task LoadItems()
+    {
+        Count = (int)await Service.Count();
+        Items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
 
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        StateHasChanged();
+    }
 
 }

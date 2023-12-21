@@ -18,9 +18,9 @@ else
         case Crud.List:
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
             </SfPager>
-           
+
             <SfGrid DataSource="@_items" @ref="Grid">
-               
+
                 <GridColumns>
                     <GridColumn Width="50">
                         <Template>
@@ -55,12 +55,11 @@ else
     private SfButton? _editBtn;
     private SfButton? _deleteBtn;
     public int SkipValue;
-    public SfGrid<Informant> Grid { get; set; }
+    public required SfGrid<Informant> Grid { get; set; }
     public int TakeValue = 6;
-   
     public int Count { get; set; }
-    public SfPager Page { get; set; }
-   
+    public required SfPager Page { get; set; }
+
     Crud _flag = Crud.List;
     Informant? _informant;
     List<Informant?>? _items;
@@ -85,7 +84,7 @@ else
     private async Task Delete(MouseEventArgs args, Informant? ticket)
     {
         await Service.Delete(ticket);
-       await IntelChanged();
+        await IntelChanged();
     }
 
     private void Callback()
@@ -96,7 +95,7 @@ else
 
     private async Task LoadItems()
     {
-        Count = (int) await Service.Count();
+        Count = (int)await Service.Count();
         _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
 
     }

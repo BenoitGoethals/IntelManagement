@@ -21,8 +21,10 @@ else
     if (_flag == Crud.List)
     {
         <div class="grid">
-            <SfGrid DataSource="@_items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
-                <GridPageSettings PageSize="6"></GridPageSettings>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+            </SfPager>
+           
+            <SfGrid DataSource="@_items" @ref="Grid">
                 <GridColumns>
                     <GridColumn Field=@nameof(OpenSourceInt.SourceName) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
                     <GridColumn Field=@nameof(OpenSourceInt.ReportDate) HeaderText="ReportDate" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
@@ -63,16 +65,23 @@ else
 
     List<OpenSourceInt?>? _items;
 
+    public int SkipValue;
+    public required SfGrid<OpenSourceInt> Grid { get; set; }
+    public int TakeValue = 6;
+   
+    public int Count { get; set; }
+    public required SfPager Page { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        _items = (await Service.GetAll()).ToList();
+        await LoadItems();
 
     }
 
     protected async Task IntelChanged()
     {
         _flag = Crud.List;
-        _items = (await Service.GetAll()).ToList();
+        await LoadItems();
         StateHasChanged();
     }
 
@@ -100,6 +109,20 @@ else
         OpenSourceInt = context;
         _flag = Crud.Update;
         return Task.CompletedTask;
+    }
+    private async Task LoadItems()
+    {
+        Count = (int) await Service.Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        StateHasChanged();
     }
 }
 
