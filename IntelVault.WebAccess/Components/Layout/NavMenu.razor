@@ -1,57 +1,53 @@
 ﻿@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @using Syncfusion.Blazor.Navigations
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
-    <MenuItems>
-        <MenuItem Text="Home" Url="/">
+@using System.Security.Claims
+<div>
+    <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
+        <MenuItems>
+            <MenuItem Text="Home" Url="/"></MenuItem>
+            <AuthorizeView>
+                <NotAuthorized>
+                    <MenuItem Text="Login" Url="auth"></MenuItem>
+                    <MenuItem Text="Account">
+                        <MenuItems>
+                            <MenuItem Text="Account/Register" Url="/Account/Register"></MenuItem>
+                            <MenuItem Text="Account/Login" Url="/Account/Login"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                </NotAuthorized>
+                <Authorized>
+                    <MenuItem Text="Logout" Url="/Logout"></MenuItem>
+                    <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
+                    <MenuItem Text="Add intel">
+                        <MenuItems>
+                            <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
+                            <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
+                            <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
+                            <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
+                            <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
+                            <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
+                            <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
+                    <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView"></MenuItem>
+                    <MenuItem Text="Account">
+                        <MenuItems>
+                            <MenuItem Text="Logout" Url="/Logout"></MenuItem>
+                            <MenuItem Text="Customize"></MenuItem>
+                            <MenuItem Text="Options"></MenuItem>
+                        </MenuItems>
+                    </MenuItem>
 
-        </MenuItem>
-        <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile">
+                </Authorized>
+            </AuthorizeView>
 
-        </MenuItem>
-
-        <MenuItem Text="Add intel">
-            <MenuItems>
-                <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
-                <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
-                <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
-                <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
-                <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
-                <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
-                <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
-            </MenuItems>
-        </MenuItem>
-        <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView">
-
-        </MenuItem>
-        <MenuItem Text="Auth Required" Url="auth">
-
-        </MenuItem>
-        <AuthorizeView>
-            <Authorized>
-                <MenuItem Text="Account">
-                    <MenuItems>
-                        <MenuItem Text="Account/Logout"></MenuItem>
-                        <MenuItem Text="Customize"></MenuItem>
-                        <MenuItem Text="Options"></MenuItem>
-                    </MenuItems>
-                </MenuItem>
-            </Authorized>
-            <NotAuthorized>
-                <MenuItem Text="Tools">
-                    <MenuItems>
-                        <MenuItem Text="Account/Register"></MenuItem>
-                        <MenuItem Text="Account/Login"></MenuItem>
-
-                    </MenuItems>
-                </MenuItem>
-            </NotAuthorized>
-        </AuthorizeView>
-        <MenuItem Text="Go"></MenuItem>
-        <MenuItem Text="Help"></MenuItem>
-    </MenuItems>
-</SfMenu>
+        </MenuItems>
+    </SfMenu>
+  
+</div>
 <style>
 
     /* Styles to achieve rounder corner in menu */
@@ -69,6 +65,22 @@
 
 
 @code {
+    private AuthenticationState? _authenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = _authenticationState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            // Access user information
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userName = user.Identity.Name;
+            // ... other claims or properties
+        }
+    }
+
     private string? currentUrl;
 
     protected override void OnInitialized()
