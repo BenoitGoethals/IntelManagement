@@ -27,7 +27,7 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
     {
         try
         {
-            IAsyncCursor<T?> cursor = await _collection.FindAsync(FilterDefinition<T>.Empty);
+            IAsyncCursor<T?> cursor = await _collection.FindAsync(FilterDefinition<T>.Empty, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
         catch (Exception e)
@@ -43,7 +43,7 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         {
             IAsyncCursor<T?> cursor = await _collection.Find(FilterDefinition<T>.Empty).Skip(page)
                 .Limit(pageSize)
-                .ToCursorAsync(); ;
+                .ToCursorAsync(cancellationToken); ;
             return await cursor.ToListAsync(cancellationToken);
         }
         catch (Exception e)
