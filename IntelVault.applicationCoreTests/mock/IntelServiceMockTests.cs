@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.ApplicationCore.Services;
 using IntelVault.ApplicationCore.validation;

@@ -1,4 +1,6 @@
-﻿namespace IntelVault.ApplicationCore.Services;
+﻿using IntelVault.ApplicationCore.Interfaces;
+
+namespace IntelVault.ApplicationCore.Services;
 
 public class PdfReader : IReader
 {

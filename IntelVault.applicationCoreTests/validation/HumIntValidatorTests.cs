@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System;
 using FluentAssertions;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.ApplicationCore.validation;
 using Xunit;

@@ -1,6 +1,4 @@
-﻿using IntelVault.ApplicationCore.IntelData;
-
-namespace IntelVault.ApplicationCore.Model;
+﻿namespace IntelVault.ApplicationCore.Model;
 
 public class Informant:BaseIntel
 {

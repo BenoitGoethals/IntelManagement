@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Model;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;

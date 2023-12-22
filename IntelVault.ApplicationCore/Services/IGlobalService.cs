@@ -1,5 +1,4 @@
-﻿using IntelVault.ApplicationCore.IntelData;
-using IntelVault.ApplicationCore.Model;
+﻿using IntelVault.ApplicationCore.Model;
 
 namespace IntelVault.ApplicationCore.Services;
 

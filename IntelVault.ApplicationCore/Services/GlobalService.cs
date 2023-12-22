@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using FluentValidation;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.Infrastructure.repos;

@@ -1,6 +1,5 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.Infrastructure;
 using IntelVault.WebAccess.Components;
 using IntelVault.WebAccess.Components.Account;
