@@ -1,5 +1,4 @@
 ﻿using FluentAssertions.Common;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.ApplicationCore.Services;

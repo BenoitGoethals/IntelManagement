@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using IntelVault.ApplicationCore.Constants;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Interfaces;
+using IntelVault.ApplicationCore.Model;
 using IntelVault.Infrastructure.repos;
 
 namespace IntelVault.ApplicationCore.Services;
@@ -10,9 +10,6 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
     : IIntelService<T>
     where T : BaseIntel
 {
-
-    
-
     private readonly IValidator<T> _validator = validator;
 
     public async Task Add(T entity)
@@ -27,6 +24,7 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
 
     public async Task Update(T entity)
     {
+        entity.UpdatedIntelVaultUser = await GetUserName();
         await mongodbDbRepository.UpdateAsync(entity.Id, entity);
     }
 

@@ -1,4 +1,4 @@
-﻿namespace IntelVault.ApplicationCore.Services;
+﻿namespace IntelVault.ApplicationCore.Interfaces;
 
 public interface IReader
 {

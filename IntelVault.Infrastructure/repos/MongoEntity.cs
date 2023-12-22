@@ -8,7 +8,11 @@ public class MongoEntity
 
     public DateTime CreatedDtg { get; set; } = DateTime.UtcNow;
 
+    public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+    
     public string? IntelVaultUser { get; set; }
+
+    public string? UpdatedIntelVaultUser { get; set; }
 
 
     protected bool Equals(MongoEntity other)

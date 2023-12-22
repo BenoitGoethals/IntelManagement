@@ -1,4 +1,4 @@
-﻿namespace IntelVault.ApplicationCore.IntelData;
+﻿namespace IntelVault.ApplicationCore.Model;
 
 public class ListItem
 {

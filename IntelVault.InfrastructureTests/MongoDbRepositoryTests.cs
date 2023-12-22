@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IntelVault.ApplicationCore.IntelData;
 using IntelVault.ApplicationCore.Model;
 using IntelVault.Sharewdtest;
 using MongoDB.Bson;
