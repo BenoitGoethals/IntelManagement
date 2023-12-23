@@ -1,11 +1,9 @@
 ﻿@page "/CybIntel"
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
-@using Microsoft.AspNetCore.Components.QuickGrid
-@using System.Timers
+@using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.ApplicationCore.Model
-@using IntelVault.ApplicationCore.Services
 
 @inject IIntelService<CybInt> Service;
 <PageTitle>Cyber Intel</PageTitle>
@@ -18,13 +16,15 @@ else
     if (_flag == Crud.List)
     {
         <div class="grid">
+            <SearchBar TextButton="Search  IncidentDescription" SearchText="@SText" Onchange="LoadItemsSerachText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
             </SfPager>
-           
+
             <SfGrid DataSource="@_items" @ref="Grid">
                 <GridColumns>
                     <GridColumn Field=@nameof(CyberIntel.IncidentType) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
-                    <GridColumn Field=@nameof(CyberIntel.IncidentDescription) HeaderText="ReportDate" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(CyberIntel.IncidentDescription) HeaderText="IncidentDescription" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(CyberIntel.CreatedDtg) HeaderText="ReportDate" Format="d" Type="ColumnType.Date" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
                     <GridColumn Width="50">
                         <Template>
                             @{
@@ -57,7 +57,7 @@ else
     private SfButton? _deleteBtn;
 
     Crud _flag = Crud.List;
-
+    public string SText { get; set; }
     List<CybInt?>? _items;
     public int SkipValue;
     public SfGrid<CybInt> Grid { get; set; }
@@ -74,8 +74,8 @@ else
 
     private async Task LoadItems()
     {
-        Count = (int) await Service.Count();
-        _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+        Count = (int)await Service.Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue, nameof(CyberIntel.IncidentDescription), SText)).ToList();
 
     }
 
@@ -84,8 +84,20 @@ else
         SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
         TakeValue = Page.PageSize;
         await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
         StateHasChanged();
     }
+
+    private async Task LoadItemsSerachText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
     protected async Task IntelChanged()
     {
         _flag = Crud.List;

@@ -1,7 +1,8 @@
 ﻿@page "/overviewIntelInvestigationFile"
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.ApplicationCore.Model
-@inject IIntelService<IntelInvestigationFile> IntelInvestigationFileService
+@using IntelVault.WebAccess.Components.Pages.common
+@inject IIntelService<IntelInvestigationFile> Service
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @if (_items == null)
@@ -13,6 +14,7 @@ else
     switch (_flag)
     {
         case Crud.List:
+            <SearchBar TextButton="Search CaseNumber" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
             </SfPager>
 
@@ -54,7 +56,7 @@ else
     private SfButton? _editBtn;
     private SfButton? _deleteBtn;
     private List<IntelInvestigationFile?>? _items;
-
+    public required string SText { get; set; }
     public int SkipValue;
     public required SfGrid<IntelInvestigationFile> Grid { get; set; }
     public int TakeValue = 6;
@@ -85,7 +87,7 @@ else
 
     private async Task Delete(MouseEventArgs args, IntelInvestigationFile? ticket)
     {
-        await IntelInvestigationFileService.Delete(ticket);
+        await Service.Delete(ticket);
         await IntelChanged();
     }
 
@@ -98,8 +100,8 @@ else
     }
     private async Task LoadItems()
     {
-        Count = (int)await IntelInvestigationFileService.Count();
-        _items = (await IntelInvestigationFileService.GetAll(SkipValue, TakeValue)).ToList();
+        Count = (int)await Service.Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue, nameof(IntelInvestigationFile.CaseNumber), SText)).ToList();
 
     }
 
@@ -108,6 +110,17 @@ else
         SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
         TakeValue = Page.PageSize;
         await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
         StateHasChanged();
     }
 }

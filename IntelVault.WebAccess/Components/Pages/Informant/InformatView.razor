@@ -1,5 +1,4 @@
 ﻿@page "/InformantView"
-@using IntelVault.ApplicationCore.Services
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
@@ -17,7 +16,7 @@ else
     switch (_flag)
     {
         case Crud.List:
-            <SearchBar TextButton="Search Informant Name" SearchText="@SText" Onchange="LoadItemsSerachText"></SearchBar>
+            <SearchBar TextButton="Search Informant Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count"  ItemClick="Click">
             </SfPager>
 
@@ -65,7 +64,7 @@ else
     Crud _flag = Crud.List;
     Informant? _informant;
     List<Informant?>? _items;
-    public string SText { get; set; }
+    public required string SText { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
@@ -111,7 +110,7 @@ else
         StateHasChanged();
     }
 
-    private async Task LoadItemsSerachText(string text)
+    private async Task LoadItemsSearchText(string text)
     {
         SText = text;
         await LoadItems();

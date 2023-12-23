@@ -1,5 +1,5 @@
 ﻿@page "/SocialMedia"
-@using IntelVault.ApplicationCore.Services
+@using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Interfaces
 @rendermode InteractiveServer
@@ -19,6 +19,7 @@ else
     {
 
         case Crud.List:
+            <SearchBar TextButton="Search DisplayName Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
             </SfPager>
 
@@ -68,7 +69,7 @@ else
     public int Count { get; set; }
     public required SfPager Page { get; set; }
 
-
+    public required string SText { get; set; }
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
@@ -105,7 +106,7 @@ else
     private async Task LoadItems()
     {
         Count = (int)await Service.Count();
-        Items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+        Items = (await Service.GetAll(SkipValue, TakeValue, nameof(SocialMedia.DisplayName), SText)).ToList();
 
     }
 
@@ -114,6 +115,17 @@ else
         SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
         TakeValue = Page.PageSize;
         await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
         StateHasChanged();
     }
 

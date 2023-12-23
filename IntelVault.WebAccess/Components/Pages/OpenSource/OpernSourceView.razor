@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Timers
 @using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Services
 @inject IIntelService<OpenSourceInt> Service;
@@ -21,9 +22,10 @@ else
     if (_flag == Crud.List)
     {
         <div class="grid">
+            <SearchBar TextButton="Search  Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
             </SfPager>
-           
+
             <SfGrid DataSource="@_items" @ref="Grid">
                 <GridColumns>
                     <GridColumn Field=@nameof(OpenSourceInt.SourceName) HeaderText="Name" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
@@ -68,7 +70,7 @@ else
     public int SkipValue;
     public required SfGrid<OpenSourceInt> Grid { get; set; }
     public int TakeValue = 6;
-   
+    public required string SText { get; set; }
     public int Count { get; set; }
     public required SfPager Page { get; set; }
 
@@ -112,8 +114,8 @@ else
     }
     private async Task LoadItems()
     {
-        Count = (int) await Service.Count();
-        _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+        Count = (int)await Service.Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue, nameof(OpenSourceInt.SourceName), SText)).ToList();
 
     }
 
@@ -122,6 +124,17 @@ else
         SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
         TakeValue = Page.PageSize;
         await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
         StateHasChanged();
     }
 }
