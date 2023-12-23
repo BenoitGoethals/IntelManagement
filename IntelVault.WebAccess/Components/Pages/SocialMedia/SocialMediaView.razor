@@ -17,7 +17,6 @@ else
 {
     switch (_flag)
     {
-
         case Crud.List:
             <SearchBar TextButton="Search DisplayName Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
             <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
@@ -42,7 +41,6 @@ else
             </SfGrid>
 
             <div class="btn-sm">
-               
                 <SfButton IsPrimary="true" @onclick="AddPerson"  Content="Add"></SfButton>
             </div>
             break;
@@ -87,7 +85,6 @@ else
     public void AddPerson()
     {
         _flag = Crud.Add;
-       
     }
 
     private async Task Delete(MouseEventArgs args, SocialMedia? context)
