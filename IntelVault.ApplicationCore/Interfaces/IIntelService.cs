@@ -8,6 +8,6 @@ public interface IIntelService<T>
     public Task DeleteAll();
     public Task<IEnumerable<T?>> GetAll();
     Task<long> Count();
-
     public Task<IEnumerable<T?>> GetAll(int page, int pageSize);
+    public Task<IEnumerable<T?>> GetAll(int page, int pageSize, string field, string sText);
 }

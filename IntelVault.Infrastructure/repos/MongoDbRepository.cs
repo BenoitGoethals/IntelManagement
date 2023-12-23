@@ -37,21 +37,6 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
         }
     }
 
-    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            IAsyncCursor<T?> cursor = await _collection.Find(FilterDefinition<T>.Empty).Skip(page)
-                .Limit(pageSize)
-                .ToCursorAsync(cancellationToken); ;
-            return await cursor.ToListAsync(cancellationToken);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            throw new VaultException(e.Message);
-        }
-    }
 
     public async Task<T> GetByIdAsync(ObjectId id, CancellationToken cancellationToken = default)
     {
@@ -148,4 +133,45 @@ public class MongoDbRepository<T> : IMongoDbRepository<T> where T : MongoEntity
             throw new VaultException(e.Message);
         }
     }
+
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize, string field, string searchText,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(searchText))
+        {
+          return await GetAll(page, pageSize, cancellationToken);
+        }
+        try
+        {
+            var filter = Builders<T>.Filter.Regex(field, new BsonRegularExpression(searchText, "i"));
+
+            IAsyncCursor<T?> cursor = await _collection.Find(filter).Skip(page)
+                .Limit(pageSize)
+                .ToCursorAsync(cancellationToken); ;
+            return await cursor.ToListAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new VaultException(e.Message);
+        }
+    }
+
+
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            IAsyncCursor<T?> cursor = await _collection.Find(FilterDefinition<T>.Empty).Skip(page)
+                .Limit(pageSize)
+                .ToCursorAsync(cancellationToken); ;
+            return await cursor.ToListAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            throw new VaultException(e.Message);
+        }
+    }
+
 }

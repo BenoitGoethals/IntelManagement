@@ -99,6 +99,18 @@ namespace IntelVault.IntegrationTests
             _service.GetAll()?.Result?.Should().HaveCount(20);
 
         }
+        [Trait("Category", "Integration")]
+        [Fact()]
+        public async void GetAllWithSearchTextTest()
+        {
+            for (var i = 0; i < 15; i++)
+            {
+                await _service.Add(GetHumit());
+            }
+
+            _service.GetAll(1,10,nameof(HumInt.ContactEmail),"sdfdsfds@fdfs.be")?.Result?.Should().HaveCount(10);
+
+        }
 
 
         private HumInt GetHumit()
@@ -111,9 +123,9 @@ namespace IntelVault.IntegrationTests
                 AssessmentAndAnalysis = "sfdsfds",
                 ClassificationHandlingInstructions = "dsfdsf",
                 ContactEmail = "sdfdsfds@fdfs.be",
-                ContactName = "fsdfsd",
+                ContactName = "fsdfsd"+Guid.NewGuid().ToString(),
                 ContactPhoneNumber = "dsfdsf",
-                ContactTitle = "John Doe",
+                ContactTitle = "John Doe"+Guid.NewGuid(),
                 ContextBackground = "sdfsdf",
                 IntelligenceDetails = new List<ListItem>() , 
                 LastContactDate = DateTime.Now,
@@ -122,7 +134,7 @@ namespace IntelVault.IntegrationTests
                 ReliabilityRating = 100,
                 SourceAffiliation = "dsad",
                 SourceInformation = "sdfdsf",
-                SourceName = "sdfdsf",
+                SourceName = "sdfdsf"+Guid.NewGuid(),
                 SourceType = "sadsa",
                 TimeLocation = "uk",
                 HumIntType = HumIntType.Advisors

@@ -40,12 +40,16 @@ public class IntelService<T>(IMongoDbRepository<T> mongodbDbRepository, Abstract
 
     public async Task<long> Count()
     {
-       return await mongodbDbRepository.Count();
+        return await mongodbDbRepository.Count();
     }
 
+    public async Task<IEnumerable<T?>> GetAll(int page, int pageSize,string field, string sText)
+    {
+        return await mongodbDbRepository.GetAll(page, pageSize, field, sText);
+    }
     public async Task<IEnumerable<T?>> GetAll(int page, int pageSize)
     {
-        return await mongodbDbRepository.GetAll(page,pageSize);
+        return await mongodbDbRepository.GetAll(page, pageSize);
     }
 
     public async Task<IEnumerable<T?>> GetAll()

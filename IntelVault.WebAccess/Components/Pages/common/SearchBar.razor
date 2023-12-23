@@ -1,0 +1,24 @@
+﻿@using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs
+@rendermode InteractiveServer
+<div>
+    <SfButton Content="@TextButton" IsPrimary="true" @onclick="Changed"></SfButton>
+    <SfTextBox @bind-Value="@SearchText" Width="100"></SfTextBox>
+</div>
+
+@code {
+    [Parameter]
+    public string? SearchText { get; set; }
+
+    [Parameter]
+    public string? TextButton { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Onchange { get; set; }
+
+
+    private void Changed()
+    {
+        Onchange.InvokeAsync(SearchText);
+    }
+
+}

@@ -1,6 +1,7 @@
 ﻿@page "/InformantView"
 @using IntelVault.ApplicationCore.Services
 @using IntelVault.ApplicationCore.Model
+@using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -16,7 +17,8 @@ else
     switch (_flag)
     {
         case Crud.List:
-            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+            <SearchBar TextButton="Search Informant Name" SearchText="@SText" Onchange="LoadItemsSerachText"></SearchBar>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count"  ItemClick="Click">
             </SfPager>
 
             <SfGrid DataSource="@_items" @ref="Grid">
@@ -63,11 +65,10 @@ else
     Crud _flag = Crud.List;
     Informant? _informant;
     List<Informant?>? _items;
-
+    public string SText { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
-
     }
     protected async Task IntelChanged()
     {
@@ -96,7 +97,7 @@ else
     private async Task LoadItems()
     {
         Count = (int)await Service.Count();
-        _items = (await Service.GetAll(SkipValue, TakeValue)).ToList();
+        _items = (await Service.GetAll(SkipValue, TakeValue, nameof(Informant.InformantName), SText)).ToList();
 
     }
 
@@ -105,6 +106,18 @@ else
         SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
         TakeValue = Page.PageSize;
         await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
         StateHasChanged();
     }
+
+    private async Task LoadItemsSerachText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
 }

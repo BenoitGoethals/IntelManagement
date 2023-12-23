@@ -16,4 +16,5 @@ public interface IMongoDbRepository<T> where T : MongoEntity?
     Task DeleteAsync(ObjectId id, CancellationToken cancellationToken = default);
 
     Task DeleteAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<T?>> GetAll(int page, int pageSize, string field,string searchText, CancellationToken cancellationToken = default);
 }
