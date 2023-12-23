@@ -2,6 +2,7 @@
 @using IntelVault.ApplicationCore.Services
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.WebAccess.Components.Pages.common
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IIntelService<GeneralIntel> Service;
@@ -18,8 +19,11 @@ else
     switch (_flag)
     {
         case Crud.List:
-            <SfGrid DataSource="@Items" AllowPaging="true" AllowSorting="true" AllowFiltering="true">
-                <GridPageSettings PageSize="6"></GridPageSettings>
+            <SearchBar TextButton="Search Informant Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count"  ItemClick="Click">
+            </SfPager>
+
+            <SfGrid DataSource="@Items" @ref="Grid">
                 <GridColumns>
                     <GridColumn Width="50">
                         <Template>
@@ -59,18 +63,48 @@ else
     private SfButton? _editBtn;
     private SfButton? _deleteBtn;
     public List<GeneralIntel?>? Items { get; set; }
+    public int SkipValue;
+    public required SfGrid<GeneralIntel> Grid { get; set; }
+    public int TakeValue = 6;
+    public int Count { get; set; }
+    public required SfPager Page { get; set; }
+    public string? SText { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        Items = (await Service.GetAll()).ToList();
+        await LoadItems();
     }
 
+    private async Task LoadItems()
+    {
+        Count = (int)await Service.Count();
+         Items = (await Service.GetAll(SkipValue, TakeValue, nameof(GeneralIntel.Name), SText)).ToList();
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
 
     protected async Task IntelChanged()
     {
         _flag = Crud.List;
-        Items = (await Service.GetAll()).ToList();
+        await LoadItems();
         StateHasChanged();
     }
 
