@@ -1,25 +1,25 @@
 ﻿@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @using Syncfusion.Blazor.Navigations
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-@using System.Security.Claims
 <div>
     <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
             <AuthorizeView>
                 <NotAuthorized>
-                    <MenuItem Text="Login" Url="auth"></MenuItem>
+                    <MenuItem Text="Login" Url="/login"></MenuItem>
                     <MenuItem Text="Account">
                         <MenuItems>
-                            <MenuItem Text="Account/Register" Url="/Account/Register"></MenuItem>
-                            <MenuItem Text="Account/Login" Url="/Account/Login"></MenuItem>
+                            <MenuItem Text="Register" Url="/Account/Register"></MenuItem>
+                            <MenuItem Text="Login" Url="/login"></MenuItem>
                         </MenuItems>
                     </MenuItem>
                 </NotAuthorized>
                 <Authorized>
-                    <MenuItem Text="Logout" Url="/Logout"></MenuItem>
+                    <MenuItem Text="Logout" Url="/LogOut"></MenuItem>
                     <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
                     <MenuItem Text="Add intel">
                         <MenuItems>
@@ -35,12 +35,12 @@
                     <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView"></MenuItem>
                     <MenuItem Text="Account">
                         <MenuItems>
-                            <MenuItem Text="Logout" Url="/Logout"></MenuItem>
+                            <MenuItem Text="Logout" Url="/LogOut"></MenuItem>
                             <MenuItem Text="Customize"></MenuItem>
                             <MenuItem Text="Options"></MenuItem>
                         </MenuItems>
                     </MenuItem>
-
+              
                 </Authorized>
             </AuthorizeView>
 
@@ -81,23 +81,6 @@
         }
     }
 
-    private string? currentUrl;
 
-    protected override void OnInitialized()
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
 }
 

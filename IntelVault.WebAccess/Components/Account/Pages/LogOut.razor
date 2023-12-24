@@ -1,0 +1,29 @@
+﻿@page "/LogOut"
+@using Microsoft.AspNetCore.Identity
+@using IntelVault.WebAccess.Data
+
+@using System.Security.Claims
+@inject NavigationManager navManager;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is {IsAuthenticated: true})
+        {
+            // Perform any additional logout actions here, such as revoking tokens on the server
+
+            // Sign out the user
+            await SignInManager.SignOutAsync();
+            navManager.NavigateTo("/");
+        }
+
+        // Redirect to the home page or login page
+        
+    }
+
+}
