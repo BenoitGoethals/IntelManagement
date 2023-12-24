@@ -22,3 +22,11 @@
 </body>
 
 </html>
+@inject IHttpContextAccessor HttpContextAccessor
+@code {
+
+    private HttpContext HttpContext => HttpContextAccessor.HttpContext;
+    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
+        ? null
+        : InteractiveServer;
+}

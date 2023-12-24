@@ -8,45 +8,32 @@
     <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
-            <AuthorizeView>
-                <NotAuthorized>
-                    <MenuItem Text="Login" Url="/login"></MenuItem>
-                    <MenuItem Text="Account">
-                        <MenuItems>
-                            <MenuItem Text="Register" Url="/Account/Register"></MenuItem>
-                            <MenuItem Text="Login" Url="/login"></MenuItem>
-                        </MenuItems>
-                    </MenuItem>
-                </NotAuthorized>
-                <Authorized>
+
+            <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
+            <MenuItem Text="Add intel">
+                <MenuItems>
+                    <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
+                    <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
+                    <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
+                    <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
+                    <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
+                    <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
+                    <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
+                </MenuItems>
+            </MenuItem>
+            <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView"></MenuItem>
+            <MenuItem Text="Account">
+                <MenuItems>
                     <MenuItem Text="Logout" Url="/LogOut"></MenuItem>
-                    <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
-                    <MenuItem Text="Add intel">
-                        <MenuItems>
-                            <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
-                            <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
-                            <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
-                            <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>
-                            <MenuItem Text="Cyber Intelligence" Url="CybIntel"></MenuItem>
-                            <MenuItem Text="Person Of Interest" Url="PersonInterest"></MenuItem>
-                            <MenuItem Text="Human Intel" Url="HumanIntel"></MenuItem>
-                        </MenuItems>
-                    </MenuItem>
-                    <MenuItem Text="DocumentUploaderView" Url="DocumentUploaderView"></MenuItem>
-                    <MenuItem Text="Account">
-                        <MenuItems>
-                            <MenuItem Text="Logout" Url="/LogOut"></MenuItem>
-                            <MenuItem Text="Customize"></MenuItem>
-                            <MenuItem Text="Options"></MenuItem>
-                        </MenuItems>
-                    </MenuItem>
-              
-                </Authorized>
-            </AuthorizeView>
+                    <MenuItem Text="Customize"></MenuItem>
+                    <MenuItem Text="Options"></MenuItem>
+                </MenuItems>
+            </MenuItem>
+
 
         </MenuItems>
     </SfMenu>
-  
+
 </div>
 <style>
 
