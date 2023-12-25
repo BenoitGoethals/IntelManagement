@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using IntelVault.WebAccess.Components.Pages.common
 @using Syncfusion.Blazor.Navigations
 @inject NavigationManager NavigationManager
 @using System.Security.Claims
@@ -15,16 +16,13 @@
 
     <main>
         <div>
-            <NavMenu />
+           
         </div>
         <article class="content px-4">
             @Body
         </article>
         <br/>
-        <article>
-            <SfButton Content="Login" @onclick="LoginPage"></SfButton>
-            <div class="child">User : @_authenticationState.User.Identity.Name</div>
-        </article>
+       
     </main>
 </div>
 
