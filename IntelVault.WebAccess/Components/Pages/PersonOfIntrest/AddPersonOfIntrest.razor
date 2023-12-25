@@ -10,6 +10,8 @@
 @inject ILogger<PersonOfInterest> Logger
 @inject IIntelService<PersonOfInterest> Service;
 @inject ServiceCountry CountryService;
+
+
 @if (Interest != null)
 {
     <EditForm Model="@Interest" OnValidSubmit="Submit" FormName="AddPersonOfIntrest">

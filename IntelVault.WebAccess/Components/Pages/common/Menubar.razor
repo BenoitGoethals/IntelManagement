@@ -1,11 +1,10 @@
 ﻿@rendermode InteractiveServer
-@inject NavigationManager NavigationManager
-@using Syncfusion.Blazor.Navigations
+
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div>
-    <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
+    <SfMenu @ref="Menu" TValue="MenuItem" CssClass="e-rounded-menu" >
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
             <AuthorizeView>
@@ -40,7 +39,7 @@
                             <MenuItem Text="Options"></MenuItem>
                         </MenuItems>
                     </MenuItem>
-              
+
                 </Authorized>
             </AuthorizeView>
         </MenuItems>
@@ -65,9 +64,10 @@
 
 @code {
     private AuthenticationState? _authenticationState;
-
+    private SfMenu<MenuItem> Menu;
     protected override async Task OnInitializedAsync()
     {
+       
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = _authenticationState.User;
 
@@ -78,6 +78,11 @@
             var userName = user.Identity.Name;
             // ... other claims or properties
         }
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
     }
 
 

@@ -8,6 +8,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @code {
+    
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -19,7 +20,9 @@
 
             // Sign out the user
             await SignInManager.SignOutAsync();
-            navManager.NavigateTo("/");
+            navManager.Refresh(true);
+         //   navManager.NavigateTo("/home", true, true);
+           
         }
 
         // Redirect to the home page or login page
