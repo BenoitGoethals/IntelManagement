@@ -1,6 +1,6 @@
 ﻿@page "/OpenSource"
 @rendermode InteractiveServer
-
+@attribute [Authorize(Roles = "ADMIN")]
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Timers
@@ -8,6 +8,7 @@
 @using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Services
+@using Microsoft.AspNetCore.Authorization
 @inject IIntelService<OpenSourceInt> Service;
 <PageTitle>OpenSource Intel</PageTitle>
 

@@ -3,12 +3,13 @@
 @using IntelVault.ApplicationCore.Services
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.WebAccess.Components.Pages.common
+@using Microsoft.AspNetCore.Authorization
 <PageTitle>HumanIntel</PageTitle>
 <h3>Human Intel Report</h3>
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IIntelService<HumInt> Service
-
+@attribute [Authorize(Roles = "ADMIN")]
 <Menubar></Menubar>
 
 @if (_items == null)

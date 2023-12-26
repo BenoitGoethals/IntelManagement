@@ -3,10 +3,12 @@
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.WebAccess.Components.Pages.common
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IIntelService<GeneralIntel> Service;
 <PageTitle>General Intel</PageTitle>
+@attribute [Authorize(Roles = "ADMIN")]
 <Menubar></Menubar>
 
 

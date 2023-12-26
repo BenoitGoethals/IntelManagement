@@ -8,6 +8,7 @@
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.ApplicationCore.Services
 @using IntelVault.Infrastructure.repos
+@using Microsoft.AspNetCore.Authorization
 @using SelectionType = Syncfusion.Blazor.Grids.SelectionType
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -16,7 +17,7 @@
 @inject IIntelService<IntelInvestigationFile> IntelInvestigationFileService
 @inject IGlobalService GlobalService
 @inject IDocumentService IntelService
-
+@attribute [Authorize(Roles = "ADMIN")]
 
 <SfDialog @bind-Visible="@IsDialogVisible" ID="GridPersonOfInterestsGrid" Height="500px" Width="700px">
 

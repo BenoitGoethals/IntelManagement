@@ -3,9 +3,10 @@
 @using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.ApplicationCore.Model
+@using Microsoft.AspNetCore.Authorization
 @inject IIntelService<PersonOfInterest> Service;
 <PageTitle>Person Of Interest</PageTitle>
-
+@attribute [Authorize(Roles = "ADMIN")]
 <Menubar></Menubar>
 
 

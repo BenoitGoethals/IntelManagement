@@ -4,7 +4,8 @@
 @using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
 @using IntelVault.ApplicationCore.Model
-
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "ADMIN")]
 @inject IIntelService<CybInt> Service;
 
 <PageTitle>Cyber Intel</PageTitle>

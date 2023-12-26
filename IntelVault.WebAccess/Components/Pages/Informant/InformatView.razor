@@ -2,11 +2,12 @@
 @using IntelVault.ApplicationCore.Model
 @using IntelVault.WebAccess.Components.Pages.common
 @using IntelVault.ApplicationCore.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IIntelService<Informant> Service;
 <PageTitle>InformantView</PageTitle>
-
+@attribute [Authorize(Roles = "ADMIN") ]
 <Menubar></Menubar>
 
 @if (_items == null)
