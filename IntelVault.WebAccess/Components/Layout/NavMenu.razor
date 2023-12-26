@@ -8,9 +8,11 @@
     <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
+            <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
             <AuthorizeView>
                 <NotAuthorized>
                     <MenuItem Text="Login" Url="/Account/login"></MenuItem>
+                    <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
                     <MenuItem Text="Account">
                         <MenuItems>
                             <MenuItem Text="Register" Url="/Account/Register"></MenuItem>
@@ -20,6 +22,7 @@
                 </NotAuthorized>
                 <Authorized>
                     <MenuItem Text="Logout" Url="/Logout"></MenuItem>
+                    <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
                     <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
                     <MenuItem Text="Add intel">
                         <MenuItems>
@@ -36,7 +39,7 @@
                     <MenuItem Text="Account">
                         <MenuItems>
                             <MenuItem Text="Logout" Url="/Logout"></MenuItem>
-                            <MenuItem Text="Customize"></MenuItem>
+                            <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
                             <MenuItem Text="Options"></MenuItem>
                         </MenuItems>
                     </MenuItem>
