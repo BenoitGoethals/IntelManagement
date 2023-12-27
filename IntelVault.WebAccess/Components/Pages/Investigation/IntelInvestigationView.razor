@@ -19,7 +19,7 @@
 @inject IDocumentService IntelService
 @attribute [Authorize(Roles = "ADMIN")]
 
-<SfDialog @bind-Visible="@IsDialogVisible" ID="GridPersonOfInterestsGrid" Height="500px" Width="700px">
+<SfDialog @bind-Visible="@IsDialogVisible" ID="GridPersonOfInterestsGrid" MinHeight="500px" Height="500px" Width="700px">
 
     <DialogTemplates>
         <Content>
@@ -43,7 +43,7 @@
     </DialogButtons>
 </SfDialog>
 
-<SfDialog @bind-Visible="@IsDialogIntelDocumentsVisible" Height="500px" Width="700px" ID="GridIntelDocuments">
+<SfDialog @bind-Visible="@IsDialogIntelDocumentsVisible" MinHeight="500px" Height="500px" Width="700px" ID="GridIntelDocuments">
 
     <DialogTemplates>
         <Content>
@@ -68,7 +68,7 @@
     </DialogButtons>
 </SfDialog>
 
-<SfDialog @bind-Visible="@IsDialogBaseLineVisible" Height="500px" Width="700px"  ID="GridBaseLine">
+<SfDialog @bind-Visible="@IsDialogBaseLineVisible" MinHeight="500px" Height="500px" Width="700px" ID="GridBaseLine">
 
     <DialogTemplates>
         <Content>
