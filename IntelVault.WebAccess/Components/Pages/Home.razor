@@ -3,10 +3,49 @@
 @rendermode InteractiveServer
 @using IntelVault.WebAccess.Components.Pages.Reports
 @using IntelVault.WebAccess.Components.Pages.common
+@using IntelVault.WebAccess.Components.Pages.security
 @using Syncfusion.Blazor.SfPdfViewer
+@using System.Security.Claims
 
 
 <PageTitle>Home</PageTitle>
-
 <Menubar></Menubar>
-<OverviewReportsBar></OverviewReportsBar>
+@if (IsAuthenticated)
+{
+    <OverviewReportsBar></OverviewReportsBar>
+}
+else
+{
+    <LoginDialog></LoginDialog>
+
+}
+
+
+
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@code {
+    private AuthenticationState? _authenticationState;
+    private bool IsAuthenticated { get; set; }
+    private SfMenu<MenuItem> Menu;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = _authenticationState.User;
+        if (user.Identity != null)
+        {
+            IsAuthenticated = user.Identity.IsAuthenticated;
+
+            if (user.Identity.IsAuthenticated)
+            {
+                // Access user information
+                var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userName = user.Identity.Name;
+                // ... other claims or properties
+            }
+        }
+    }
+
+}

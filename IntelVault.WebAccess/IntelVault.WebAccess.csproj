@@ -49,6 +49,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Syncfusion.Blazor.Cards" Version="24.1.41" />
     <PackageReference Include="Syncfusion.Blazor.Charts" Version="24.1.41" />
     <PackageReference Include="Syncfusion.Blazor.Grid" Version="24.1.41" />
@@ -62,10 +63,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IntelVault.ApplicationCore\IntelVault.ApplicationCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\Pages\security\" />
   </ItemGroup>
 
 </Project>
