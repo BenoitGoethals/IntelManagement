@@ -1,0 +1,121 @@
+﻿@using IntelVault.WebAccess.Components.Pages.OpenSource
+@using IntelVault.WebAccess.Components.Pages.common
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Navigations
+@using IntelVault.ApplicationCore.Model
+@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.Interfaces
+@using IntelVault.ApplicationCore.Services
+@using IntelVault.Infrastructure.repos
+@using Microsoft.AspNetCore.Authorization
+@using EventArgs = System.EventArgs
+@using SelectionMode = Syncfusion.Blazor.Grids.SelectionMode
+@using SelectionType = Syncfusion.Blazor.Grids.SelectionType
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject ILogger<IntelInvestigationFile> Logger
+
+@inject IGlobalService GlobalService
+@attribute [Authorize(Roles = "ADMIN")]
+<SfDialog @bind-Visible="@IsDialogVisibleEvidenceCollected" MinHeight="500px" Height="500px" Width="700px" ID="GridBaseLine">
+    <DialogTemplates>
+        <Content>
+            <SearchBar TextButton="Search Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
+            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="@Click"></SfPager>
+            <SfGrid @ref="Grid" DataSource="@_evidenceCollected" TValue="BaseIntel" AllowSelection="true" @onselectionchange="@Check">
+                <GridSelectionSettings Type="SelectionType.Multiple" Mode="SelectionMode.Row" ></GridSelectionSettings>
+                <GridPageSettings PageSize="6"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(BaseIntel.IntelType) HeaderText="TypeIntel" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(BaseIntel.ShortContent) HeaderText="SelectedListItem" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                    <GridColumn Field=@nameof(MongoEntity.CreatedDtg) HeaderText="TimeCreated" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+                </GridColumns>
+                <GridPageSettings PageSize="5"></GridPageSettings>
+
+            </SfGrid>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="OK" IsPrimary="false" @onclick="Select" Disabled="IsSelected" />
+        <DialogButton Content="Cancel" OnClick="@CancelDialog" />
+    </DialogButtons>
+</SfDialog>
+
+@code {
+    [Parameter]
+    public EventCallback<List<BaseIntel?>> Selected { get; set; }
+    [Parameter]
+    public bool IsDialogVisibleEvidenceCollected { get; set; } = true;
+    public required SfPager Page { get; set; }
+    public int SkipValue;
+    public int TakeValue = 6;
+    public int Count { get; set; }
+    public required string SText { get; set; }
+    public required SfGrid<BaseIntel?>? Grid { get; set; }
+    public bool IsSelected { get; set; } = true;
+    private List<BaseIntel>? _evidenceCollected;
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid?.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        if (Grid != null) await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItems()
+    {
+        var tempAllCount = await GlobalService.GetAllCount();
+        Count=(int) tempAllCount.Select(x => x.Item2).Sum();
+        _evidenceCollected = (await GlobalService.GetAll(SkipValue, TakeValue, nameof(BaseIntel.ShortContent), SText)).ToList();
+
+    }
+    void CancelDialog()
+    {
+        IsDialogVisibleEvidenceCollected = false;
+        Selected.InvokeAsync(new List<BaseIntel?>());
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await LoadItems();
+    }
+
+
+    private async Task Select()
+    {
+        var selectedRecords = await Grid?.GetSelectedRecordsAsync();
+        if (selectedRecords != null) await Selected.InvokeAsync(selectedRecords);
+        IsDialogVisibleEvidenceCollected = false;
+        StateHasChanged();
+    }
+
+    private async Task Check()
+    {
+        var selectedRecords = await Grid?.GetSelectedRecordsAsync();
+        if (selectedRecords is {Count: > 0})
+        {
+            IsSelected = false;
+            StateHasChanged();
+        }
+        else
+        {
+            IsSelected = false;
+        }
+    }
+
+  
+
+}
