@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelVault.ApplicationCore"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelVault.applicationCoreTests", "IntelVault.applicationCoreTests\IntelVault.applicationCoreTests.csproj", "{C304913B-27DC-46F6-8487-2C498C864491}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelVault.Worker", "IntelVault.Worker\IntelVault.Worker.csproj", "{1768DE98-1FF9-4AFD-AFBA-467B01947D5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{C304913B-27DC-46F6-8487-2C498C864491}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C304913B-27DC-46F6-8487-2C498C864491}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C304913B-27DC-46F6-8487-2C498C864491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1768DE98-1FF9-4AFD-AFBA-467B01947D5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1768DE98-1FF9-4AFD-AFBA-467B01947D5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1768DE98-1FF9-4AFD-AFBA-467B01947D5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1768DE98-1FF9-4AFD-AFBA-467B01947D5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{924FD7A9-FA56-49AC-AF38-8321F4DA8AE4} = {3AFA2FEA-1F6F-412E-8277-DD73F9C29966}
 		{72BA0104-8CE3-4907-BC20-E34D7F2B398B} = {3AFA2FEA-1F6F-412E-8277-DD73F9C29966}
 		{C304913B-27DC-46F6-8487-2C498C864491} = {85D17E1A-543C-482F-B28B-D9787CFA5740}
+		{1768DE98-1FF9-4AFD-AFBA-467B01947D5D} = {3AFA2FEA-1F6F-412E-8277-DD73F9C29966}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E9AE07EC-C3E9-4A3C-9155-0072E51A9C3E}
