@@ -1,5 +1,6 @@
 ﻿@using Microsoft.IdentityModel.Tokens
 @using IntelVault.ApplicationCore.Model
+@using System.Text.RegularExpressions
 
 
 <div class="row-cols-2">
@@ -12,12 +13,14 @@
                 foreach (var ti in Items)
                 {
                     <p>
-                        @ti.Text?.Substring(0, ti.Text.Length-1)
+                        @if (ti.Text != null)
+                        {
+                            @Regex.Replace(ti.Text, "<.*?>", String.Empty)
+                        }
                         <button Type="button" @onclick="@(() => OnDelete(ti))" class="btn-primary">Delete</button>
                         <button Type="button" @onclick="@(() => OnEdit(ti))" class="btn-primary">Edit</button>
                     </p>
                 }
-
             }
             <div class="form-group col-md-6">
                 <BigTextItem InputText="@SelectedListItem.Text" BindingValueChanged="OnUpdateText" Size="500"> </BigTextItem>
@@ -50,7 +53,6 @@
             Items?.Add(new ListItem() { Id = Items.Count != 0 ? Items.Last().Id + 1 : 1, Text = SelectedListItem.Text });
             SelectedListItem.Text = "Expert name : ";
         }
-            
     }
 
     private void OnDelete(ListItem listItem)

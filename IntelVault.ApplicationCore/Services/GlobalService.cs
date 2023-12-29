@@ -51,6 +51,28 @@ public class GlobalService(
         throw new NotImplementedException();
     }
 
+    public async Task<IEnumerable<BaseIntel>> GetAll(int page, int pageSize, string field, string? sText)
+    {
+        List<BaseIntel> baseIntels = new List<BaseIntel>();
+
+        IEnumerable<HumInt?> humit = await _humIntService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(humit);
+        IEnumerable<SocialMedia> soc = await _socialMediaService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(soc);
+        IEnumerable<PersonOfInterest> pers = await _personOfInterestService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(pers);
+        IEnumerable<CybInt> cyb = await _cybIntServiceService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(cyb);
+        IEnumerable<GeneralIntel> gen = await _generalIntelService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(gen);
+        IEnumerable<OpenSourceInt> op = await _openSourceService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(op);
+        IEnumerable<Informant> info = await _informantService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(info);
+
+        return baseIntels.Skip(page).Take(pageSize);
+    }
+
     public async Task<IEnumerable<BaseIntel>> GetAll()
     {
        
