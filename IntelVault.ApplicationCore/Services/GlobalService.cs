@@ -55,22 +55,22 @@ public class GlobalService(
     {
         List<BaseIntel> baseIntels = new List<BaseIntel>();
 
-        var humit = await _humIntService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<HumInt?> humit = await _humIntService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(humit);
-        var soc = await _socialMediaService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<SocialMedia> soc = await _socialMediaService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(soc);
-        var pers = await _personOfInterestService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<PersonOfInterest> pers = await _personOfInterestService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(pers);
-        var cyb = await _cybIntServiceService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<CybInt> cyb = await _cybIntServiceService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(cyb);
-        var gen = await _generalIntelService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<GeneralIntel> gen = await _generalIntelService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(gen);
-        var op = await _openSourceService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<OpenSourceInt> op = await _openSourceService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(op);
-        var info = await _informantService?.GetAll(page, pageSize, field, sText);
+        IEnumerable<Informant> info = await _informantService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(info);
 
-        return baseIntels;
+        return baseIntels.Skip(page).Take(pageSize);
     }
 
     public async Task<IEnumerable<BaseIntel>> GetAll()

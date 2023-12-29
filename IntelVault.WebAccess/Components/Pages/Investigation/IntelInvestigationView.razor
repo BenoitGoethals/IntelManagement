@@ -89,7 +89,17 @@
                     <div class="form-group col-md-6">
                         <SfButton @ref="_cancelBtn" CssClass="btn btn-primary" @onclick="@(Cancel)" IsPrimary="false">Cancel</SfButton>
                     </div>
+                    <div class="form-group col-md-6">
+                        @if (Update)
+                        {
+                            <SfButton IsPrimary="true" @onclick="SubmitForm">Update Investigation</SfButton>
+                        }
+                        else
+                        {
+                            <SfButton IsPrimary="true" @onclick="SubmitForm">Add Investigation</SfButton>
+                        }
 
+                    </div>
                 </ContentTemplate>
 
             </TabItem>
@@ -251,17 +261,7 @@
             </TabItem>
         </TabItems>
     </SfTab>
-    <div class="form-group col-md-6">
-        @if (Update)
-        {
-            <SfButton IsPrimary="true" @onclick="SubmitForm">Update</SfButton>
-        }
-        else
-        {
-            <SfButton IsPrimary="true" @onclick="SubmitForm">Add</SfButton>
-        }
-
-    </div>
+   
 </EditForm>
 @code {
     [Parameter] public IntelInvestigationFile? IntelInvest { get; set; }
@@ -335,15 +335,17 @@
             if (Update)
             {
                 await IntelInvestigationFileService.Update(IntelInvest);
+                await OnFileInvestChanged.InvokeAsync();
             }
             else
             {
                 await IntelInvestigationFileService.Add(IntelInvest);
+                await OnFileInvestChanged.InvokeAsync();
             }
 
         }
 
-        await OnFileInvestChanged.InvokeAsync();
+       
     }
 
     protected void Changed()

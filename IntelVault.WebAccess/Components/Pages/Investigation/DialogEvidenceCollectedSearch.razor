@@ -20,10 +20,11 @@
 <SfDialog @bind-Visible="@IsDialogVisibleEvidenceCollected" MinHeight="500px" Height="500px" Width="700px" ID="GridBaseLine">
     <DialogTemplates>
         <Content>
-            <SearchBar TextButton="Search Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
-            <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="@Click"></SfPager>
-            <SfGrid @ref="Grid" DataSource="@_evidenceCollected" TValue="BaseIntel" AllowSelection="true" @onselectionchange="@Check">
+            <SearchBar TextButton="Search Short Content" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
+            <SfPager @ref="Page" PageSize="@_takeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="@Click"></SfPager>
+            <SfGrid @ref="Grid" DataSource="@_evidenceCollected" TValue="BaseIntel" AllowSelection="true">
                 <GridSelectionSettings Type="SelectionType.Multiple" Mode="SelectionMode.Row" ></GridSelectionSettings>
+                <GridEvents RowSelected="RowSelectHandler" TValue="BaseIntel"></GridEvents>
                 <GridPageSettings PageSize="6"></GridPageSettings>
                 <GridColumns>
                     <GridColumn Field=@nameof(BaseIntel.IntelType) HeaderText="TypeIntel" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
@@ -36,7 +37,7 @@
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="OK" IsPrimary="false" @onclick="Select" Disabled="IsSelected" />
+        <DialogButton Content="OK" IsPrimary="false" @onclick="Select" Disabled="!IsSelected" />
         <DialogButton Content="Cancel" OnClick="@CancelDialog" />
     </DialogButtons>
 </SfDialog>
@@ -47,26 +48,27 @@
     [Parameter]
     public bool IsDialogVisibleEvidenceCollected { get; set; } = true;
     public required SfPager Page { get; set; }
-    public int SkipValue;
-    public int TakeValue = 6;
-    public int Count { get; set; }
-    public required string SText { get; set; }
-    public required SfGrid<BaseIntel?>? Grid { get; set; }
-    public bool IsSelected { get; set; } = true;
+    private int _skipValue;
+    private int _takeValue = 6;
+    private int Count { get; set; }
+    private  string? SText { get; set; }
+    private  SfGrid<BaseIntel?>? Grid { get; set; }
+    private bool IsSelected { get; set; } = false;
     private List<BaseIntel>? _evidenceCollected;
 
-    private async Task LoadItemsSearchText(string text)
+
+    private async Task LoadItemsSearchText(string? text)
     {
         SText = text;
         await LoadItems();
-        await Grid?.Refresh();
+         Grid?.Refresh();
         await Page.RefreshAsync();
         StateHasChanged();
     }
     public async Task Click(PagerItemClickEventArgs args)
     {
-        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
-        TakeValue = Page.PageSize;
+        _skipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        _takeValue = Page.PageSize;
         await LoadItems();
         if (Grid != null) await Grid.Refresh();
         await Page.RefreshAsync();
@@ -77,19 +79,19 @@
     {
         var tempAllCount = await GlobalService.GetAllCount();
         Count=(int) tempAllCount.Select(x => x.Item2).Sum();
-        _evidenceCollected = (await GlobalService.GetAll(SkipValue, TakeValue, nameof(BaseIntel.ShortContent), SText)).ToList();
+        _evidenceCollected = (await GlobalService.GetAll(_skipValue, _takeValue, nameof(BaseIntel.ShortContent), SText)).ToList();
 
     }
     void CancelDialog()
     {
         IsDialogVisibleEvidenceCollected = false;
         Selected.InvokeAsync(new List<BaseIntel?>());
-
+        IsSelected = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
-
+       
         await LoadItems();
     }
 
@@ -99,23 +101,16 @@
         var selectedRecords = await Grid?.GetSelectedRecordsAsync();
         if (selectedRecords != null) await Selected.InvokeAsync(selectedRecords);
         IsDialogVisibleEvidenceCollected = false;
+        IsSelected = false;
         StateHasChanged();
     }
 
-    private async Task Check()
-    {
-        var selectedRecords = await Grid?.GetSelectedRecordsAsync();
-        if (selectedRecords is {Count: > 0})
-        {
-            IsSelected = false;
-            StateHasChanged();
-        }
-        else
-        {
-            IsSelected = false;
-        }
-    }
+    public void RowSelectHandler(RowSelectEventArgs<BaseIntel> args) 
+    { 
+        IsSelected = Grid?.GetSelectedRecordsAsync().ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext).GetAwaiter().GetResult().Count > 0;
+    } 
+} 
 
   
 
-}
+
