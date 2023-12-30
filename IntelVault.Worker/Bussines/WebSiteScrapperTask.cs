@@ -1,21 +1,30 @@
 ﻿using IntelVault.Worker.model;
+using System.Diagnostics.Metrics;
+using System.Threading;
+using Quartz;
 
 namespace IntelVault.Worker.Bussines;
-
-public class WebSiteScrapperTask:RequestTask
+[DisallowConcurrentExecution]
+public class WebSiteScrapperTask(ILogger<WebSiteScrapperTask> logger) :RequestTask
 {
-    public override Task Execute(OpenSourceRequest openSourceRequest)
+    private OpenSourceRequest _openSourceRequest;
+
+    public override async Task Execute(IJobExecutionContext context)
     {
-        throw new NotImplementedException();
+        Console.WriteLine(_openSourceRequest);
+        if (IsRunning) return;
+        IsRunning = true;
+        CancellationToken = CancellationTokenSource.Token;
+        logger.LogInformation("started");
+        while (!CancellationToken.IsCancellationRequested)
+        {
+            if (!IsRunning) continue;
+            _ = Task.Delay(5000, CancellationToken);
+            logger.LogInformation("running");
+            Console.WriteLine(_openSourceRequest);
+        }
+
+        IsRunning = false;
     }
 
-    public override void Start()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Stop()
-    {
-        throw new NotImplementedException();
-    }
 }

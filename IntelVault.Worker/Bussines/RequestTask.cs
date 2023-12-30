@@ -1,14 +1,18 @@
 ﻿using IntelVault.Worker.model;
+using System.Diagnostics.Metrics;
+using Quartz;
 
 namespace IntelVault.Worker.Bussines;
 
-public abstract class RequestTask:ITask
+public abstract class RequestTask:IJob
 {
-    public bool IsRunning { get; private set; }
+    protected bool IsRunning { get;  set; }
     public string? Name { get; set; }
-    private CancellationToken CancellationToken { get; set; }
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
-    public abstract Task Execute(OpenSourceRequest openSourceRequest);
-    public abstract void Start();
-    public abstract void Stop();
+    protected CancellationToken CancellationToken { get; set; }
+    protected readonly CancellationTokenSource CancellationTokenSource = new();
+   
+
+   
+    public abstract Task Execute(IJobExecutionContext context);
+   
 }

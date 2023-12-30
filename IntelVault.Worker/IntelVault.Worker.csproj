@@ -9,5 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Quartz" Version="3.8.0" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.8.0" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.8.0" />
+    <PackageReference Include="Quartz.Jobs" Version="3.8.0" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.8.0" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
   </ItemGroup>
 </Project>

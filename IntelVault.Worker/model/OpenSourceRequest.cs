@@ -27,4 +27,10 @@ public class OpenSourceRequest
     {
         return Id.GetHashCode();
     }
+
+    public override string ToString()
+    {
+        return $"{nameof(Id)}: {Id}, {nameof(SourceType)}: {SourceType}, {nameof(Url)}: {Url}, {nameof(KeyWords)}: {KeyWords}, {nameof(Start)}: {Start}, {nameof(End)}: {End}";
+    }
+    
 }
