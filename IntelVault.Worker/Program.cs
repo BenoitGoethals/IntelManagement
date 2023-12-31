@@ -1,9 +1,12 @@
 using IntelVault.Worker;
+using Microsoft.AspNetCore.Builder;
 using Quartz;
 using Quartz.Impl;
 using System.Collections.Specialized;
+using IntelVault.Worker.Services;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
 //builder.Services.AddQuartzHostedService(options =>
 //{
 //    options.StartDelay = TimeSpan.FromSeconds(5);
@@ -78,13 +81,10 @@ builder.Services.AddQuartzHostedService(options =>
     // when shutting down we want jobs to complete gracefully
     options.WaitForJobsToComplete = true;
 });
-//// First we must get a reference to a scheduler
-//var properties = new NameValueCollection
-//{
-//    ["quartz.scheduler.instanceName"] = "QuartzWithCore",
-//    ["quartz.threadPool.type"] = "Quartz.Simpl.SimpleThreadPool, Quartz",
-//    ["quartz.threadPool.threadCount"] = "3",
-//    ["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz",
-//};
+builder.Services.AddGrpc();
+
 var host = builder.Build();
+host.MapGrpcService<IntelVaultService>();
+host.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+
 host.Run();
