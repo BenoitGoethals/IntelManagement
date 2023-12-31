@@ -9,10 +9,10 @@ public class WebSiteScrapperTask(ILogger<WebSiteScrapperTask> logger) :RequestTa
 {
     private OpenSourceRequest _openSourceRequest;
 
-    public override async Task Execute(IJobExecutionContext context)
+    public override Task Execute(IJobExecutionContext context)
     {
         Console.WriteLine(_openSourceRequest);
-        if (IsRunning) return;
+        if (IsRunning) return Task.CompletedTask;
         IsRunning = true;
         CancellationToken = CancellationTokenSource.Token;
         logger.LogInformation("started");
@@ -25,6 +25,7 @@ public class WebSiteScrapperTask(ILogger<WebSiteScrapperTask> logger) :RequestTa
         }
 
         IsRunning = false;
+        return Task.CompletedTask;
     }
 
 }

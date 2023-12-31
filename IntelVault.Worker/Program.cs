@@ -14,34 +14,52 @@ builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddQuartz(q =>
 {
-    q.SchedulerName = "MassTransit-Scheduler";
-    q.SchedulerId = "AUTO";
+    // handy when part of cluster or you want to otherwise identify multiple schedulers
+    q.SchedulerId = "Scheduler-Core";
 
+    // we take this from appsettings.json, just show it's possible
+    q.SchedulerName = "Quartz ASP.NET Core Scheduler";
+
+    // as of 3.3.2 this also injects scoped services (like EF DbContext) without problems
     q.UseMicrosoftDependencyInjectionJobFactory();
+    // or for scoped service support like EF Core DbContext
+    //q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
+    // these are the defaults
+    q.UseSimpleTypeLoader();
+    q.UseInMemoryStore();
     q.UseDefaultThreadPool(tp =>
     {
-        tp.MaxConcurrency = 10;
+        tp.MaxConcurrency = 100;
     });
 
-
-    //q.UsePersistentStore(s =>
+    //// also add XML configuration and poll it for changes
+    //q.UseXmlSchedulingConfiguration(x =>
     //{
-    //    s.UseProperties = true;
-    //    s.RetryInterval = TimeSpan.FromSeconds(15);
-
-    // //   s.UseSqlServer(connectionString);
-
-    //    s.UseJsonSerializer();
-
-    //    s.UseClustering(c =>
-    //    {
-    //        c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
-    //        c.CheckinInterval = TimeSpan.FromSeconds(10);
-    //    });
+    //    x.Files = new[] { "~/quartz.config" };
+    //    x.ScanInterval = TimeSpan.FromSeconds(2);
+    //    x.FailOnFileNotFound = true;
+    //    x.FailOnSchedulingError = true;
     //});
-});
 
+    // convert time zones using converter that can handle Windows/Linux differences
+    q.UseTimeZoneConverter();
+
+    // auto-interrupt long-running job
+    q.UseJobAutoInterrupt(options =>
+    {
+
+        // this is the default
+        options.DefaultMaxRunTime = TimeSpan.FromMinutes(60);
+    });
+
+})
+
+.AddSingleton<Quartz.IScheduler>((sp) => {
+
+    var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
+    return scheduler;
+});
 
 
 builder.Services.AddLogging(loggingBuilder =>
@@ -56,17 +74,13 @@ builder.Services.AddQuartzHostedService(options =>
     // when shutting down we want jobs to complete gracefully
     options.WaitForJobsToComplete = true;
 });
-// First we must get a reference to a scheduler
-var properties = new NameValueCollection
-{
-    ["quartz.scheduler.instanceName"] = "QuartzWithCore",
-    ["quartz.threadPool.type"] = "Quartz.Simpl.SimpleThreadPool, Quartz",
-    ["quartz.threadPool.threadCount"] = "3",
-    ["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz",
-};
-ISchedulerFactory sf = new StdSchedulerFactory(properties);
-IScheduler scheduler = sf.GetScheduler().GetAwaiter().GetResult(); ;
-builder.Services.AddSingleton<IScheduler>(scheduler);
-builder.Services.AddHostedService<QuartzHostedService>();
+//// First we must get a reference to a scheduler
+//var properties = new NameValueCollection
+//{
+//    ["quartz.scheduler.instanceName"] = "QuartzWithCore",
+//    ["quartz.threadPool.type"] = "Quartz.Simpl.SimpleThreadPool, Quartz",
+//    ["quartz.threadPool.threadCount"] = "3",
+//    ["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz",
+//};
 var host = builder.Build();
 host.Run();
