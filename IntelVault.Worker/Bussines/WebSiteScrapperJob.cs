@@ -5,7 +5,7 @@ using Quartz;
 
 namespace IntelVault.Worker.Bussines;
 [DisallowConcurrentExecution]
-public class WebSiteScrapperTask() :RequestTask, IJob
+public class WebSiteScrapperJob() :RequestJob, IJob
 {
     private OpenSourceRequest _openSourceRequest;
 
@@ -13,7 +13,7 @@ public class WebSiteScrapperTask() :RequestTask, IJob
     {
         var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
         _openSourceRequest = jobDetailJobData;
-        Console.WriteLine("------------>");
+        Console.WriteLine("------------>"+jobDetailJobData);
         await Task.Delay(1000);
 
     }

@@ -4,7 +4,7 @@ using Quartz;
 
 namespace IntelVault.Worker.Bussines;
 
-public abstract class RequestTask:IJob
+public abstract class RequestJob:IJob
 {
     protected bool IsRunning { get;  set; }
     public string? Name { get; set; }

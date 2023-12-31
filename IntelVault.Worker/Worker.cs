@@ -21,9 +21,9 @@ namespace IntelVault.Worker
                     case OpenSourceType.Scrapper:
                         schedulder.Start(stoppingToken);
                         var m = new JobDataMap();
-                        m.Put(nameof(x),x);
+                        m.Put(nameof(OpenSourceRequest),x);
 
-                        var job = JobBuilder.Create<WebSiteScrapperTask>()
+                        var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity("myJob", "group1") 
                             .UsingJobData(m)
                             .Build();
