@@ -5,27 +5,17 @@ using Quartz;
 
 namespace IntelVault.Worker.Bussines;
 [DisallowConcurrentExecution]
-public class WebSiteScrapperTask(ILogger<WebSiteScrapperTask> logger) :RequestTask
+public class WebSiteScrapperTask() :RequestTask, IJob
 {
     private OpenSourceRequest _openSourceRequest;
 
-    public override Task Execute(IJobExecutionContext context)
+    public override async Task Execute(IJobExecutionContext context)
     {
-        Console.WriteLine(_openSourceRequest);
-        if (IsRunning) return Task.CompletedTask;
-        IsRunning = true;
-        CancellationToken = CancellationTokenSource.Token;
-        logger.LogInformation("started");
-        while (!CancellationToken.IsCancellationRequested)
-        {
-            if (!IsRunning) continue;
-            _ = Task.Delay(5000, CancellationToken);
-            logger.LogInformation("running");
-            Console.WriteLine(_openSourceRequest);
-        }
+        var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
+        _openSourceRequest = jobDetailJobData;
+        Console.WriteLine("------------>");
+        await Task.Delay(1000);
 
-        IsRunning = false;
-        return Task.CompletedTask;
     }
 
 }

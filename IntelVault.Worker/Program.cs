@@ -30,7 +30,7 @@ builder.Services.AddQuartz(q =>
     q.UseInMemoryStore();
     q.UseDefaultThreadPool(tp =>
     {
-        tp.MaxConcurrency = 100;
+        tp.MaxConcurrency = 10;
     });
 
     //// also add XML configuration and poll it for changes
@@ -53,8 +53,12 @@ builder.Services.AddQuartz(q =>
         options.DefaultMaxRunTime = TimeSpan.FromMinutes(60);
     });
 
-})
-
+}).AddQuartzOpenTracing(options =>
+    {
+        // these are the defaults
+      //  options.ComponentName = "Quartz";
+        options.IncludeExceptionDetails = true;
+    })
 .AddSingleton<Quartz.IScheduler>((sp) => {
 
     var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
