@@ -1,0 +1,53 @@
+﻿syntax = "proto3";
+
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "IntelVault.Worker";
+
+package Intel;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc MakeJob(OpenSourceRequestScan) returns (Status);
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+message OpenSourceRequestScan {
+    string id =1;
+    string url = 2;
+    OpenSourceMediaType openSourceType =3;
+    google.protobuf.Timestamp Start=4;
+    google.protobuf.Timestamp End=5;
+    keywordList list = 6;
+    int32 Interval=7;     
+}
+message keywordList {
+  repeated keyword keyword = 1;
+}
+message keyword{
+    string name = 1;
+ }
+enum OpenSourceMediaType{
+        Twitter=0;
+        Scrapper=1;
+        Doc=2;
+        LinkNl=3;
+}
+
+
+
+// The response message containing the greetings.
+message HelloReply {
+  string message = 1;
+}
+
+message Status {
+  string message = 1;
+}
