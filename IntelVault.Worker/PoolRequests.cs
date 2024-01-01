@@ -35,14 +35,7 @@ public class PoolRequests : IObservable<OpenSourceRequest>, IDisposable
             }
 
     }
-
-
-
-
-
-
-
-
+    
     public IDisposable Subscribe(IObserver<OpenSourceRequest> observer)
     {
         if (_observers != null && !_observers.Contains(observer))
@@ -56,6 +49,6 @@ public class PoolRequests : IObservable<OpenSourceRequest>, IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _cancellationTokenSource.Dispose();
     }
 }

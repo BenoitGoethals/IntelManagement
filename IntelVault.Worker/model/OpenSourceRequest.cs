@@ -2,10 +2,11 @@
 
 public class OpenSourceRequest
 {
+    public int Interval { get; set; }
     public Guid Id { get; set; }
     public OpenSourceType SourceType { get; set; }
     public required string Url { get; set; }
-    public required List<string> KeyWords { get; set; }
+    public  List<string>? KeyWords { get; set; }
 
     public DateTime Start { get; set; }
     public DateTime End { get; set; }

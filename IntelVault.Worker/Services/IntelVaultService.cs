@@ -1,23 +1,50 @@
 ﻿using Grpc.Core;
+using IntelVault.Worker.model;
+using Microsoft.AspNetCore.Components;
 
 namespace IntelVault.Worker.Services;
 
-public class IntelVaultService:Greeter.GreeterBase
+public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests poolRequests)
+    : Greeter.GreeterBase
 {
-    private readonly ILogger<IntelVaultService> _logger;
-
-    public IntelVaultService(ILogger<IntelVaultService> logger)
-    {
-        _logger = logger;
-    }
+    public PoolRequests PoolRequests { get; } = poolRequests;
 
     public override Task<HelloReply> SayHello(HelloRequest request,
         ServerCallContext context)
     {
-        _logger.LogInformation("Saying hello to {Name}", request.Name);
-        return Task.FromResult(new HelloReply
+        return Task.FromResult(new HelloReply()
         {
-            Message = "Hello " + request.Name
+            Message = "Hello " 
         });
+    }
+
+    public override Task<Status> MakeJob(OpenSourceRequestScan request, ServerCallContext context)
+    {
+        PoolRequests.AddRequest(OpenSourceRequestMapOpenSourceRequest(request));
+        logger.LogInformation("Saying hello to {Name}", request.Id);
+        return Task.FromResult(new Status(){
+            Message = "Hello " + request.Url
+        });
+    }
+
+
+    private OpenSourceRequest OpenSourceRequestMapOpenSourceRequest(OpenSourceRequestScan openSourceRequestScan)
+    {
+        OpenSourceRequest request = new OpenSourceRequest()
+        {
+            Url = openSourceRequestScan.Url,
+            Id = new Guid(openSourceRequestScan.Id),
+            End = openSourceRequestScan.End.ToDateTime(),
+            Start = openSourceRequestScan.Start.ToDateTime(),
+            KeyWords = new List<string>(),
+            SourceType = (OpenSourceType) openSourceRequestScan.OpenSourceType,
+            Interval= openSourceRequestScan.Interval,
+        };
+
+        foreach (var keyword in openSourceRequestScan.List.Keyword)
+        {
+            request.KeyWords.Add(keyword.Name);
+        }
+        return request;
     }
 }

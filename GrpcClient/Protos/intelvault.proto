@@ -20,13 +20,14 @@ message HelloRequest {
   string name = 1;
 }
 message OpenSourceRequestScan {
-    string id =1;
-    string url = 2;
-    OpenSourceMediaType openSourceType =3;
-    google.protobuf.Timestamp Start=4;
-    google.protobuf.Timestamp End=5;
-    keywordList list = 6;
-    int32 Interval=7;     
+     string id =1;
+     string url = 2;
+     OpenSourceMediaType openSourceType =3;
+     google.protobuf.Timestamp Start=4;
+     google.protobuf.Timestamp End=5;
+     keywordList list = 6;
+     int32 Interval=7;     
+  
 }
 message keywordList {
   repeated keyword keyword = 1;

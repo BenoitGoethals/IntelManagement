@@ -1,50 +1,62 @@
 using IntelVault.Worker.Bussines;
 using IntelVault.Worker.model;
+using IntelVault.Worker.Services;
 using Quartz;
 using Quartz.Impl.Matchers;
 using IScheduler = Quartz.IScheduler;
 
 namespace IntelVault.Worker
 {
-    public class Worker(ILogger<Worker> logger, IScheduler schedulder) : BackgroundService
+    public class Worker : BackgroundService
     {
- 
-        public PoolRequests Obs { get; private set; } = new();
+        private readonly ILogger<Worker> _logger;
+        private readonly IScheduler _schedulder;
+
+        public Worker(ILogger<Worker> logger, IScheduler schedulder, PoolRequests poolRequests)
+        {
+            _logger = logger;
+            _schedulder = schedulder;
+            _obs=poolRequests;
+            
+        }
+
+       
+
+        private readonly PoolRequests _obs;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
-            Obs.Subscribe( x =>
+            _obs.Subscribe( x =>
             {
                 switch (x.SourceType)
                 {
                     case OpenSourceType.Scrapper:
-                        schedulder.Start(stoppingToken);
+                        _schedulder.Start(stoppingToken);
                         var m = new JobDataMap();
                         m.Put(nameof(OpenSourceRequest),x);
 
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
-                            .WithIdentity("myJob", "group1") 
+                            .WithIdentity(x.Id.ToString(), "groupScrapper") 
                             .UsingJobData(m)
                             .Build();
                         var trigger = TriggerBuilder.Create()
-                            .WithIdentity("mytrigger", "group1")
-                            .StartNow()
-                            .WithSimpleSchedule(x => x
-                                .WithIntervalInSeconds(10)
+                            .WithIdentity(x.Id.ToString(), "groupScrapper")
+                           .StartAt(x.Start)
+                            .EndAt(x.End)
+                            .WithSimpleSchedule(xy => xy
+                                .WithIntervalInSeconds(x.Interval)
                                 .RepeatForever())
+                            
                             .Build();
-                         schedulder.ScheduleJob(job, trigger, stoppingToken);
+                         _schedulder.ScheduleJob(job, trigger, stoppingToken);
                         break;
                 }
 
             });
-            await schedulder.Start(stoppingToken);
-            Obs.AddRequest(new OpenSourceRequest() { Url = "wwww.google.be", SourceType = OpenSourceType.Scrapper, KeyWords =
-                []
-            });
           
-            logger.LogInformation("WORKER STARTED");
+          
+            _logger.LogInformation("WORKER STARTED");
             while (!stoppingToken.IsCancellationRequested)
             {
               
@@ -53,7 +65,7 @@ namespace IntelVault.Worker
                 
 
             }
-            await schedulder.Shutdown(stoppingToken);
+            await _schedulder.Shutdown(stoppingToken);
         }
     }
 }

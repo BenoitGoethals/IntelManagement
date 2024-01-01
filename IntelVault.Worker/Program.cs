@@ -12,9 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.StartDelay = TimeSpan.FromSeconds(5);
 //    options.WaitForJobsToComplete = true;
 //});
+builder.Services.AddGrpc();
 builder.Services.AddHostedService<Worker>();
 
-
+builder.Services.AddSingleton<PoolRequests>();
 builder.Services.AddQuartz(q =>
 {
     // handy when part of cluster or you want to otherwise identify multiple schedulers
@@ -81,7 +82,7 @@ builder.Services.AddQuartzHostedService(options =>
     // when shutting down we want jobs to complete gracefully
     options.WaitForJobsToComplete = true;
 });
-builder.Services.AddGrpc();
+
 
 var host = builder.Build();
 host.MapGrpcService<IntelVaultService>();
