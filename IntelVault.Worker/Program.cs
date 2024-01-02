@@ -3,7 +3,23 @@ using Microsoft.AspNetCore.Builder;
 using Quartz;
 using Quartz.Impl;
 using System.Collections.Specialized;
+using FluentValidation;
+
 using IntelVault.Worker.Services;
+using IntelVault.ApplicationCore.Interfaces;
+using IntelVault.ApplicationCore.Model;
+using IntelVault.ApplicationCore.Services;
+using IntelVault.ApplicationCore.validation;
+using IntelVault.Infrastructure.repos;
+using MongoDB.Driver.Core.Configuration;
+using MongoDB.Driver;
+using NLog.Extensions.Logging;
+using MongoDB.Bson.Serialization;
+using Quartz.Spi;
+using System.Reactive.Concurrency;
+using Quartz.Simpl;
+using NLog;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +28,35 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.StartDelay = TimeSpan.FromSeconds(5);
 //    options.WaitForJobsToComplete = true;
 //});
+builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
+{
+    var setting = new MongoClientSettings()
+    {
+        Scheme = ConnectionStringScheme.MongoDB,
+        Server = new MongoServerAddress("localhost", 27017),
+        //  Credential = MongoCredential.CreateCredential("IntelVault", "benoit", "ranger14")
+    };
+    return new MongoClient(setting);
+});
+builder.Services.AddSingleton<NewsArticleValidator>();
+
+builder.Services.AddSingleton<IMongoDbRepository<NewsArticle>, MongoDbRepository<NewsArticle>>(n => new MongoDbRepository<NewsArticle>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<NewsArticle>>>(), "IntelVault"));
+
+builder.Services.AddSingleton<IIntelService<NewsArticle>, IntelService<NewsArticle>>(n => new IntelService<NewsArticle>(n.GetRequiredService<IMongoDbRepository<NewsArticle>>(), n.GetRequiredService<NewsArticleValidator>()));
+
+builder.Services.AddSingleton<ServiceCountry>();
+
+
+builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+builder.Services.AddQuartzHostedService(options =>
+{
+    // when shutting down we want jobs to complete gracefully
+    options.WaitForJobsToComplete = true;
+});
 builder.Services.AddGrpc();
 builder.Services.AddHostedService<Worker>();
-
+//builder.Services.AddSingleton<IJobFactory, JobFactory>();
+//builder.Services.AddHostedService<SingletonJobFactory>();
 builder.Services.AddSingleton<PoolRequests>();
 builder.Services.AddQuartz(q =>
 {
@@ -58,30 +100,35 @@ builder.Services.AddQuartz(q =>
     });
 
 }).AddQuartzOpenTracing(options =>
-    {
-        // these are the defaults
-      //  options.ComponentName = "Quartz";
-        options.IncludeExceptionDetails = true;
-    })
-.AddSingleton<Quartz.IScheduler>((sp) => {
+{
+    // these are the defaults
+    //  options.ComponentName = "Quartz";
+    options.IncludeExceptionDetails = true;
+})
+
+builder.Services.AddSingleton((sp) => {
 
     var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
+  
     return scheduler;
 });
+
 
 
 builder.Services.AddLogging(loggingBuilder =>
 {
     loggingBuilder.ClearProviders(); // Clear other logging providers
     loggingBuilder.SetMinimumLevel(LogLevel.Debug);
+    loggingBuilder.AddNLog(builder.Configuration);
     loggingBuilder.AddConsole();
 });
 
-builder.Services.AddQuartzHostedService(options =>
+BsonClassMap.RegisterClassMap<SocialMedia>(cm =>
 {
-    // when shutting down we want jobs to complete gracefully
-    options.WaitForJobsToComplete = true;
+    cm.AutoMap();
+    cm.SetDiscriminator("SocialMedia");
 });
+
 
 
 var host = builder.Build();

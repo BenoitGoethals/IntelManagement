@@ -32,6 +32,7 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
     {
         OpenSourceRequest request = new OpenSourceRequest()
         {
+            Name = openSourceRequestScan.Name,
             Url = openSourceRequestScan.Url,
             Id = new Guid(openSourceRequestScan.Id),
             End = openSourceRequestScan.End.ToDateTime(),

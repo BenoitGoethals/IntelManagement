@@ -29,13 +29,15 @@ namespace IntelVault.Worker
 
             _obs.Subscribe( x =>
             {
+                if (!_schedulder.IsStarted)
+                {
+                    _schedulder.Start(stoppingToken);
+                }
+                var m = new JobDataMap();
+                m.Put(nameof(OpenSourceRequest), x);
                 switch (x.SourceType)
                 {
                     case OpenSourceType.Scrapper:
-                        _schedulder.Start(stoppingToken);
-                        var m = new JobDataMap();
-                        m.Put(nameof(OpenSourceRequest),x);
-
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
                             .UsingJobData(m)
@@ -50,6 +52,22 @@ namespace IntelVault.Worker
                             
                             .Build();
                          _schedulder.ScheduleJob(job, trigger, stoppingToken);
+                        break;
+                    case OpenSourceType.Api:
+                        var jobApi = JobBuilder.Create<RestApiScrapperJob>()
+                            .WithIdentity(x.Id.ToString(), "groupScrapperApi")
+                            .UsingJobData(m)
+                            .Build();
+                        var triggerApi = TriggerBuilder.Create()
+                            .WithIdentity(x.Id.ToString(), "groupScrapperApi")
+                            .StartAt(x.Start)
+                            .EndAt(x.End)
+                            .WithSimpleSchedule(xy => xy
+                                .WithIntervalInSeconds(x.Interval)
+                                .RepeatForever())
+
+                            .Build();
+                        _schedulder.ScheduleJob(jobApi, triggerApi, stoppingToken);
                         break;
                 }
 

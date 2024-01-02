@@ -26,7 +26,8 @@ message OpenSourceRequestScan {
     google.protobuf.Timestamp Start=4;
     google.protobuf.Timestamp End=5;
     keywordList list = 6;
-    int32 Interval=7;     
+    int32 Interval=7;  
+    string name = 8;
 }
 message keywordList {
   repeated keyword keyword = 1;

@@ -15,5 +15,6 @@ public enum TypeIntel
     Insum,    // Intelligence Summary
     Other,    // Other or un
     Informant,
-    SocialMedia
+    SocialMedia,
+    NewsArticle
 }
