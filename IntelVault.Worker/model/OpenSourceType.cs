@@ -11,6 +11,7 @@ namespace IntelVault.Worker.model
         Twitter,
         Scrapper,
         Doc,
-        LinkNl
+        LinkNl,
+        Api
     }
 }
