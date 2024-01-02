@@ -39,6 +39,7 @@ enum OpenSourceMediaType{
         Scrapper=1;
         Doc=2;
         LinkNl=3;
+        Api=4;
 }
 
 
