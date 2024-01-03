@@ -17,9 +17,12 @@ using NLog.Extensions.Logging;
 using MongoDB.Bson.Serialization;
 using Quartz.Spi;
 using System.Reactive.Concurrency;
+using IntelVault.Worker.Bussines;
 using Quartz.Simpl;
 using NLog;
+using ILogger = NLog.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,29 +51,26 @@ builder.Services.AddSingleton<ServiceCountry>();
 
 
 builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
-builder.Services.AddQuartzHostedService(options =>
-{
-    // when shutting down we want jobs to complete gracefully
-    options.WaitForJobsToComplete = true;
-});
+//builder.Services.AddQuartzHostedService(options =>
+//{
+//    // when shutting down we want jobs to complete gracefully
+//    options.WaitForJobsToComplete = true;
+//});
 builder.Services.AddGrpc();
 builder.Services.AddHostedService<Worker>();
-//builder.Services.AddSingleton<IJobFactory, JobFactory>();
-//builder.Services.AddHostedService<SingletonJobFactory>();
+builder.Services.AddTransient<IJobFactory, JobFactory>();
 builder.Services.AddSingleton<PoolRequests>();
 builder.Services.AddQuartz(q =>
 {
     // handy when part of cluster or you want to otherwise identify multiple schedulers
     q.SchedulerId = "Scheduler-Core";
-
+  
     // we take this from appsettings.json, just show it's possible
-    q.SchedulerName = "Quartz ASP.NET Core Scheduler";
-
+    q.SchedulerName = "QuartzIntel";
+  
     // as of 3.3.2 this also injects scoped services (like EF DbContext) without problems
-    q.UseMicrosoftDependencyInjectionJobFactory();
-    // or for scoped service support like EF Core DbContext
-    //q.UseMicrosoftDependencyInjectionScopedJobFactory();
-
+ 
+  
     // these are the defaults
     q.UseSimpleTypeLoader();
     q.UseInMemoryStore();
@@ -104,12 +104,22 @@ builder.Services.AddQuartz(q =>
     // these are the defaults
     //  options.ComponentName = "Quartz";
     options.IncludeExceptionDetails = true;
-})
-
-builder.Services.AddSingleton((sp) => {
-
-    var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
-  
+}).AddQuartzHostedService(options =>
+{
+    // when shutting down we want jobs to complete gracefully
+    options.WaitForJobsToComplete = true;
+    // when we need to init another IHostedServices first
+    options.StartDelay = TimeSpan.FromSeconds(10);
+});
+//builder.Services.AddScoped<WebSiteScrapperJob>();
+builder.Services.AddSingleton<RestApiScrapperJob>();
+builder.Services.AddSingleton<WebSiteScrapperJob>();
+builder.Services.AddSingleton<Quartz.IScheduler>((sp) =>
+{
+    using var scope = sp.CreateScope();
+    var schedulerFactory = scope.ServiceProvider.GetService<ISchedulerFactory>();
+    var scheduler =schedulerFactory?.GetScheduler().GetAwaiter().GetResult() ?? throw new InvalidOperationException(); 
+    scheduler.JobFactory = new JobFactory(sp);
     return scheduler;
 });
 

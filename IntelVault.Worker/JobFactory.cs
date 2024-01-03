@@ -10,13 +10,14 @@ public class JobFactory : IJobFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+    public IJob? NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
     {
         return _serviceProvider.GetRequiredService(bundle.JobDetail.JobType) as IJob;
     }
 
     public void ReturnJob(IJob job)
     {
-        // we let the DI container handler this
+        var disposable = job as IDisposable;
+        disposable?.Dispose();
     }
 }

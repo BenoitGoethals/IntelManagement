@@ -11,22 +11,23 @@ using IntelVault.ApplicationCore.Model;
 using static System.Net.WebRequestMethods;
 
 namespace IntelVault.Worker.Bussines;
-[DisallowConcurrentExecution]
+
 public class RestApiScrapperJob : RequestJob, IJob
 {
     
-    private readonly ILogger _logger;
-    private OpenSourceRequest _openSourceRequest;
-    private IIntelService<NewsArticle> IntelService;
+    private readonly ILogger? _logger;
+    private PoolRequests? _poolRequests;
+    private IIntelService<NewsArticle>? IntelService;
 
     /// <inheritdoc />
-    public RestApiScrapperJob(ILogger logger, OpenSourceRequest openSourceRequest, IIntelService<NewsArticle> intelService)
+    public RestApiScrapperJob(ILogger<RestApiScrapperJob>? logger, PoolRequests? poolRequests, IIntelService<NewsArticle>? intelService)
     {
         _logger = logger;
-        _openSourceRequest = openSourceRequest;
+        _poolRequests = poolRequests;
         IntelService = intelService;
     }
 
+  
     public override async Task Execute(IJobExecutionContext context)
     { //api  e00c6f3f1ff748c0b1604c6dc07c5fac
         CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -34,7 +35,7 @@ public class RestApiScrapperJob : RequestJob, IJob
 
         
         var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
-        _openSourceRequest = jobDetailJobData;
+        //_openSourceRequest = jobDetailJobData;
         //var client = new RestClient();
         //var response = await client.ExecuteGetAsync(new RestRequest(){Resource = "https://newsapi.org/v2/everything?q=tesla&from=2023-12-02&sortBy=publishedAt&apiKey=e00c6f3f1ff748c0b1604c6dc07c5fac" }, cancellationToken: token);
         var newsApiClient = new NewsApiClient("e00c6f3f1ff748c0b1604c6dc07c5fac");
