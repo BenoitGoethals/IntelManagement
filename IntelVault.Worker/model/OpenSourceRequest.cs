@@ -3,6 +3,7 @@
 public class OpenSourceRequest
 {
     public int Interval { get; set; }
+    public required string Name { get; set; }
     public Guid Id { get; set; }
     public OpenSourceType SourceType { get; set; }
     public required string Url { get; set; }

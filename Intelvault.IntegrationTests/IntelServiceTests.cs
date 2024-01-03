@@ -80,9 +80,9 @@ namespace IntelVault.IntegrationTests
 
             }
 
-            DbRepository.Count().Result.Should().Be(20);
-             _service.Count().Result.Should().Be(20);
-            await _service.DeleteAll();
+           
+            _service.Count().Result.Should().Be(20);
+           await _service.DeleteAll();
 
             DbRepository.GetAllAsync()?.Result?.FirstOrDefault().Should().BeNull();
         }
@@ -108,7 +108,7 @@ namespace IntelVault.IntegrationTests
                 await _service.Add(GetHumit());
             }
 
-            _service.GetAll(1,10,nameof(HumInt.ContactEmail),"sdfdsfds@fdfs.be")?.Result?.Should().HaveCount(10);
+            _service.GetAll(1, 10, nameof(HumInt.ContactEmail), "sdfdsfds@fdfs.be")?.Result?.Should().HaveCount(10);
 
         }
 
@@ -123,18 +123,18 @@ namespace IntelVault.IntegrationTests
                 AssessmentAndAnalysis = "sfdsfds",
                 ClassificationHandlingInstructions = "dsfdsf",
                 ContactEmail = "sdfdsfds@fdfs.be",
-                ContactName = "fsdfsd"+Guid.NewGuid().ToString(),
+                ContactName = "fsdfsd" + Guid.NewGuid().ToString(),
                 ContactPhoneNumber = "dsfdsf",
-                ContactTitle = "John Doe"+Guid.NewGuid(),
+                ContactTitle = "John Doe" + Guid.NewGuid(),
                 ContextBackground = "sdfsdf",
-                IntelligenceDetails = new List<ListItem>() , 
+                IntelligenceDetails = new List<ListItem>(),
                 LastContactDate = DateTime.Now,
                 OperationalStatus = "asdsa",
                 ReliabilityCredibility = "fdsds",
                 ReliabilityRating = 100,
                 SourceAffiliation = "dsad",
                 SourceInformation = "sdfdsf",
-                SourceName = "sdfdsf"+Guid.NewGuid(),
+                SourceName = "sdfdsf" + Guid.NewGuid(),
                 SourceType = "sadsa",
                 TimeLocation = "uk",
                 HumIntType = HumIntType.Advisors

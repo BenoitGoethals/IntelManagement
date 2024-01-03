@@ -27,6 +27,7 @@ message OpenSourceRequestScan {
      google.protobuf.Timestamp End=5;
      keywordList list = 6;
      int32 Interval=7;     
+     string name = 8;
   
 }
 message keywordList {

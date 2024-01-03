@@ -3,7 +3,26 @@ using Microsoft.AspNetCore.Builder;
 using Quartz;
 using Quartz.Impl;
 using System.Collections.Specialized;
+using FluentValidation;
+
 using IntelVault.Worker.Services;
+using IntelVault.ApplicationCore.Interfaces;
+using IntelVault.ApplicationCore.Model;
+using IntelVault.ApplicationCore.Services;
+using IntelVault.ApplicationCore.validation;
+using IntelVault.Infrastructure.repos;
+using MongoDB.Driver.Core.Configuration;
+using MongoDB.Driver;
+using NLog.Extensions.Logging;
+using MongoDB.Bson.Serialization;
+using Quartz.Spi;
+using System.Reactive.Concurrency;
+using IntelVault.Worker.Bussines;
+using Quartz.Simpl;
+using NLog;
+using ILogger = NLog.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,23 +31,46 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.StartDelay = TimeSpan.FromSeconds(5);
 //    options.WaitForJobsToComplete = true;
 //});
+builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
+{
+    var setting = new MongoClientSettings()
+    {
+        Scheme = ConnectionStringScheme.MongoDB,
+        Server = new MongoServerAddress("localhost", 27017),
+        //  Credential = MongoCredential.CreateCredential("IntelVault", "benoit", "ranger14")
+    };
+    return new MongoClient(setting);
+});
+builder.Services.AddSingleton<NewsArticleValidator>();
+
+builder.Services.AddSingleton<IMongoDbRepository<NewsArticle>, MongoDbRepository<NewsArticle>>(n => new MongoDbRepository<NewsArticle>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<NewsArticle>>>(), "IntelVault"));
+
+builder.Services.AddSingleton<IIntelService<NewsArticle>, IntelService<NewsArticle>>(n => new IntelService<NewsArticle>(n.GetRequiredService<IMongoDbRepository<NewsArticle>>(), n.GetRequiredService<NewsArticleValidator>()));
+
+builder.Services.AddSingleton<ServiceCountry>();
+
+
+builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+//builder.Services.AddQuartzHostedService(options =>
+//{
+//    // when shutting down we want jobs to complete gracefully
+//    options.WaitForJobsToComplete = true;
+//});
 builder.Services.AddGrpc();
 builder.Services.AddHostedService<Worker>();
-
+builder.Services.AddTransient<IJobFactory, JobFactory>();
 builder.Services.AddSingleton<PoolRequests>();
 builder.Services.AddQuartz(q =>
 {
     // handy when part of cluster or you want to otherwise identify multiple schedulers
     q.SchedulerId = "Scheduler-Core";
-
+  
     // we take this from appsettings.json, just show it's possible
-    q.SchedulerName = "Quartz ASP.NET Core Scheduler";
-
+    q.SchedulerName = "QuartzIntel";
+  
     // as of 3.3.2 this also injects scoped services (like EF DbContext) without problems
-    q.UseMicrosoftDependencyInjectionJobFactory();
-    // or for scoped service support like EF Core DbContext
-    //q.UseMicrosoftDependencyInjectionScopedJobFactory();
-
+ 
+  
     // these are the defaults
     q.UseSimpleTypeLoader();
     q.UseInMemoryStore();
@@ -58,30 +100,45 @@ builder.Services.AddQuartz(q =>
     });
 
 }).AddQuartzOpenTracing(options =>
-    {
-        // these are the defaults
-      //  options.ComponentName = "Quartz";
-        options.IncludeExceptionDetails = true;
-    })
-.AddSingleton<Quartz.IScheduler>((sp) => {
-
-    var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
+{
+    // these are the defaults
+    //  options.ComponentName = "Quartz";
+    options.IncludeExceptionDetails = true;
+}).AddQuartzHostedService(options =>
+{
+    // when shutting down we want jobs to complete gracefully
+    options.WaitForJobsToComplete = true;
+    // when we need to init another IHostedServices first
+    options.StartDelay = TimeSpan.FromSeconds(10);
+});
+//builder.Services.AddScoped<WebSiteScrapperJob>();
+builder.Services.AddSingleton<RestApiScrapperJob>();
+builder.Services.AddSingleton<WebSiteScrapperJob>();
+builder.Services.AddSingleton<Quartz.IScheduler>((sp) =>
+{
+    using var scope = sp.CreateScope();
+    var schedulerFactory = scope.ServiceProvider.GetService<ISchedulerFactory>();
+    var scheduler =schedulerFactory?.GetScheduler().GetAwaiter().GetResult() ?? throw new InvalidOperationException(); 
+    scheduler.JobFactory = new JobFactory(sp);
     return scheduler;
 });
+
 
 
 builder.Services.AddLogging(loggingBuilder =>
 {
     loggingBuilder.ClearProviders(); // Clear other logging providers
     loggingBuilder.SetMinimumLevel(LogLevel.Debug);
+    loggingBuilder.AddNLog(builder.Configuration);
     loggingBuilder.AddConsole();
 });
 
-builder.Services.AddQuartzHostedService(options =>
+BsonClassMap.RegisterClassMap<SocialMedia>(cm =>
 {
-    // when shutting down we want jobs to complete gracefully
-    options.WaitForJobsToComplete = true;
+    cm.AutoMap();
+    cm.SetDiscriminator("SocialMedia");
 });
+
 
 
 var host = builder.Build();

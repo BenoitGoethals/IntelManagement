@@ -1,6 +1,7 @@
 using IntelVault.Worker.Bussines;
 using IntelVault.Worker.model;
 using IntelVault.Worker.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.Impl.Matchers;
 using IScheduler = Quartz.IScheduler;
@@ -10,13 +11,15 @@ namespace IntelVault.Worker
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly IScheduler _schedulder;
+        private readonly IScheduler _scheduler;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Worker(ILogger<Worker> logger, IScheduler schedulder, PoolRequests poolRequests)
+        public Worker(ILogger<Worker> logger, IScheduler scheduler, PoolRequests poolRequests,IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _schedulder = schedulder;
+            _scheduler = scheduler;
             _obs=poolRequests;
+            _serviceProvider=serviceProvider;
             
         }
 
@@ -28,14 +31,19 @@ namespace IntelVault.Worker
         {
 
             _obs.Subscribe( x =>
+            
             {
+                if (!_scheduler.IsStarted)
+                {
+                    _scheduler.Start(stoppingToken);
+                }
+                var m = new JobDataMap();
+                m.Put(nameof(OpenSourceRequest), x);
                 switch (x.SourceType)
                 {
+                    
                     case OpenSourceType.Scrapper:
-                        _schedulder.Start(stoppingToken);
-                        var m = new JobDataMap();
-                        m.Put(nameof(OpenSourceRequest),x);
-
+                        
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
                             .UsingJobData(m)
@@ -49,7 +57,24 @@ namespace IntelVault.Worker
                                 .RepeatForever())
                             
                             .Build();
-                         _schedulder.ScheduleJob(job, trigger, stoppingToken);
+                         _scheduler.ScheduleJob(job, trigger, stoppingToken);
+                        break;
+                    case OpenSourceType.Api:
+                  
+                        var jobApi = JobBuilder.Create<RestApiScrapperJob>()
+                            .WithIdentity(x.Id.ToString(), "groupScrapperApi")
+                            .UsingJobData(m)
+                            .Build();
+                        var triggerApi = TriggerBuilder.Create()
+                            .WithIdentity(x.Id.ToString(), "groupScrapperApi")
+                            .StartAt(x.Start)
+                            .EndAt(x.End)
+                            .WithSimpleSchedule(xy => xy
+                                .WithIntervalInSeconds(x.Interval)
+                                .RepeatForever())
+
+                            .Build();
+                        _scheduler.ScheduleJob(jobApi, triggerApi, stoppingToken);
                         break;
                 }
 
@@ -65,7 +90,7 @@ namespace IntelVault.Worker
                 
 
             }
-            await _schedulder.Shutdown(stoppingToken);
+            await _scheduler.Shutdown(stoppingToken);
         }
     }
 }
