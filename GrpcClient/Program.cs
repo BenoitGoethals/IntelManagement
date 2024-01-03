@@ -12,14 +12,14 @@ namespace GrpcClient
             keywordList li=new keywordList();
             li.Keyword.AddRange(new keyword[]
             {
-                //new keyword()
-                //{
-                //    Name = "Raoul Hedebouw"
-                //},
-                //new keyword() { Name = "Peter Mertens" }
-                //, new keyword() { Name = "Sofie Merckx"}
-                //    , new keyword() { Name = " Jos D’Haese"}
-                //    , new keyword() { Name = "Steven De Vuyss"}
+                new keyword()
+                {
+                    Name = "Raoul Hedebouw"
+                },
+                new keyword() { Name = "Peter Mertens" }
+                , new keyword() { Name = "Sofie Merckx"}
+                    , new keyword() { Name = " Jos D’Haese"}
+                    , new keyword() { Name = "Steven De Vuyss"},
                      new keyword() { Name = "Nabil Boukili" }
             });
             

@@ -14,26 +14,26 @@ namespace IntelVault.Worker.Bussines;
 
 public class RestApiScrapperJob : RequestJob, IJob
 {
-    
+
     private readonly ILogger? _logger;
     private PoolRequests? _poolRequests;
-    private IIntelService<NewsArticle>? IntelService;
+    private IIntelService<NewsArticle>? _intelService;
 
     /// <inheritdoc />
     public RestApiScrapperJob(ILogger<RestApiScrapperJob>? logger, PoolRequests? poolRequests, IIntelService<NewsArticle>? intelService)
     {
         _logger = logger;
         _poolRequests = poolRequests;
-        IntelService = intelService;
+        _intelService = intelService;
     }
 
-  
+
     public override async Task Execute(IJobExecutionContext context)
     { //api  e00c6f3f1ff748c0b1604c6dc07c5fac
         CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         CancellationToken token = cancelTokenSource.Token;
 
-        
+
         var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
         //_openSourceRequest = jobDetailJobData;
         //var client = new RestClient();
@@ -47,34 +47,37 @@ public class RestApiScrapperJob : RequestJob, IJob
                     Q = key,
                     SortBy = SortBys.Popularity,
                     Language = Languages.NL,
-                    
+
                 });
                 if (articlesResponse.Status == Statuses.Ok)
                 {
                     // total results found  
                     Console.WriteLine(articlesResponse.TotalResults);
-                    // here's the first 20
+          
                     foreach (var article in articlesResponse.Articles)
                     {
-                        // title
-                        Console.WriteLine(article.Title);
-                        // author
-                        Console.WriteLine(article.Author);
-                        // description
-                        Console.WriteLine(article.Description);
-                        // url
-                        Console.WriteLine(article.Url);
-                        // published at
-                        Console.WriteLine(article.PublishedAt);
+                      
+                        if (_intelService != null)
+                        {
+                            await _intelService.Add(new NewsArticle()
+                            {
+                                Author = article.Author,
+                                PublishedDate = article.PublishedAt,
+                                Source = article.Source.Name,
+                                ShortContent = article.Description,
+                                keywords = [key],
+                                Title = article.Title,
+                                IntelType = TypeIntel.NewsArticle,
+                                Content = article.Url
+
+                            });
+                        }
+                      
                     }
                 }
             }
-        // init with your API key
-       
-       
-
-        
-        await Task.Delay(1000);
+     
+        await Task.Delay(1000, token);
 
     }
 
