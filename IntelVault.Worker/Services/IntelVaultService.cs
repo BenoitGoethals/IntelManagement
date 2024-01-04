@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using IntelVault.Worker.model;
 using Microsoft.AspNetCore.Components;
 
@@ -47,5 +48,20 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
             request.KeyWords.Add(keyword.Name);
         }
         return request;
+    }
+
+    public override Task AllJobsRunning(Empty request, IServerStreamWriter<ListJobsRunning> responseStream, ServerCallContext context)
+    {
+        return base.AllJobsRunning(request, responseStream, context);
+    }
+
+    public override Task<IsRunning> IsWorkerRunning(Empty request, ServerCallContext context)
+    {
+        return base.IsWorkerRunning(request, context);
+    }
+
+    public override Task NewsDocumentAdded(Empty request, IServerStreamWriter<NewsItem> responseStream, ServerCallContext context)
+    {
+        return base.NewsDocumentAdded(request, responseStream, context);
     }
 }
