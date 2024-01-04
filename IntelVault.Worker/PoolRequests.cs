@@ -5,13 +5,12 @@ using IntelVault.Worker.model;
 
 namespace IntelVault.Worker;
 
-public class PoolRequests : IObservable<OpenSourceRequest>, IDisposable
+public class PoolRequests : IObservable<OpenSourceRequest>
 {
     private ConcurrentQueue<OpenSourceRequest> _requests = new ConcurrentQueue<OpenSourceRequest>();
     public bool IsRunning { get; private set; }
     private readonly List<IObserver<OpenSourceRequest>>? _observers = new();
-    private CancellationToken _cancellationToken;
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    
     public void AddRequest(OpenSourceRequest openSourceRequest)
     {
 
@@ -47,8 +46,4 @@ public class PoolRequests : IObservable<OpenSourceRequest>, IDisposable
     }
 
 
-    public void Dispose()
-    {
-        _cancellationTokenSource.Dispose();
-    }
 }

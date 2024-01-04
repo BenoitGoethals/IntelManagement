@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Grpc.Net.Client;
 using IntelVault.Worker;
 
@@ -8,6 +9,8 @@ namespace GrpcClient
     {
         static void Main(string[] args)
         {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            var token=cts.Token;
             using var channel = GrpcChannel.ForAddress("https://localhost:5001"); // Replace with your gRPC server address
             keywordList li=new keywordList();
             li.Keyword.AddRange(new keyword[]
@@ -31,11 +34,30 @@ namespace GrpcClient
                Console.WriteLine("Make a chose :");
                Console.WriteLine("(A) API");
                Console.WriteLine("(W) API");
-               
-               var key=Console.ReadKey().Key;
+               Console.WriteLine("(J) All Jobs");
+               Console.WriteLine("(R) running");
+
+                var key=Console.ReadKey().Key;
 
                switch (key)
                {
+                   case ConsoleKey.J:
+                       var allJobs = client.AllJobsRunning(new Empty());
+                       var responseReaderTask = Task.Run(async () =>
+                       {
+                           while (await allJobs.ResponseStream.MoveNext(token))
+                           {
+                               var note = allJobs.ResponseStream.Current;
+                               Console.WriteLine("1 Received " + note.Name);
+                           }
+                       }, token);
+
+                       
+                       break;
+                    case ConsoleKey.R:
+                       var running=client.IsWorkerRunningAsync(new Empty());
+                       Console.WriteLine($"Running worker {running.ResponseAsync.Result.Running}");
+                       break;
                     case ConsoleKey.W:
                         var request = new OpenSourceRequestScan()
                         {
@@ -64,7 +86,6 @@ namespace GrpcClient
                             OpenSourceType = OpenSourceMediaType.Api,
                             Interval = 10,
                             Name = "api " + Guid.NewGuid().ToString()
-
 
                         };
                         var response2 = client.MakeJob(request2);

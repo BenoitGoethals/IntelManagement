@@ -13,7 +13,7 @@ service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
   rpc MakeJob(OpenSourceRequestScan) returns (Status);
-  rpc AllJobsRunning(google.protobuf.Empty) returns (stream ListJobsRunning);
+  rpc AllJobsRunning(google.protobuf.Empty) returns (stream Job);
   rpc IsWorkerRunning(google.protobuf.Empty) returns (IsRunning);
   rpc NewsDocumentAdded(google.protobuf.Empty) returns (stream NewsItem);
 }

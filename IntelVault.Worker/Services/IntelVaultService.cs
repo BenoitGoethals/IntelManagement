@@ -1,14 +1,19 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using IntelVault.Worker.model;
 using Microsoft.AspNetCore.Components;
+using Quartz;
 
 namespace IntelVault.Worker.Services;
 
-public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests poolRequests)
+public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests poolRequests, IScheduler scheduler)
     : Greeter.GreeterBase
 {
     public PoolRequests PoolRequests { get; } = poolRequests;
+    public IScheduler Scheduler { get; } = scheduler;
+
 
     public override Task<HelloReply> SayHello(HelloRequest request,
         ServerCallContext context)
@@ -50,18 +55,27 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
         return request;
     }
 
-    public override Task AllJobsRunning(Empty request, IServerStreamWriter<ListJobsRunning> responseStream, ServerCallContext context)
-    {
-        return base.AllJobsRunning(request, responseStream, context);
-    }
 
     public override Task<IsRunning> IsWorkerRunning(Empty request, ServerCallContext context)
     {
-        return base.IsWorkerRunning(request, context);
+        return Task.FromResult(new IsRunning(){Running = Scheduler.IsStarted });
     }
 
-    public override Task NewsDocumentAdded(Empty request, IServerStreamWriter<NewsItem> responseStream, ServerCallContext context)
+    public override async Task AllJobsRunning(Empty request, IServerStreamWriter<Job> responseStream, ServerCallContext context)
     {
-        return base.NewsDocumentAdded(request, responseStream, context);
+        var dsp = Scheduler.GetCurrentlyExecutingJobs(CancellationToken.None).GetAwaiter().GetResult().ToObservable().Subscribe(
+            onNext:  item =>  responseStream.WriteAsync(new Job(){Name = item.JobDetail.Description}),
+            onError: ex => Console.WriteLine($"Error: {ex.Message}"),
+            onCompleted: () => Console.WriteLine("Observable completed")
+            );
+
+        while (!context.CancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(500); // Gotta look busy
+
+           
+
+        //    await responseStream.WriteAsync(new TempatureReply() { Message = forecast });
+        }
     }
 }
