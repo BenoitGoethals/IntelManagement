@@ -5,14 +5,14 @@ using IntelVault.Worker;
 
 namespace GrpcClient
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             CancellationTokenSource cts = new CancellationTokenSource();
-            var token=cts.Token;
+            var token = cts.Token;
             using var channel = GrpcChannel.ForAddress("https://localhost:5001"); // Replace with your gRPC server address
-            keywordList li=new keywordList();
+            keywordList li = new keywordList();
             li.Keyword.AddRange(new keyword[]
             {
                 new keyword()
@@ -25,39 +25,58 @@ namespace GrpcClient
                     , new keyword() { Name = "Steven De Vuyss"},
                      new keyword() { Name = "Nabil Boukili" }
             });
-            
-            
+
+
             var client = new Greeter.GreeterClient(channel);
-           
+            Task backgroundTask= new Task(async () =>
+            {
+                try
+                {
+                    var rs = client.NewsDocumentAdded(new Empty()).ResponseStream;
+                    await foreach (var data in rs.ReadAllAsync(cancellationToken: cts.Token))
+                    {
+                        Console.WriteLine(data.Title);
+                    }
+                }
+                catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+                {
+                    Console.WriteLine("Stream cancelled.");
+                }
+            }, token);
+            backgroundTask.Start(TaskScheduler.Current);
             do
             {
-               Console.WriteLine("Make a chose :");
-               Console.WriteLine("(A) API");
-               Console.WriteLine("(W) API");
-               Console.WriteLine("(J) All Jobs");
-               Console.WriteLine("(R) running");
+                Console.WriteLine("Make a chose :");
+                Console.WriteLine("(A) API");
+                Console.WriteLine("(W) API");
+                Console.WriteLine("(J) All Jobs");
+                Console.WriteLine("(R) running");
 
-                var key=Console.ReadKey().Key;
+                var key = Console.ReadKey().Key;
 
-               switch (key)
-               {
-                   case ConsoleKey.J:
-                       var allJobs = client.AllJobsRunning(new Empty());
-                       var responseReaderTask = Task.Run(async () =>
-                       {
-                           while (await allJobs.ResponseStream.MoveNext(token))
-                           {
-                               var note = allJobs.ResponseStream.Current;
-                               Console.WriteLine("1 Received " + note.Name);
-                           }
-                       }, token);
+                switch (key)
+                {
 
-                       
-                       break;
+                    case ConsoleKey.J:
+
+                        try
+                        {
+                            var allJobs = client.AllJobsRunningAsync(new Empty()).ResponseAsync.Result.Job;
+                            foreach (var job in allJobs)
+                            {
+                                Console.WriteLine(job.Name);
+                            }
+                        }
+                        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+                        {
+                            Console.WriteLine("Stream cancelled.");
+                        }
+
+                        break;
                     case ConsoleKey.R:
-                       var running=client.IsWorkerRunningAsync(new Empty());
-                       Console.WriteLine($"Running worker {running.ResponseAsync.Result.Running}");
-                       break;
+                        var running = client.IsWorkerRunningAsync(new Empty());
+                        Console.WriteLine($"Running worker {running.ResponseAsync.Result.Running}");
+                        break;
                     case ConsoleKey.W:
                         var request = new OpenSourceRequestScan()
                         {
@@ -68,7 +87,7 @@ namespace GrpcClient
                             List = li,
                             OpenSourceType = OpenSourceMediaType.Scrapper,
                             Interval = 10,
-                            Name = "web "+ Guid.NewGuid().ToString()
+                            Name = "web " + Guid.NewGuid().ToString()
 
 
                         };
@@ -93,14 +112,14 @@ namespace GrpcClient
                         break;
                     default:
                         return;
-                       
-               }
+
+                }
 
             } while (true);
+
            
-            
-        
+
         }
     }
-    
+
 }

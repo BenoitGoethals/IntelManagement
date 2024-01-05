@@ -31,7 +31,6 @@ namespace IntelVault.Worker
         {
 
             _obs.Subscribe( x =>
-            
             {
                 if (!_scheduler.IsStarted)
                 {
@@ -41,9 +40,7 @@ namespace IntelVault.Worker
                 m.Put(nameof(OpenSourceRequest), x);
                 switch (x.SourceType)
                 {
-                    
                     case OpenSourceType.Scrapper:
-                        
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
                             .UsingJobData(m)
@@ -77,18 +74,13 @@ namespace IntelVault.Worker
                         _scheduler.ScheduleJob(jobApi, triggerApi, stoppingToken);
                         break;
                 }
-
             });
           
           
             _logger.LogInformation("WORKER STARTED");
             while (!stoppingToken.IsCancellationRequested)
             {
-              
                 await Task.Delay(1000, stoppingToken);
-                
-                
-
             }
             await _scheduler.Shutdown(stoppingToken);
         }
