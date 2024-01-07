@@ -1,6 +1,7 @@
 ﻿@page "/WorkerPage"
 @using IntelVault.Infrastructure.Workers
-@inject IWorkersGrpc worker;
+@using System.Collections.ObjectModel
+@inject IWorkersGrpc Worker;
 <h3>WorkerPage</h3>
 @if (_jobsList == null)
 {
@@ -8,76 +9,86 @@
 }
 else
 {
+    <SfGrid DataSource="@_observableCollection" TValue="QJobs" AllowPaging="true">
+        <GridColumns>
+            <GridColumn Field="@nameof(QJobs.Name)" HeaderText="ID" TextAlign="TextAlign.Right" Width="100"></GridColumn>
+            <GridColumn Field="@nameof(QJobs.Description)" HeaderText="Description" Width="150"></GridColumn>
+            <GridColumn Field="@nameof(QJobs.StartDate)" HeaderText="StartDate" TextAlign="TextAlign.Left" Type="ColumnType.Date" Width="100"></GridColumn>
+            <GridColumn Field="@nameof(QJobs.EndDate)" HeaderText="EndDate" TextAlign="TextAlign.Left" Type="ColumnType.Date" Width="100"></GridColumn>
+            <GridColumn Field="@nameof(QJobs.Next)" HeaderText="Next" TextAlign="TextAlign.Left" Type="ColumnType.Date" Width="100"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+
     <SfGrid DataSource="@_jobsList">
-    <GridTemplates>
-        <RowTemplate Context="emp">
-            @{
-                var job = (emp as QJobs);
-                // <td class="photo">
-                //     <img src="@($" scripts/Images/Employees/{employee.EmployeeID}.png")" alt="@employee.EmployeeID" />
-                // </td>
-                <td class="details">
-                    <table class="CardTable" cellpadding="3" cellspacing="2">
-                        <colgroup>
-                            <col width="25%">
-                            <col width="65%">
-                         
-                            <col width="10%">
-                        </colgroup>
-                        <tbody>
-                            <tr>
-                                <td class="CardHeader">Name </td>
-                                <td>@job.Name </td>
+        <GridTemplates>
+            <RowTemplate Context="emp">
+                @{
+                    var job = (emp as QJobs);
+                    // <td class="photo">
+                    //     <img src="@($" scripts/Images/Employees/{employee.EmployeeID}.png")" alt="@employee.EmployeeID" />
+                    // </td>
+                    <td class="details">
+                        <table class="CardTable" cellpadding="3" cellspacing="2">
+                            <colgroup>
+                                <col width="25%">
+                                <col width="65%">
+
+                                <col width="10%">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <td class="CardHeader">Name </td>
+                                    <td>@job.Name </td>
                                     <td><SfButton Content="stop" IsPrimary="true"></SfButton><SfButton Content="Start" IsPrimary="true"></SfButton></td>
-                             
-                            </tr>
-                            <tr>
+
+                                </tr>
+                                <tr>
                                     <td class="CardHeader">Description</td>
-                                <td>@job.Description </td>
-                            </tr>
-                            <tr>
-                                <td class="CardHeader">
-                                    Title
-                                </td>
-                                <td>
-                                    @job.Name
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="CardHeader">
-                                Start DTG
-                            </td>
-                            <td>
-                                @job.StartDate
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="CardHeader">
-                                End DTG
-                            </td>
-                            <td>
-                                @job.EndDate
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="CardHeader">
-                                         Next DTG
-                            </td>
-                            <td>
-                                @job.Next
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            }
-        </RowTemplate>
-    </GridTemplates>
-    <GridColumns>
-        <GridColumn HeaderText="Job Running" Width="250" TextAlign="TextAlign.Left"> </GridColumn>
-       
-    </GridColumns>
-</SfGrid>
+                                    <td>@job.Description </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Title
+                                    </td>
+                                    <td>
+                                        @job.Name
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Start DTG
+                                    </td>
+                                    <td>
+                                        @job.StartDate
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        End DTG
+                                    </td>
+                                    <td>
+                                        @job.EndDate
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Next DTG
+                                    </td>
+                                    <td>
+                                        @job.Next
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                }
+            </RowTemplate>
+        </GridTemplates>
+        <GridColumns>
+            <GridColumn HeaderText="Job Running" Width="250" TextAlign="TextAlign.Left"> </GridColumn>
+
+        </GridColumns>
+    </SfGrid>
 
 }
 <style type="text/css" class="cssStyles">
@@ -130,9 +141,12 @@ else
     private List<QJobs>? _jobsList;
     private bool? _working;
 
+    private ObservableCollection<QJobs>? _observableCollection;
+
     protected override async Task OnInitializedAsync()
     {
-        _jobsList = await worker.GetJobs() as List<QJobs>;
-        _working = await worker.IsWorkerRunning();
+        _jobsList = await Worker.GetJobs() as List<QJobs>;
+        _working = await Worker.IsWorkerRunning();
+        _observableCollection = Worker.GetSstreamingJobs();
     }
 }

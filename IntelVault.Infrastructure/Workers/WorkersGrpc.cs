@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Collections.ObjectModel;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using IntelVault.Worker;
@@ -13,11 +14,47 @@ public class WorkersGrpc : IWorkersGrpc
     private readonly ILogger<WorkersGrpc> _logger;
     private readonly Greeter.GreeterClient _client;
 
+
     public WorkersGrpc(ILogger<WorkersGrpc> logger)
     {
         _logger = logger;
         var grpcChannel = GrpcChannel.ForAddress("https://localhost:5001"); // Replace with your gRPC server address
         _client = new Greeter.GreeterClient(grpcChannel);
+
+    }
+
+    public ObservableCollection<QJobs> GetSstreamingJobs()
+    {
+        ObservableCollection<QJobs> jobsList = new ObservableCollection<QJobs>();
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        var token = cancellationTokenSource.Token;
+
+        Task backgroundTask = new Task(Action, token);
+        backgroundTask.Start(TaskScheduler.Current);
+
+        return jobsList;
+
+        async void Action()
+        {
+            try
+            {
+                var rs = _client.NewsDocumentAdded(new Empty()).ResponseStream;
+                await foreach (var job in rs.ReadAllAsync(cancellationToken: token))
+                {
+                    jobsList.Add(new QJobs()
+                    {
+                        Name = job.Name,
+                        Description = job.Url,
+                        EndDate = job.End.ToDateTime(),
+                        StartDate = job.Start.ToDateTime(),
+                    });
+                }
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+            {
+                _logger.LogError("Stream cancelled.");
+            }
+        }
     }
 
     public async Task<IList<QJobs>?> GetJobs()
@@ -35,7 +72,7 @@ public class WorkersGrpc : IWorkersGrpc
                     EndDate = job.EndDate.ToDateTime(),
                     StartDate = job.StartDate.ToDateTime(),
                     Next = job.Next.ToDateTime()
-                    
+
                 });
             }
             return jobs;
@@ -90,4 +127,8 @@ public class WorkersGrpc : IWorkersGrpc
         return null;
     }
 
+}
+
+public class QNews : QJobs
+{
 }

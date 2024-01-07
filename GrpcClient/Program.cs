@@ -35,7 +35,7 @@ namespace GrpcClient
                     var rs = client.NewsDocumentAdded(new Empty()).ResponseStream;
                     await foreach (var data in rs.ReadAllAsync(cancellationToken: cts.Token))
                     {
-                        Console.WriteLine(data.Title);
+                        Console.WriteLine(data.Name);
                     }
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

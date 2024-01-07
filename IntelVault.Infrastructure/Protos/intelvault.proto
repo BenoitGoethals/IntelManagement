@@ -15,7 +15,7 @@ service Greeter {
   rpc MakeJob(OpenSourceRequestScan) returns (Status);
   rpc AllJobsRunning(google.protobuf.Empty) returns (ListJobsRunning);
   rpc IsWorkerRunning(google.protobuf.Empty) returns (IsRunning);
-  rpc NewsDocumentAdded(google.protobuf.Empty) returns (stream NewsItem);
+  rpc NewsDocumentAdded(google.protobuf.Empty) returns (stream OpenSourceRequestScan);
 }
 
 // The request message containing the user's name.

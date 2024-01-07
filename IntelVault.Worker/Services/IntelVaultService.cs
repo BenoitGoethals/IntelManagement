@@ -70,7 +70,7 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
         var jobs = new ListJobsRunning();
         // Get all job keys
         var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-
+        
         // Iterate through each job key and get the job details
         foreach (var jobKey in jobKeys)
         {
@@ -94,15 +94,19 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
 
     }
 
-    public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<NewsItem> responseStream, ServerCallContext context)
+    public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<OpenSourceRequestScan> responseStream, ServerCallContext context)
     {
         poolRequests.Subscribe(x =>
         {
-            responseStream.WriteAsync(new NewsItem()
+            responseStream.WriteAsync(new OpenSourceRequestScan()
             {
-                Title = x.Name,
-                Content = x.Url,
-                PublishedDate = x.Start.ToTimestamp()
+                Name = x.Name,
+                Url = x.Url,
+                Start = x.Start.ToTimestamp(),
+                End = x.End.ToTimestamp(),
+                OpenSourceType = (OpenSourceMediaType) x.SourceType,
+                Interval = x.Interval
+               
             });
         });
 
