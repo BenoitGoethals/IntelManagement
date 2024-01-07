@@ -13,7 +13,7 @@ public class WorkersGrpc : IWorkersGrpc
 {
     private readonly ILogger<WorkersGrpc> _logger;
     private readonly Greeter.GreeterClient _client;
-
+    private readonly ObservableCollection<QJobs> jobsList = new ObservableCollection<QJobs>();
 
     public WorkersGrpc(ILogger<WorkersGrpc> logger)
     {
@@ -25,7 +25,7 @@ public class WorkersGrpc : IWorkersGrpc
 
     public ObservableCollection<QJobs> GetSstreamingJobs()
     {
-        ObservableCollection<QJobs> jobsList = new ObservableCollection<QJobs>();
+       
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
 

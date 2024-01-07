@@ -1,15 +1,16 @@
 ﻿@page "/WorkerPage"
 @using IntelVault.Infrastructure.Workers
 @using System.Collections.ObjectModel
+@rendermode InteractiveServer
 @inject IWorkersGrpc Worker;
 <h3>WorkerPage</h3>
-@if (_jobsList == null)
+@if (JobsList == null)
 {
     <h1>Loading</h1>
 }
 else
 {
-    <SfGrid DataSource="@_observableCollection" TValue="QJobs" AllowPaging="true">
+    <SfGrid DataSource="@_observableCollection"  AllowPaging="true">
         <GridColumns>
             <GridColumn Field="@nameof(QJobs.Name)" HeaderText="ID" TextAlign="TextAlign.Right" Width="100"></GridColumn>
             <GridColumn Field="@nameof(QJobs.Description)" HeaderText="Description" Width="150"></GridColumn>
@@ -19,7 +20,7 @@ else
         </GridColumns>
     </SfGrid>
 
-    <SfGrid DataSource="@_jobsList">
+    <SfGrid DataSource="@JobsList">
         <GridTemplates>
             <RowTemplate Context="emp">
                 @{
@@ -138,14 +139,14 @@ else
 
 
 @code {
-    private List<QJobs>? _jobsList;
+    public List<QJobs>? JobsList { get; private set; }
     private bool? _working;
 
     private ObservableCollection<QJobs>? _observableCollection;
 
     protected override async Task OnInitializedAsync()
     {
-        _jobsList = await Worker.GetJobs() as List<QJobs>;
+        JobsList = await Worker.GetJobs() as List<QJobs>;
         _working = await Worker.IsWorkerRunning();
         _observableCollection = Worker.GetSstreamingJobs();
     }
