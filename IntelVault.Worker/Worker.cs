@@ -43,12 +43,14 @@ namespace IntelVault.Worker
                     case OpenSourceType.Scrapper:
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
+                            .WithDescription(x.Name)
                             .UsingJobData(m)
                             .Build();
                         var trigger = TriggerBuilder.Create()
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                            .StartAt(x.Start)
                             .EndAt(x.End)
+                            .WithDescription(x.Name)
                             .WithSimpleSchedule(xy => xy
                                 .WithIntervalInSeconds(x.Interval)
                                 .RepeatForever())
@@ -61,10 +63,12 @@ namespace IntelVault.Worker
                         var jobApi = JobBuilder.Create<RestApiScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapperApi")
                             .UsingJobData(m)
+                            .WithDescription(x.Name)
                             .Build();
                         var triggerApi = TriggerBuilder.Create()
                             .WithIdentity(x.Id.ToString(), "groupScrapperApi")
                             .StartAt(x.Start)
+                            .WithDescription(x.Name)
                             .EndAt(x.End)
                             .WithSimpleSchedule(xy => xy
                                 .WithIntervalInSeconds(x.Interval)

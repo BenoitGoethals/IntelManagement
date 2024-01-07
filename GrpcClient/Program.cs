@@ -64,7 +64,7 @@ namespace GrpcClient
                             var allJobs = client.AllJobsRunningAsync(new Empty()).ResponseAsync.Result.Job;
                             foreach (var job in allJobs)
                             {
-                                Console.WriteLine(job.Name);
+                                Console.WriteLine($"{job.Name} - {job.Description} - {job.StartDate.ToDateTime()} - {job.EndDate.ToDateTime()} - next : {job.Next.ToDateTime()}");
                             }
                         }
                         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

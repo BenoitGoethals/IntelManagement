@@ -1,5 +1,138 @@
-﻿<h3>WorkerPage</h3>
+﻿@page "/WorkerPage"
+@using IntelVault.Infrastructure.Workers
+@inject IWorkersGrpc worker;
+<h3>WorkerPage</h3>
+@if (_jobsList == null)
+{
+    <h1>Loading</h1>
+}
+else
+{
+    <SfGrid DataSource="@_jobsList">
+    <GridTemplates>
+        <RowTemplate Context="emp">
+            @{
+                var job = (emp as QJobs);
+                // <td class="photo">
+                //     <img src="@($" scripts/Images/Employees/{employee.EmployeeID}.png")" alt="@employee.EmployeeID" />
+                // </td>
+                <td class="details">
+                    <table class="CardTable" cellpadding="3" cellspacing="2">
+                        <colgroup>
+                            <col width="25%">
+                            <col width="65%">
+                         
+                            <col width="10%">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td class="CardHeader">Name </td>
+                                <td>@job.Name </td>
+                                    <td><SfButton Content="stop" IsPrimary="true"></SfButton><SfButton Content="Start" IsPrimary="true"></SfButton></td>
+                             
+                            </tr>
+                            <tr>
+                                    <td class="CardHeader">Description</td>
+                                <td>@job.Description </td>
+                            </tr>
+                            <tr>
+                                <td class="CardHeader">
+                                    Title
+                                </td>
+                                <td>
+                                    @job.Name
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="CardHeader">
+                                Start DTG
+                            </td>
+                            <td>
+                                @job.StartDate
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CardHeader">
+                                End DTG
+                            </td>
+                            <td>
+                                @job.EndDate
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CardHeader">
+                                         Next DTG
+                            </td>
+                            <td>
+                                @job.Next
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            }
+        </RowTemplate>
+    </GridTemplates>
+    <GridColumns>
+        <GridColumn HeaderText="Job Running" Width="250" TextAlign="TextAlign.Left"> </GridColumn>
+       
+    </GridColumns>
+</SfGrid>
+
+}
+<style type="text/css" class="cssStyles">
+    .photo img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .photo,
+    .details {
+        border-color: #e0e0e0;
+        border-style: solid;
+    }
+
+    .photo {
+        border-width: 1px 0px 0px 0px;
+        text-align: center;
+    }
+
+    .details {
+        border-width: 1px 0px 0px 0px;
+        padding-left: 18px;
+    }
+
+    .e-bigger .details {
+        padding-left: 25px;
+    }
+
+    .e-device .details {
+        padding-left: 8px;
+    }
+
+    .details > table {
+        width: 100%;
+    }
+
+    .CardHeader {
+        font-weight: 600;
+    }
+
+    td {
+        padding: 2px 2px 3px 4px;
+    }
+</style>
+
 
 @code {
+    private List<QJobs>? _jobsList;
+    private bool? _working;
 
+    protected override async Task OnInitializedAsync()
+    {
+        _jobsList = await worker.GetJobs() as List<QJobs>;
+        _working = await worker.IsWorkerRunning();
+    }
 }

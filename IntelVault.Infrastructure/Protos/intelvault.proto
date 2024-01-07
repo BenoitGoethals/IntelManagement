@@ -13,12 +13,16 @@ service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
   rpc MakeJob(OpenSourceRequestScan) returns (Status);
+  rpc AllJobsRunning(google.protobuf.Empty) returns (ListJobsRunning);
+  rpc IsWorkerRunning(google.protobuf.Empty) returns (IsRunning);
+  rpc NewsDocumentAdded(google.protobuf.Empty) returns (stream NewsItem);
 }
 
 // The request message containing the user's name.
 message HelloRequest {
   string name = 1;
 }
+
 message OpenSourceRequestScan {
      string id =1;
      string url = 2;
@@ -27,9 +31,26 @@ message OpenSourceRequestScan {
      google.protobuf.Timestamp End=5;
      keywordList list = 6;
      int32 Interval=7;     
-     string name = 8;
-  
+     string name = 8;  
 }
+
+message IsRunning {
+    bool running = 1;
+}
+
+message ListJobsRunning {
+  repeated Job job = 1;
+}
+
+message Job{
+    string name = 1;
+    string description=2;
+    google.protobuf.Timestamp startDate=3;
+    google.protobuf.Timestamp endDate=4; 
+    int32 timetriggerd=5;
+    google.protobuf.Timestamp next=6;
+}
+
 message keywordList {
   repeated keyword keyword = 1;
 }
@@ -53,4 +74,12 @@ message HelloReply {
 
 message Status {
   string message = 1;
+}
+
+message NewsItem{
+    string Title =1;
+    string Author =2;
+    google.protobuf.Timestamp PublishedDate =3;
+    string Content =4;
+    string Source =5;
 }

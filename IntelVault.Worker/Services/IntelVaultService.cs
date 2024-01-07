@@ -71,38 +71,46 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
         // Get all job keys
         var jobKeys = await scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
 
-        // List to store scheduled jobs
-        List<IJobDetail?> scheduledJobs = new List<IJobDetail?>();
-
         // Iterate through each job key and get the job details
         foreach (var jobKey in jobKeys)
         {
             IJobDetail? jobDetail = await scheduler.GetJobDetail(jobKey);
-            scheduledJobs.Add(jobDetail);
+            IReadOnlyCollection<ITrigger> triggers = await scheduler.GetTriggersOfJob(jobKey);
+            foreach (var trigger in triggers)
+            {
+                jobs.Job.Add(new Job()
+                {
+                    Name = jobDetail?.Key.Name,
+                    Description = jobDetail?.Description,
+                    StartDate = trigger.StartTimeUtc.ToTimestamp(),
+                    EndDate = trigger.StartTimeUtc.ToTimestamp(),
+                    Timetriggerd = 1,
+                    Next = trigger.GetNextFireTimeUtc()?.ToTimestamp()
+                        
+                });
+            }
         }
-
-        // Now, scheduledJobs list contains all scheduled jobs
-
-        // Display information about the scheduled jobs
-        foreach (var job in scheduledJobs)
-        {
-            jobs.Job.Add(new Job() { Name = job?.Key.Name });
-        }
-
-      
         return await Task.FromResult(jobs);
-       
+
     }
 
     public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<NewsItem> responseStream, ServerCallContext context)
     {
-        poolRequests.Subscribe(x => { responseStream.WriteAsync(new NewsItem(){Title = x.Name,Content = x.Url,PublishedDate = x.Start.ToTimestamp()});});
+        poolRequests.Subscribe(x =>
+        {
+            responseStream.WriteAsync(new NewsItem()
+            {
+                Title = x.Name,
+                Content = x.Url,
+                PublishedDate = x.Start.ToTimestamp()
+            });
+        });
 
         while (!context.CancellationToken.IsCancellationRequested)
         {
             await Task.Delay(500); // Gotta look busy
 
-          
+
         }
 
     }

@@ -44,6 +44,11 @@ message ListJobsRunning {
 
 message Job{
     string name = 1;
+    string description=2;
+    google.protobuf.Timestamp startDate=3;
+    google.protobuf.Timestamp endDate=4; 
+    int32 timetriggerd=5;
+    google.protobuf.Timestamp next=6;
 }
 
 message keywordList {

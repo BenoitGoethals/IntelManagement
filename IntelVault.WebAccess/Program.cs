@@ -20,6 +20,7 @@ using IntelVault.Infrastructure.repos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Bson.Serialization;
+using IntelVault.Infrastructure.Workers;
 var builder = WebApplication.CreateBuilder(args);
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NAaF5cWWJCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH1feHRXRWlcVEV3VkQ=");
 // Add services to the container.
@@ -66,6 +67,7 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
     return new MongoClient(setting);
 });
 
+builder.Services.AddSingleton<IWorkersGrpc,WorkersGrpc>();
 builder.Services.AddValidatorsFromAssemblyContaining<HumIntValidator>();
 builder.Services.AddSingleton<IMongoDbRepository<SocialMedia>, MongoDbRepository<SocialMedia>>(n => new MongoDbRepository<SocialMedia>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<SocialMedia>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<CybInt>, MongoDbRepository<CybInt>>(n => new MongoDbRepository<CybInt>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<CybInt>>>(), "IntelVault"));
