@@ -13,7 +13,7 @@ public class WorkersGrpc : IWorkersGrpc
 {
     private readonly ILogger<WorkersGrpc> _logger;
     private readonly Greeter.GreeterClient _client;
-    private readonly ObservableCollection<QJobs> jobsList = new ObservableCollection<QJobs>();
+    private readonly ObservableCollection<QJobs> _jobsList = new ObservableCollection<QJobs>();
 
     public WorkersGrpc(ILogger<WorkersGrpc> logger)
     {
@@ -23,16 +23,16 @@ public class WorkersGrpc : IWorkersGrpc
 
     }
 
-    public ObservableCollection<QJobs> GetSstreamingJobs()
+    public Task<ObservableCollection<QJobs>> GetStreamingJobs()
     {
        
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
 
         Task backgroundTask = new Task(Action, token);
-        backgroundTask.Start(TaskScheduler.Current);
+         backgroundTask.Start(TaskScheduler.Current);
 
-        return jobsList;
+        return Task.FromResult(_jobsList);
 
         async void Action()
         {
@@ -41,7 +41,8 @@ public class WorkersGrpc : IWorkersGrpc
                 var rs = _client.NewsDocumentAdded(new Empty()).ResponseStream;
                 await foreach (var job in rs.ReadAllAsync(cancellationToken: token))
                 {
-                    jobsList.Add(new QJobs()
+                    await Task.Yield();
+                    _jobsList.Add(new QJobs()
                     {
                         Name = job.Name,
                         Description = job.Url,

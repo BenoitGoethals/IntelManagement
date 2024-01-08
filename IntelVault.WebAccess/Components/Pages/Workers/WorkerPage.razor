@@ -10,7 +10,7 @@
 }
 else
 {
-    <SfGrid DataSource="@_observableCollection"  AllowPaging="true">
+  @*   <SfGrid DataSource="@_observableCollection"  AllowPaging="true">
         <GridColumns>
             <GridColumn Field="@nameof(QJobs.Name)" HeaderText="ID" TextAlign="TextAlign.Right" Width="100"></GridColumn>
             <GridColumn Field="@nameof(QJobs.Description)" HeaderText="Description" Width="150"></GridColumn>
@@ -18,9 +18,9 @@ else
             <GridColumn Field="@nameof(QJobs.EndDate)" HeaderText="EndDate" TextAlign="TextAlign.Left" Type="ColumnType.Date" Width="100"></GridColumn>
             <GridColumn Field="@nameof(QJobs.Next)" HeaderText="Next" TextAlign="TextAlign.Left" Type="ColumnType.Date" Width="100"></GridColumn>
         </GridColumns>
-    </SfGrid>
+    </SfGrid> *@
 
-    <SfGrid DataSource="@JobsList">
+    <SfGrid DataSource="@_observableCollection">
         <GridTemplates>
             <RowTemplate Context="emp">
                 @{
@@ -148,6 +148,6 @@ else
     {
         JobsList = await Worker.GetJobs() as List<QJobs>;
         _working = await Worker.IsWorkerRunning();
-        _observableCollection = Worker.GetSstreamingJobs();
+        _observableCollection = await Worker.GetStreamingJobs();
     }
 }
