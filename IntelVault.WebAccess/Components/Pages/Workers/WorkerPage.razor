@@ -2,6 +2,8 @@
 @using IntelVault.Infrastructure.Workers
 @using System.Collections.ObjectModel
 @using ObservableCollections
+@using Syncfusion.Blazor.Grids.Internal
+@using Syncfusion.ExcelExport
 @rendermode InteractiveServer
 @inject IWorkersGrpc Worker;
 <h3>WorkerPage</h3>
@@ -143,13 +145,19 @@ else
     public List<QJobs>? JobsList { get; private set; }
     private bool? _working;
 
-    private ObservableCollection<QJobs>? _observableCollection;
-
+    private ObservableList<QJobs>? _observableCollection;
+ 
     protected override async Task OnInitializedAsync()
     {
         JobsList = await Worker.GetJobs() as List<QJobs>;
         _working = await Worker.IsWorkerRunning();
         _observableCollection = await Worker.GetStreamingJobs();
+        // _view = obs.CreateView(x => new QJobs(){Description = x.Description,EndDate = x.EndDate,Name = x.Name,Next = x.Next,StartDate = x.StartDate});
+    // View also has a change notification. 
+        // _view.CollectionStateChanged += async _ =>
+        // {
+        //     await InvokeAsync(StateHasChanged);
+        // };
         
     }
 }

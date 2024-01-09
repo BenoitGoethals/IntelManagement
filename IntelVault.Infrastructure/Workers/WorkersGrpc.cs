@@ -6,6 +6,7 @@ using IntelVault.Worker;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using ObservableCollections;
 
 namespace IntelVault.Infrastructure.Workers;
 
@@ -13,7 +14,7 @@ public class WorkersGrpc : IWorkersGrpc
 {
     private readonly ILogger<WorkersGrpc> _logger;
     private readonly Greeter.GreeterClient _client;
-    private readonly ObservableCollection<QJobs> _jobsList = new ObservableCollection<QJobs>();
+    private readonly ObservableList<QJobs> _jobsList = new ObservableList<QJobs>();
 
     public WorkersGrpc(ILogger<WorkersGrpc> logger)
     {
@@ -23,7 +24,7 @@ public class WorkersGrpc : IWorkersGrpc
 
     }
 
-    public Task<ObservableCollection<QJobs>> GetStreamingJobs()
+    public Task<ObservableList<QJobs>> GetStreamingJobs()
     {
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
@@ -48,13 +49,18 @@ public class WorkersGrpc : IWorkersGrpc
                 {
                     //await Task.Yield();
 
-                    _jobsList.Add(new QJobs()
+                    var jb = new QJobs()
                     {
                         Name = job.Name,
                         Description = job.Url,
                         EndDate = job.End.ToDateTime(),
                         StartDate = job.Start.ToDateTime(),
-                    });
+                    };
+                    if (!_jobsList.Contains(jb))
+                    {
+                        _jobsList.Add(jb);
+                    }
+                   
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

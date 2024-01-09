@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using ObservableCollections;
 
 namespace IntelVault.Infrastructure.Workers;
 
@@ -7,5 +8,5 @@ public interface IWorkersGrpc
     Task<IList<QJobs>?> GetJobs();
     Task<bool> IsWorkerRunning();
     Task<string?> MakeJob(OpenSourceRequest request);
-    public Task<ObservableCollection<QJobs>> GetStreamingJobs();
+    public Task<ObservableList<QJobs>> GetStreamingJobs();
 }
