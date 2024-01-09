@@ -34,17 +34,19 @@ else
                     <td class="details">
                         <table class="CardTable" cellpadding="3" cellspacing="2">
                             <colgroup>
-                                <col width="25%">
-                                <col width="65%">
-
                                 <col width="10%">
+                                <col width="30%">
+                                <col width="10%">
+                                <col width="10%">
+                                <col width="30%">
                             </colgroup>
                             <tbody>
                                 <tr>
                                     <td class="CardHeader">Name </td>
                                     <td>@job.Name </td>
-                                    <td><SfButton Content="stop" IsPrimary="true"></SfButton><SfButton Content="Start" IsPrimary="true"></SfButton></td>
-
+                                    <td></td>
+                                    <td></td>
+                                    <td><SfButton Content="Start" IsPrimary="true"></SfButton>&nbsp;<SfButton Content="stop" IsPrimary="true"></SfButton>&nbsp;<SfButton Content="Delete" IsPrimary="true">&nbsp;</SfButton></td>
                                 </tr>
                                 <tr>
                                     <td class="CardHeader">Description</td>
@@ -145,19 +147,14 @@ else
     public List<QJobs>? JobsList { get; private set; }
     private bool? _working;
 
-    private ObservableList<QJobs>? _observableCollection;
+    private IList<QJobs>? _observableCollection;
+
  
     protected override async Task OnInitializedAsync()
     {
         JobsList = await Worker.GetJobs() as List<QJobs>;
         _working = await Worker.IsWorkerRunning();
-        _observableCollection = await Worker.GetStreamingJobs();
-        // _view = obs.CreateView(x => new QJobs(){Description = x.Description,EndDate = x.EndDate,Name = x.Name,Next = x.Next,StartDate = x.StartDate});
-    // View also has a change notification. 
-        // _view.CollectionStateChanged += async _ =>
-        // {
-        //     await InvokeAsync(StateHasChanged);
-        // };
-        
+        _observableCollection = await Worker.GetJobs();
+
     }
 }

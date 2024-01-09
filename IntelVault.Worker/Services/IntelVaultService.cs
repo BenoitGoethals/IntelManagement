@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System;
+using System.Diagnostics.Metrics;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -96,10 +97,11 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
 
     public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<OpenSourceRequestScan> responseStream, ServerCallContext context)
     {
-        poolRequests.Subscribe(x =>
+        var disp=poolRequests.Subscribe(x =>
         {
             responseStream.WriteAsync(new OpenSourceRequestScan()
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = x.Name,
                 Url = x.Url,
                 Start = x.Start.ToTimestamp(),
@@ -116,6 +118,7 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
 
 
         }
-
+        
+        disp.Dispose();
     }
 }

@@ -2,7 +2,7 @@
 
 public class QJobs
 {
-    public Guid Id { get; private set; } = new Guid();
+    public Guid Id { get;  set; } = new Guid();
     public string? Name { get; set; }
     public string? Description { get; set; }
     public DateTime StartDate { get; set; }

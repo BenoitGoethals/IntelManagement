@@ -4,6 +4,8 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using IntelVault.Worker;
 using System.Threading.Channels;
+using Grpc.Net.Client.Web;
+
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using ObservableCollections;
@@ -19,7 +21,9 @@ public class WorkersGrpc : IWorkersGrpc
     public WorkersGrpc(ILogger<WorkersGrpc> logger)
     {
         _logger = logger;
-        var grpcChannel = GrpcChannel.ForAddress("https://localhost:5001"); // Replace with your gRPC server address
+        var httpClient = new HttpClient(new GrpcWebHandler(GrpcWebMode.GrpcWeb, new HttpClientHandler()));
+    
+        var grpcChannel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions { HttpClient = httpClient }); // Replace with your gRPC server address
         _client = new Greeter.GreeterClient(grpcChannel);
 
     }
@@ -28,14 +32,9 @@ public class WorkersGrpc : IWorkersGrpc
     {
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
-       // var jobs = await GetJobs();
-        //if (jobs != null)
-        //    foreach (var job in jobs)
-        //    {
-        //        _jobsList.Add(job);
-        //    }
+      //  _jobsList.Clear();
 
-        Task backgroundTask = new Task(Action, token);
+          Task backgroundTask = new Task(Action, token);
          backgroundTask.Start(TaskScheduler.Current);
 
         return  Task.FromResult(_jobsList);
@@ -51,6 +50,7 @@ public class WorkersGrpc : IWorkersGrpc
 
                     var jb = new QJobs()
                     {
+                        Id = Guid.Parse(job.Id),
                         Name = job.Name,
                         Description = job.Url,
                         EndDate = job.End.ToDateTime(),
@@ -66,7 +66,9 @@ public class WorkersGrpc : IWorkersGrpc
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
                 _logger.LogError("Stream cancelled.");
+                await cancellationTokenSource.CancelAsync();
             }
+            await cancellationTokenSource.CancelAsync();
         }
     }
 

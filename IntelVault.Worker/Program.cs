@@ -139,10 +139,13 @@ BsonClassMap.RegisterClassMap<SocialMedia>(cm =>
     cm.SetDiscriminator("SocialMedia");
 });
 
-
+builder.Services.AddGrpc();
 
 var host = builder.Build();
-host.MapGrpcService<IntelVaultService>();
+
+
+host.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
+host.MapGrpcService<IntelVaultService>().EnableGrpcWeb(); ;
 host.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 host.Run();
