@@ -28,22 +28,22 @@ namespace GrpcClient
 
 
             var client = new Greeter.GreeterClient(channel);
-            Task backgroundTask= new Task(async () =>
-            {
-                try
-                {
-                    var rs = client.NewsDocumentAdded(new Empty()).ResponseStream;
-                    await foreach (var data in rs.ReadAllAsync(cancellationToken: cts.Token))
-                    {
-                        Console.WriteLine(data.Name);
-                    }
-                }
-                catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-                {
-                    Console.WriteLine("Stream cancelled.");
-                }
-            }, token);
-            backgroundTask.Start(TaskScheduler.Current);
+            //Task backgroundTask= new Task(async () =>
+            //{
+            //    try
+            //    {
+            //        var rs = client.NewsDocumentAdded(new Empty()).ResponseStream;
+            //        await foreach (var data in rs.ReadAllAsync(cancellationToken: cts.Token))
+            //        {
+            //            Console.WriteLine(data.Name);
+            //        }
+            //    }
+            //    catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+            //    {
+            //        Console.WriteLine("Stream cancelled.");
+            //    }
+            //}, token);
+            //backgroundTask.Start(TaskScheduler.Current);
             do
             {
                 Console.WriteLine("Make a chose :");

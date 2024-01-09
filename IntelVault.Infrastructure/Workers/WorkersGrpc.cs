@@ -25,14 +25,19 @@ public class WorkersGrpc : IWorkersGrpc
 
     public Task<ObservableCollection<QJobs>> GetStreamingJobs()
     {
-       
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
+       // var jobs = await GetJobs();
+        //if (jobs != null)
+        //    foreach (var job in jobs)
+        //    {
+        //        _jobsList.Add(job);
+        //    }
 
         Task backgroundTask = new Task(Action, token);
          backgroundTask.Start(TaskScheduler.Current);
 
-        return Task.FromResult(_jobsList);
+        return  Task.FromResult(_jobsList);
 
         async void Action()
         {
@@ -41,7 +46,8 @@ public class WorkersGrpc : IWorkersGrpc
                 var rs = _client.NewsDocumentAdded(new Empty()).ResponseStream;
                 await foreach (var job in rs.ReadAllAsync(cancellationToken: token))
                 {
-                    await Task.Yield();
+                    //await Task.Yield();
+
                     _jobsList.Add(new QJobs()
                     {
                         Name = job.Name,
