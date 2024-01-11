@@ -31,7 +31,6 @@ namespace IntelVault.Worker
         {
 
             _obs.Subscribe( x =>
-            
             {
                 if (!_scheduler.IsStarted)
                 {
@@ -41,19 +40,20 @@ namespace IntelVault.Worker
                 m.Put(nameof(OpenSourceRequest), x);
                 switch (x.SourceType)
                 {
-                    
                     case OpenSourceType.Scrapper:
-                        
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
+                            .WithDescription(x.Name)
                             .UsingJobData(m)
                             .Build();
                         var trigger = TriggerBuilder.Create()
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                            .StartAt(x.Start)
                             .EndAt(x.End)
+                            
+                            .WithDescription(x.Name)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInSeconds(x.Interval)
+                                .WithIntervalInHours((int)x.Interval)
                                 .RepeatForever())
                             
                             .Build();
@@ -64,31 +64,28 @@ namespace IntelVault.Worker
                         var jobApi = JobBuilder.Create<RestApiScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapperApi")
                             .UsingJobData(m)
+                            .WithDescription(x.Name)
                             .Build();
                         var triggerApi = TriggerBuilder.Create()
                             .WithIdentity(x.Id.ToString(), "groupScrapperApi")
                             .StartAt(x.Start)
+                            .WithDescription(x.Name)
                             .EndAt(x.End)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInSeconds(x.Interval)
+                                .WithIntervalInHours((int)x.Interval)
                                 .RepeatForever())
 
                             .Build();
                         _scheduler.ScheduleJob(jobApi, triggerApi, stoppingToken);
                         break;
                 }
-
             });
           
           
             _logger.LogInformation("WORKER STARTED");
             while (!stoppingToken.IsCancellationRequested)
             {
-              
                 await Task.Delay(1000, stoppingToken);
-                
-                
-
             }
             await _scheduler.Shutdown(stoppingToken);
         }

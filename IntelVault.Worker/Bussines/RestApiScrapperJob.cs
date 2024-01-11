@@ -49,12 +49,8 @@ public class RestApiScrapperJob : RequestJob, IJob
                 });
                 if (articlesResponse.Status == Statuses.Ok)
                 {
-                    // total results found  
-                    Console.WriteLine(articlesResponse.TotalResults);
-          
                     foreach (var article in articlesResponse.Articles)
                     {
-                      
                         if (_intelService != null)
                         {
                             await _intelService.Add(new NewsArticle()
@@ -70,12 +66,10 @@ public class RestApiScrapperJob : RequestJob, IJob
 
                             });
                         }
-                      
+
                     }
                 }
             }
         await Task.Delay(1000, token);
-
     }
-
 }

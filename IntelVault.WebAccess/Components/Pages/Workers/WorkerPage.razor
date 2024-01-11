@@ -1,0 +1,273 @@
+﻿@page "/WorkerPage"
+@using IntelVault.Infrastructure.Workers
+@using System.Collections.ObjectModel
+@using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.validation
+@using IntelVault.Worker
+@using ObservableCollections
+@using Syncfusion.Blazor.Grids.Internal
+@using Syncfusion.ExcelExport
+@rendermode InteractiveServer
+@inject IWorkersGrpc Worker;
+<h3>WorkerPage</h3>
+@if (_observableCollection == null)
+{
+    <h1>Loading</h1>
+}
+else
+{
+
+    <div>
+        Bacgound Worker :
+        @if (_working)
+        {
+            <h6>Is running</h6>
+        }
+        else
+        {
+            <h6>Not running</h6>
+        }
+
+    </div>
+    <div>
+        <EditForm OnValidSubmit="Add" Model="@QJobAdd">
+            <FluentValidationValidator @ref="_fluentValidationValidator" />
+            <AntiforgeryToken/>
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Name</label>
+                    <SfTextBox @bind-Value="QJobAdd.Name" Placeholder="Name" class="form-control"/>
+                    <ValidationMessage For="() => QJobAdd.Name"/>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Group</label>
+                    <SfTextBox @bind-Value="QJobAdd.Group" Placeholder="Group" class="form-control"/>
+                    <ValidationMessage For="() => QJobAdd.Group"/>
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">OpenSource Type :</label>
+                    <SfDropDownList class="form-control" TValue="OpenSourceType" @bind-Value="QJobAdd.OpenSourceType" Width="300px" TItem="string" Placeholder="Select a Type " DataSource="@OpenSourceTypes"></SfDropDownList>
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Description</label>
+                    <SfTextBox @bind-Value="QJobAdd.Description" Placeholder="Description" class="form-control"/>
+                    <ValidationMessage For="() => QJobAdd.Description"/>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">URL</label>
+                    <SfTextBox @bind-Value="QJobAdd.Url" Placeholder="Description" class="form-control"/>
+                    <ValidationMessage For="() => QJobAdd.Url"/>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Interval</label>
+                    <SfNumericTextBox @bind-Value="QJobAdd.Interval" Min="0" Placeholder="Interval" class="form-control"/>
+                    <ValidationMessage For="() => QJobAdd.Interval"/>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">Start Date</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.StartDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
+                    <ValidationMessage For="() => QJobAdd.StartDate"/>
+                </div>
+
+
+
+                <div class="form-group col-md-6">
+                    <label class="form-label">End Date</label>
+                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.EndDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
+                    <ValidationMessage For="() => QJobAdd.EndDate"/>
+                </div>
+
+
+                <SfButton Content="Add Job"  IsPrimary="true"></SfButton>
+            </div>
+        </EditForm>
+    
+    </div>
+    <br/>
+    <SfGrid DataSource="@_observableCollection">
+        <GridTemplates>
+            <RowTemplate Context="emp">
+                @{
+                    var job = (emp as QJobs);
+                    // <td class="photo">
+                    //     <img src="@($" scripts/Images/Employees/{employee.EmployeeID}.png")" alt="@employee.EmployeeID" />
+                    // </td>
+                    <td class="details">
+                        <table class="CardTable" cellpadding="3" cellspacing="2">
+                            <colgroup>
+                                <col width="10%">
+                                <col width="30%">
+                                <col width="10%">
+                                <col width="10%">
+                                <col width="30%">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <td class="CardHeader">Name </td>
+                                    <td>@job.Name </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <SfButton Content="Resume" @onclick="@((args) => Start(args, job))" IsPrimary="true"></SfButton>
+                                        &nbsp;<SfButton Content="pauze" @onclick="@((args) => Stop(args, job))" IsPrimary="true"></SfButton>
+                                        &nbsp;<SfButton Content="Delete" @onclick="@((args) => Delete(args, job))" IsPrimary="true"></SfButton>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">Description</td>
+                                    <td>@job.Description </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Title
+                                    </td>
+                                    <td>
+                                        @job.Name
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Start DTG
+                                    </td>
+                                    <td>
+                                        @job.StartDate
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        End DTG
+                                    </td>
+                                    <td>
+                                        @job.EndDate
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="CardHeader">
+                                        Next DTG
+                                    </td>
+                                    <td>
+                                        @job.Next
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                }
+            </RowTemplate>
+        </GridTemplates>
+        <GridColumns>
+            <GridColumn HeaderText="Job Running" Width="250" TextAlign="TextAlign.Left"> </GridColumn>
+
+        </GridColumns>
+    </SfGrid>
+  
+}
+
+
+<style type="text/css" class="cssStyles">
+    .photo img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .photo,
+    .details {
+        border-color: #e0e0e0;
+        border-style: solid;
+    }
+
+    .photo {
+        border-width: 1px 0px 0px 0px;
+        text-align: center;
+    }
+
+    .details {
+        border-width: 1px 0px 0px 0px;
+        padding-left: 18px;
+    }
+
+    .e-bigger .details {
+        padding-left: 25px;
+    }
+
+    .e-device .details {
+        padding-left: 8px;
+    }
+
+    .details > table {
+        width: 100%;
+    }
+
+    .CardHeader {
+        font-weight: 600;
+    }
+
+    td {
+        padding: 2px 2px 3px 4px;
+    }
+</style>
+
+
+@code {
+    public List<QJobs>? JobsList { get; private set; }
+    private bool _working;
+
+    private IList<QJobs>? _observableCollection;
+
+
+    private QJobs QJobAdd { get; set; } = new QJobs();
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        QJobAdd = new QJobs();
+        JobsList = await Worker.GetJobs() as List<QJobs>;
+        _working = await Worker.IsWorkerRunning();
+        _observableCollection = await Worker.GetJobs();
+
+    }
+
+    public string[] OpenSourceTypes = Enum.GetNames(typeof(OpenSourceType));
+    private async Task Start(MouseEventArgs args, QJobs? context)
+    {
+        await Worker.Start(context?.Name, context?.Group);
+    }
+
+    private async Task Delete(MouseEventArgs args, QJobs? context)
+    {
+        await Worker.Delete(context?.Name, context?.Group);
+
+    }
+
+    private async Task Stop(MouseEventArgs args, QJobs? context)
+    {
+        await Worker.Stop(context?.Name, context?.Group);
+    }
+
+    private void Callback()
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task Add()
+    {
+        if (await _fluentValidationValidator!.ValidateAsync())
+        {
+         
+          await  Worker.MakeJob(QJobAdd);
+        }
+     
+    }
+
+}

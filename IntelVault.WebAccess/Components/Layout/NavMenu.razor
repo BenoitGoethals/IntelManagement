@@ -8,9 +8,11 @@
     <SfMenu TValue="MenuItem" CssClass="e-rounded-menu">
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
+            <MenuItem Text="Login" Url="/WorkerPage"></MenuItem>
             <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
             <AuthorizeView>
                 <NotAuthorized>
+                 
                     <MenuItem Text="Login" Url="/Account/login"></MenuItem>
                     <MenuItem Text="Customize" Url="/Account/Manage"></MenuItem>
                     <MenuItem Text="Account">
