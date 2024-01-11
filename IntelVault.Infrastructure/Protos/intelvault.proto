@@ -16,6 +16,10 @@ service Greeter {
   rpc AllJobsRunning(google.protobuf.Empty) returns (ListJobsRunning);
   rpc IsWorkerRunning(google.protobuf.Empty) returns (IsRunning);
   rpc NewsDocumentAdded(google.protobuf.Empty) returns (stream OpenSourceRequestScan);
+  rpc Start(jobTask) returns (StatusBool);
+  rpc Stop(jobTask) returns (StatusBool);
+  rpc Delete(jobTask) returns (StatusBool);
+
 }
 
 // The request message containing the user's name.
@@ -32,6 +36,10 @@ message OpenSourceRequestScan {
      keywordList list = 6;
      int32 Interval=7;     
      string name = 8;  
+}
+
+message StatusBool{
+    bool status=1;
 }
 
 message IsRunning {
@@ -57,6 +65,10 @@ message keywordList {
 message keyword{
     string name = 1;
  }
+ message jobTask{
+    string name = 1;
+ }
+
 enum OpenSourceMediaType{
         Twitter=0;
         Scrapper=1;

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Diagnostics.Metrics;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using IntelVault.Worker.model;
-using Microsoft.AspNetCore.Components;
 using Quartz;
 using Quartz.Impl.Matchers;
-using static Quartz.Logging.OperationName;
+
 
 namespace IntelVault.Worker.Services;
 
@@ -93,6 +88,47 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
         }
         return await Task.FromResult(jobs);
 
+    }
+
+    public override async Task<StatusBool> Start(jobTask request, ServerCallContext context)
+    {
+      
+        try
+        {
+            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            return new StatusBool(){Status = true};
+        }
+        catch (Exception e)
+        {
+            return new StatusBool() { Status = false };
+        }
+
+    }
+
+    public override async Task<StatusBool> Stop(jobTask request, ServerCallContext context)
+    {
+        try
+        {
+            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            return new StatusBool() { Status = true };
+        }
+        catch (Exception e)
+        {
+            return new StatusBool() { Status = false };
+        }
+    }
+
+    public override async Task<StatusBool> Delete(jobTask request, ServerCallContext context)
+    {
+        try
+        {
+            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            return new StatusBool() { Status = true };
+        }
+        catch (Exception e)
+        {
+            return new StatusBool() { Status = false };
+        }
     }
 
     public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<OpenSourceRequestScan> responseStream, ServerCallContext context)

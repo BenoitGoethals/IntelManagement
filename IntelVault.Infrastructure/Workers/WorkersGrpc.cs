@@ -3,12 +3,10 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using IntelVault.Worker;
-using System.Threading.Channels;
 using Grpc.Net.Client.Web;
-
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 using ObservableCollections;
+
 
 namespace IntelVault.Infrastructure.Workers;
 
@@ -142,8 +140,45 @@ public class WorkersGrpc : IWorkersGrpc
         return null;
     }
 
-}
+    public async Task<bool> Start(string job)
+    {
+        try
+        {
+            var response = await _client.StartAsync(new jobTask(){Name = job});
+            return response.Status;
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+            _logger.LogError(ex.Message);
+        }
+        return false;
+    }
 
-public class QNews : QJobs
-{
+    public async Task<bool> Stop(string job)
+    {
+        try
+        {
+            var response = await _client.StopAsync(new jobTask(){ Name = job});
+            return response.Status;
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+            _logger.LogError(ex.Message);
+        }
+        return false;
+    }
+
+    public async Task<bool> Delete(string job)
+    {
+        try
+        {
+            var response = await _client.DeleteAsync(new jobTask(){Name = job});
+            return response.Status;
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+            _logger.LogError(ex.Message);
+        }
+        return false;
+    }
 }
