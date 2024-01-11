@@ -66,8 +66,4 @@
     <ProjectReference Include="..\IntelVault.ApplicationCore\IntelVault.ApplicationCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Pages\NewsArticle\" />
-  </ItemGroup>
-
 </Project>
