@@ -50,9 +50,10 @@ namespace IntelVault.Worker
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                            .StartAt(x.Start)
                             .EndAt(x.End)
+                            
                             .WithDescription(x.Name)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInSeconds(x.Interval)
+                                .WithIntervalInHours((int)x.Interval)
                                 .RepeatForever())
                             
                             .Build();
@@ -71,7 +72,7 @@ namespace IntelVault.Worker
                             .WithDescription(x.Name)
                             .EndAt(x.End)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInSeconds(x.Interval)
+                                .WithIntervalInHours((int)x.Interval)
                                 .RepeatForever())
 
                             .Build();

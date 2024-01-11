@@ -19,6 +19,7 @@ service Greeter {
   rpc Start(jobTask) returns (StatusBool);
   rpc Stop(jobTask) returns (StatusBool);
   rpc Delete(jobTask) returns (StatusBool);
+  rpc IsPaused(jobTask) returns (StatusBool);
 
 }
 
@@ -34,7 +35,7 @@ message OpenSourceRequestScan {
      google.protobuf.Timestamp Start=4;
      google.protobuf.Timestamp End=5;
      keywordList list = 6;
-     int32 Interval=7;     
+     int32  Interval=7;     
      string name = 8;  
 }
 
@@ -57,6 +58,7 @@ message Job{
     google.protobuf.Timestamp endDate=4; 
     int32 timetriggerd=5;
     google.protobuf.Timestamp next=6;
+    string group =7;
 }
 
 message keywordList {
@@ -67,6 +69,7 @@ message keyword{
  }
  message jobTask{
     string name = 1;
+    string group =2;
  }
 
 enum OpenSourceMediaType{

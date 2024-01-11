@@ -1,8 +1,10 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using IntelVault.Worker.model;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Quartz;
 using Quartz.Impl.Matchers;
+using Quartz.Util;
 
 
 namespace IntelVault.Worker.Services;
@@ -76,6 +78,7 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
             {
                 jobs.Job.Add(new Job()
                 {
+                    Group = jobDetail?.Key.Group,
                     Name = jobDetail?.Key.Name,
                     Description = jobDetail?.Description,
                     StartDate = trigger.StartTimeUtc.ToTimestamp(),
@@ -90,12 +93,30 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
 
     }
 
+    public override async Task<StatusBool> IsPaused(jobTask request, ServerCallContext context)
+    {
+        var jobKey = JobKey.Create(request.Name, request.Group);
+        IJobDetail? jobDetail = await scheduler.GetJobDetail(jobKey);
+        IReadOnlyCollection<ITrigger> triggers = await scheduler.GetTriggersOfJob(jobKey);
+        if (triggers.Count > 0)
+        {
+            return new StatusBool() { Status = true }; ;
+        }
+
+        return new StatusBool() {Status = false};
+    }
+
     public override async Task<StatusBool> Start(jobTask request, ServerCallContext context)
     {
-      
         try
         {
-            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            var key = JobKey.Create(request.Name, request.Group);
+            if(await scheduler.CheckExists(key))
+            {
+                
+                await scheduler.ResumeJob(key);
+            }
+         
             return new StatusBool(){Status = true};
         }
         catch (Exception e)
@@ -109,7 +130,12 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
     {
         try
         {
-            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            var key = JobKey.Create(request.Name, request.Group);
+            if (await scheduler.CheckExists(key))
+            {
+                await scheduler.PauseJob(key);
+            }
+
             return new StatusBool() { Status = true };
         }
         catch (Exception e)
@@ -122,7 +148,12 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
     {
         try
         {
-            await scheduler.DeleteJob(JobKey.Create(request.Name));
+            var key = JobKey.Create(request.Name,request.Group);
+            if (await scheduler.CheckExists(key))
+            {
+                await scheduler.DeleteJob(key);
+            }
+
             return new StatusBool() { Status = true };
         }
         catch (Exception e)
@@ -130,6 +161,8 @@ public class IntelVaultService(ILogger<IntelVaultService> logger, PoolRequests p
             return new StatusBool() { Status = false };
         }
     }
+
+ 
 
     public override async Task NewsDocumentAdded(Empty request, IServerStreamWriter<OpenSourceRequestScan> responseStream, ServerCallContext context)
     {

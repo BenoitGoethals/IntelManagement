@@ -80,6 +80,7 @@ public class WorkersGrpc : IWorkersGrpc
             {
                 jobs.Add(new QJobs()
                 {
+                    Group = job.Group,
                     Name = job.Name,
                     Description = job.Description,
                     EndDate = job.EndDate.ToDateTime(),
@@ -113,18 +114,20 @@ public class WorkersGrpc : IWorkersGrpc
         return false;
     }
 
-    public async Task<string?> MakeJob(OpenSourceRequest request)
+    public async Task<string?> MakeJob(QJobs request)
     {
         keywordList li = new keywordList();
         var req = new OpenSourceRequestScan
         {
-            Start = request.Start.ToUniversalTime().ToTimestamp(),
-            End = request.End.ToUniversalTime().ToTimestamp(),
+            
+            Start = request.StartDate?.ToUniversalTime().ToTimestamp(),
+            End = request.EndDate?.ToUniversalTime().ToTimestamp(),
             Url = request.Url,
             Id = Guid.NewGuid().ToString(),
             List = li,
-            OpenSourceType = (OpenSourceMediaType)request.SourceType,
-            Name = "web " + Guid.NewGuid()
+            OpenSourceType = (OpenSourceMediaType)request.OpenSourceType,
+            Name =  request.Name,
+            Interval = request.Interval
         };
         try
         {
@@ -140,11 +143,11 @@ public class WorkersGrpc : IWorkersGrpc
         return null;
     }
 
-    public async Task<bool> Start(string job)
+    public async Task<bool> Start(string? job, string? group)
     {
         try
         {
-            var response = await _client.StartAsync(new jobTask(){Name = job});
+            var response = await _client.StartAsync(new jobTask(){Name = job,Group = group});
             return response.Status;
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -154,11 +157,11 @@ public class WorkersGrpc : IWorkersGrpc
         return false;
     }
 
-    public async Task<bool> Stop(string job)
+    public async Task<bool> Stop(string? job, string? group)
     {
         try
         {
-            var response = await _client.StopAsync(new jobTask(){ Name = job});
+            var response = await _client.StopAsync(new jobTask(){ Name = job,Group = group});
             return response.Status;
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -168,11 +171,11 @@ public class WorkersGrpc : IWorkersGrpc
         return false;
     }
 
-    public async Task<bool> Delete(string job)
+    public async Task<bool> Delete(string? job, string? group)
     {
         try
         {
-            var response = await _client.DeleteAsync(new jobTask(){Name = job});
+            var response = await _client.DeleteAsync(new jobTask(){Name = job,Group = group});
             return response.Status;
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

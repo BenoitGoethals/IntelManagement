@@ -4,10 +4,15 @@ public class QJobs
 {
     public Guid Id { get;  set; } = new Guid();
     public string? Name { get; set; }
+    public string? Group { get; set; }
     public string? Description { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public DateTime Next { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public DateTime? Next { get; set; }
+
+    public int Interval { get; set; }
+    public string? Url { get; set; }
+    public OpenSourceType OpenSourceType { get; set; } = OpenSourceType.Scrapper;
 
     protected bool Equals(QJobs other)
     {

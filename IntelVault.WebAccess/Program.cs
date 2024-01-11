@@ -70,6 +70,8 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
 builder.Services.AddSingleton<IWorkersGrpc,WorkersGrpc>();
 builder.Services.AddValidatorsFromAssemblyContaining<HumIntValidator>();
 builder.Services.AddSingleton<IMongoDbRepository<SocialMedia>, MongoDbRepository<SocialMedia>>(n => new MongoDbRepository<SocialMedia>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<SocialMedia>>>(), "IntelVault"));
+builder.Services.AddSingleton<IMongoDbRepository<NewsArticle>, MongoDbRepository<NewsArticle>>(n => new MongoDbRepository<NewsArticle>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<NewsArticle>>>(), "IntelVault"));
+
 builder.Services.AddSingleton<IMongoDbRepository<CybInt>, MongoDbRepository<CybInt>>(n => new MongoDbRepository<CybInt>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<CybInt>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<HumInt>, MongoDbRepository<HumInt>>(n => new MongoDbRepository<HumInt>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<HumInt>>>(), "IntelVault"));
 builder.Services.AddSingleton<IMongoDbRepository<PersonOfInterest>, MongoDbRepository<IntelVault.ApplicationCore.Model.PersonOfInterest>>(n => new MongoDbRepository<PersonOfInterest>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<PersonOfInterest>>>(), "IntelVault"));
@@ -80,6 +82,7 @@ builder.Services.AddSingleton<IMongoDbRepository<IntelInvestigationFile>, MongoD
 builder.Services.AddSingleton<IMongoDbRepository<Informant>, MongoDbRepository<Informant>>(n => new MongoDbRepository<Informant>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<Informant>>>(), "IntelVault"));
 
 builder.Services.AddScoped<IIntelService<Informant>, IntelService<Informant>>(n => new IntelService<Informant>(n.GetRequiredService<IMongoDbRepository<Informant>>(), n.GetRequiredService<InformantValidator>()));
+builder.Services.AddScoped<IIntelService<NewsArticle>, IntelService<NewsArticle>>(n => new IntelService<NewsArticle>(n.GetRequiredService<IMongoDbRepository<NewsArticle>>(), n.GetRequiredService<NewsArticleValidator>()));
 
 builder.Services.AddScoped<IDocumentService, DocumentService>(n => new DocumentService(mongodbDbRepository: n.GetRequiredService<IMongoDbRepository<IntelDocument>>(), n.GetRequiredService<IntelDocumentValidator>()));
 builder.Services.AddScoped<IIntelService<PersonOfInterest>, IntelService<PersonOfInterest>>(n => new IntelService<PersonOfInterest>(n.GetRequiredService<IMongoDbRepository<PersonOfInterest>>(), n.GetRequiredService<PersonOfInterestValidator>()));
@@ -100,7 +103,7 @@ builder.Services.AddScoped<IIntelService<OpenSourceInt>, IntelService<OpenSource
 builder.Services.AddScoped<IGlobalService, GlobalService>(x => new GlobalService(x.GetRequiredService<IIntelService<SocialMedia>>()
     , x.GetRequiredService<IIntelService<PersonOfInterest>>(), x.GetRequiredService<IIntelService<HumInt>>(),
     x.GetRequiredService<IIntelService<CybInt>>(), x.GetRequiredService<IIntelService<GeneralIntel>>(),
-    x.GetRequiredService<IIntelService<OpenSourceInt>>(),x.GetRequiredService<IIntelService<Informant>>()));
+    x.GetRequiredService<IIntelService<OpenSourceInt>>(),x.GetRequiredService<IIntelService<Informant>>(),x.GetRequiredService<IIntelService<NewsArticle>>()));
 
 
 

@@ -14,7 +14,8 @@ public class GlobalService(
     IIntelService<CybInt> cybIntServiceService,
     IIntelService<GeneralIntel> generalIntelService,
     IIntelService<OpenSourceInt> openSourceService,
-    IIntelService<Informant> InformantService)
+    IIntelService<Informant> InformantService,
+    IIntelService<NewsArticle> newsArticleService)
     : IGlobalService
 {
     private readonly IIntelService<SocialMedia>? _socialMediaService = socialMediaService;
@@ -24,6 +25,8 @@ public class GlobalService(
     private readonly IIntelService<GeneralIntel>? _generalIntelService = generalIntelService;
     private readonly IIntelService<OpenSourceInt>? _openSourceService = openSourceService;
     private readonly IIntelService<Informant>? _informantService = InformantService;
+    private readonly IIntelService<NewsArticle>? _newsService = newsArticleService;
+
 
 
     public Task Add<T>(T entity) where T : BaseIntel
@@ -69,6 +72,8 @@ public class GlobalService(
         baseIntels.AddRange(op);
         IEnumerable<Informant> info = await _informantService?.GetAll(page, pageSize, field, sText);
         baseIntels.AddRange(info);
+        IEnumerable<NewsArticle> news = await _newsService?.GetAll(page, pageSize, field, sText);
+        baseIntels.AddRange(news);
 
         return baseIntels.Skip(page).Take(pageSize);
     }
@@ -92,7 +97,9 @@ public class GlobalService(
             baseIntels.AddRange(op);
             var info = await _informantService?.GetAll();
             baseIntels.AddRange(info);
-
+            var news = await _newsService.GetAll();
+            baseIntels.AddRange(news);
+             
         return baseIntels;
     }
 
@@ -105,7 +112,8 @@ public class GlobalService(
             new Tuple<TypeIntel, long>(TypeIntel.CyberInt, await _cybIntServiceService?.Count()),
             new Tuple<TypeIntel, long>(TypeIntel.Other, await _generalIntelService?.Count()),
             new Tuple<TypeIntel, long>(TypeIntel.OpenSource, await _openSourceService?.Count()),
-            new Tuple<TypeIntel, long>(TypeIntel.Informant, await _informantService?.Count())
+            new Tuple<TypeIntel, long>(TypeIntel.Informant, await _informantService?.Count()),
+            new Tuple<TypeIntel, long>(TypeIntel.NewsArticle, await _newsService?.Count())
         };
 
 
