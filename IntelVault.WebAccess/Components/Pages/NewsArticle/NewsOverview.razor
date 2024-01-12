@@ -1,0 +1,175 @@
+﻿@page "/NewsArticleView"
+@using IntelVault.ApplicationCore.Model
+@using IntelVault.WebAccess.Components.Pages.common
+@using IntelVault.ApplicationCore.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IIntelService<NewsArticle> Service;
+<PageTitle>NewsArticle</PageTitle>
+@attribute [Authorize(Roles = "ADMIN")]
+<Menubar></Menubar>
+
+<style>
+    .e-custom-height {
+        height: 300px;
+    }
+</style>
+<SfDialog @bind-Visible="@IsDialogVisible" ID="gridarticle" MinHeight="500px" Height="500px" Width="700px">
+    <DialogTemplates>
+        <Content>
+            <table>
+
+                <tr>
+                    <td>Title</td>
+                    <td>@_article.Title</td>
+                </tr>
+                <tr>
+                    <td>Source</td>
+                    <td>@_article.Source</td>
+                </tr>
+                <tr>
+                    <td>Author</td>
+                    <td>@_article.Author</td>
+                </tr>
+
+                <tr>
+                    <td>PublishedDate</td>
+                    <td>@_article.PublishedDate</td>
+                </tr>
+
+                <tr>
+                    <td>keywords</td>
+                    @foreach (var art in _article.keywords)
+                    {
+                        <div>@art</div>
+                    }
+                   
+                </tr>
+                
+                <tr>
+                    <td>Content</td>
+                    <td><SfTextBox CssClass="e-custom-height e-outline" Multiline="true" Readonly="true" Value="@_article.Content"></SfTextBox></td>
+                </tr>
+            </table>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        
+        <DialogButton Content="Exit" OnClick="@Exit" />
+    </DialogButtons>
+</SfDialog>
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <SearchBar TextButton="Search NewsArticle Name" SearchText="@SText" Onchange="LoadItemsSearchText"></SearchBar>
+    <SfPager @ref="Page" PageSize="@TakeValue" NumericItemsCount=4 TotalItemsCount="@Count" ItemClick="Click">
+    </SfPager>
+
+    <SfGrid DataSource="@_items" @ref="Grid">
+
+        <GridColumns>
+            <GridColumn Width="50">
+                <Template>
+                    @{
+                        var ticket = (context as NewsArticle);
+                    }
+                    <SfButton @ref="_editBtn" @onclick="@((args) => Edit(args, ticket))" IsToggle="true" IsPrimary="true">Edit</SfButton>
+                    <SfButton @ref="_deleteBtn" @onclick="@((args) => Delete(args, ticket))" IsToggle="true" IsPrimary="true">Delete</SfButton>
+                </Template>
+            </GridColumn>
+            <GridColumn Field=@nameof(NewsArticle.Title) HeaderText="Title" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+            <GridColumn Field=@nameof(NewsArticle.Source) HeaderText="Source" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+            <GridColumn Field=@nameof(NewsArticle.Author) HeaderText="Author" TextAlign="@TextAlign.Left" Type="ColumnType.Date" Width="65"></GridColumn>
+            <GridColumn Field=@nameof(NewsArticle.CreatedDtg) HeaderText="CreatedDtg" Type="ColumnType.Date" TextAlign="@TextAlign.Left" Width="65"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+
+   
+
+
+}
+
+@code {
+    private SfButton? _editBtn;
+    private SfButton? _deleteBtn;
+    public int SkipValue;
+    public required SfGrid<NewsArticle> Grid { get; set; }
+    public int TakeValue = 6;
+    public int Count { get; set; }
+    public required SfPager Page { get; set; }
+
+  
+    NewsArticle? _article;
+    List<NewsArticle?>? _items;
+    public required string SText { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        IsDialogVisible = false;
+        await LoadItems();
+    }
+    protected async Task IntelChanged()
+    {
+    
+        await LoadItems();
+        StateHasChanged();
+    }
+    private void Edit(MouseEventArgs args, NewsArticle? ticket)
+    {
+        IsDialogVisible = true;
+        _article = ticket;
+    }
+
+    private async Task Delete(MouseEventArgs args, NewsArticle? ticket)
+    {
+        await Service.Delete(ticket);
+        await IntelChanged();
+    }
+
+    private void Callback()
+    {
+       
+        StateHasChanged();
+    }
+
+    private async Task LoadItems()
+    {
+        Count = (int)await Service.Count();
+        _items = (await Service.GetAll(SkipValue, TakeValue, nameof(NewsArticle.Source), SText)).ToList();
+
+    }
+
+    public async Task Click(PagerItemClickEventArgs args)
+    {
+        SkipValue = (args.CurrentPage * Page.PageSize) - Page.PageSize;
+        TakeValue = Page.PageSize;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadItemsSearchText(string text)
+    {
+        SText = text;
+        await LoadItems();
+        await Grid.Refresh();
+        await Page.RefreshAsync();
+        StateHasChanged();
+    }
+
+    public bool IsDialogVisible { get; set; }
+
+    private void Exit(MouseEventArgs obj)
+    {
+        IsDialogVisible = false;
+        StateHasChanged();
+
+    }
+
+}

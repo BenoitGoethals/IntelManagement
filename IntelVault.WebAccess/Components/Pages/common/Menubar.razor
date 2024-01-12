@@ -7,7 +7,7 @@
     <SfMenu @ref="Menu" TValue="MenuItem" CssClass="e-rounded-menu" >
         <MenuItems>
             <MenuItem Text="Home" Url="/"></MenuItem>
-            <MenuItem Text="Worker" Url="/WorkerPage"></MenuItem>
+           
             <AuthorizeView>
                 <NotAuthorized>
                     <MenuItem Text="Login" Url="/Account/login"></MenuItem>
@@ -21,9 +21,11 @@
                 <Authorized>
                     <MenuItem Text="Logout" Url="/Logout"></MenuItem>
                     <MenuItem Text="Intel Investigation" Url="overviewIntelInvestigationFile"></MenuItem>
+                    <MenuItem Text="Worker" Url="/WorkerPage"></MenuItem>
                     <MenuItem Text="Add intel">
                         <MenuItems>
                             <MenuItem Text="Informant view" Url="InformantView"></MenuItem>
+                            <MenuItem Text="News Article view" Url="NewsArticleView"></MenuItem>
                             <MenuItem Text="OpenSource" Url="OpenSource"></MenuItem>
                             <MenuItem Text="SocialMedia" Url="SocialMedia"></MenuItem>
                             <MenuItem Text="General Intel" Url="GeneralIntelView"></MenuItem>

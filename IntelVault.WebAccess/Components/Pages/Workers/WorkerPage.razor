@@ -1,15 +1,107 @@
 ﻿@page "/WorkerPage"
 @using IntelVault.Infrastructure.Workers
-@using System.Collections.ObjectModel
 @using Blazored.FluentValidation
-@using IntelVault.ApplicationCore.validation
-@using IntelVault.Worker
-@using ObservableCollections
-@using Syncfusion.Blazor.Grids.Internal
-@using Syncfusion.ExcelExport
+@using Microsoft.AspNetCore.Authorization
+@using IntelVault.WebAccess.Components.Pages.common
 @rendermode InteractiveServer
 @inject IWorkersGrpc Worker;
-<h3>WorkerPage</h3>
+@attribute [Authorize(Roles = "ADMIN")]
+<Menubar></Menubar>
+<div>
+
+    <EditForm OnValidSubmit="Add" Model="@QJobAdd">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <AntiforgeryToken />
+        <div class="form-row">
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Name</label>
+                <SfTextBox @bind-Value="QJobAdd.Name" Placeholder="Name" class="form-control" />
+                <ValidationMessage For="() => QJobAdd.Name" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Group</label>
+                <SfTextBox @bind-Value="QJobAdd.Group" Placeholder="Group" class="form-control" />
+                <ValidationMessage For="() => QJobAdd.Group" />
+            </div>
+
+
+            <div class="form-group col-md-6">
+                <label class="form-label">OpenSource Type :</label>
+                <SfDropDownList class="form-control" TValue="OpenSourceType" @bind-Value="QJobAdd.OpenSourceType" Width="300px" TItem="string" Placeholder="Select a Type " DataSource="@OpenSourceTypes"></SfDropDownList>
+            </div>
+
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Description</label>
+                <SfTextBox @bind-Value="QJobAdd.Description" Placeholder="Description" class="form-control" />
+                <ValidationMessage For="() => QJobAdd.Description" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">URL</label>
+                <SfTextBox @bind-Value="QJobAdd.Url" Placeholder="Description" class="form-control" />
+                <ValidationMessage For="() => QJobAdd.Url" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Interval</label>
+                <SfNumericTextBox @bind-Value="QJobAdd.Interval" Min="0" Placeholder="Interval" class="form-control" />
+                <ValidationMessage For="() => QJobAdd.Interval" />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Start Date</label>
+                <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.StartDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
+                <ValidationMessage For="() => QJobAdd.StartDate" />
+            </div>
+
+
+
+            <div class="form-group col-md-6">
+                <label class="form-label">End Date</label>
+                <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.EndDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
+                <ValidationMessage For="() => QJobAdd.EndDate" />
+            </div>
+
+
+            <div class="form-group col-md-6">
+                <label class="form-label">Keywords</label>
+                <SfTextBox @bind-Value="@NewKeyword.Text" Placeholder="Enter keyword" ></SfTextBox>
+                <SfButton OnClick="AddKeyword" HtmlAttributes="htmlAttr" IsPrimary="false" IsToggle="false">Add</SfButton>
+                <SfListView Id="List"
+                            DataSource="@_keywords"
+                            HeaderTitle="keywords"
+                            ShowHeader="true"
+                            CssClass="e-list-template"
+                            Width="350"
+                            SortOrder="Syncfusion.Blazor.Lists.SortOrder.Ascending">
+                    <ListViewFieldSettings TValue="DataModel" Id="Id" Text="Text"></ListViewFieldSettings>
+                    <ListViewTemplates TValue="DataModel">
+                        <Template Context="contextKey">
+                            @{
+                                DataModel dataModel = contextKey as DataModel;
+                                <div class="keyword-item">
+                                    <span>@dataModel.Text</span>
+                                    <SfButton @ref="_deleteBtn" HtmlAttributes="htmlAttr" @onclick="@((args) => RemoveKeyword(args,@dataModel))" IsPrimary="false">Delete</SfButton>
+                                 
+
+                                </div>
+                            }
+
+                        </Template>
+
+                    </ListViewTemplates>
+                </SfListView>
+            </div>
+            <br />
+            <SfButton Type="submit" Content="Add Job" IsPrimary="true"></SfButton>
+        </div>
+    </EditForm>
+    <br />
+    <br />
+</div>
 @if (_observableCollection == null)
 {
     <h1>Loading</h1>
@@ -29,70 +121,8 @@ else
         }
 
     </div>
-    <div>
-        <EditForm OnValidSubmit="Add" Model="@QJobAdd">
-            <FluentValidationValidator @ref="_fluentValidationValidator" />
-            <AntiforgeryToken/>
-            <div class="form-row">
 
-                <div class="form-group col-md-6">
-                    <label class="form-label">Name</label>
-                    <SfTextBox @bind-Value="QJobAdd.Name" Placeholder="Name" class="form-control"/>
-                    <ValidationMessage For="() => QJobAdd.Name"/>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">Group</label>
-                    <SfTextBox @bind-Value="QJobAdd.Group" Placeholder="Group" class="form-control"/>
-                    <ValidationMessage For="() => QJobAdd.Group"/>
-                </div>
-
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">OpenSource Type :</label>
-                    <SfDropDownList class="form-control" TValue="OpenSourceType" @bind-Value="QJobAdd.OpenSourceType" Width="300px" TItem="string" Placeholder="Select a Type " DataSource="@OpenSourceTypes"></SfDropDownList>
-                </div>
-
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">Description</label>
-                    <SfTextBox @bind-Value="QJobAdd.Description" Placeholder="Description" class="form-control"/>
-                    <ValidationMessage For="() => QJobAdd.Description"/>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">URL</label>
-                    <SfTextBox @bind-Value="QJobAdd.Url" Placeholder="Description" class="form-control"/>
-                    <ValidationMessage For="() => QJobAdd.Url"/>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">Interval</label>
-                    <SfNumericTextBox @bind-Value="QJobAdd.Interval" Min="0" Placeholder="Interval" class="form-control"/>
-                    <ValidationMessage For="() => QJobAdd.Interval"/>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">Start Date</label>
-                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.StartDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
-                    <ValidationMessage For="() => QJobAdd.StartDate"/>
-                </div>
-
-
-
-                <div class="form-group col-md-6">
-                    <label class="form-label">End Date</label>
-                    <SfDateTimePicker TValue="DateTime?" @bind-Value="@QJobAdd.EndDate" Format="dd-MMM-yy HH:mm" Min="DateTime.Now"></SfDateTimePicker>
-                    <ValidationMessage For="() => QJobAdd.EndDate"/>
-                </div>
-
-
-                <SfButton Content="Add Job"  IsPrimary="true"></SfButton>
-            </div>
-        </EditForm>
-    
-    </div>
-    <br/>
+    <br />
     <SfGrid DataSource="@_observableCollection">
         <GridTemplates>
             <RowTemplate Context="emp">
@@ -169,7 +199,7 @@ else
 
         </GridColumns>
     </SfGrid>
-  
+
 }
 
 
@@ -179,6 +209,54 @@ else
         height: 100px;
         border-radius: 50px;
         box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .e-listview.e-control {
+        width: 400px;
+    }
+
+    .pic01 {
+        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/1.png");
+    }
+
+    .pic02 {
+        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/3.png");
+    }
+
+    .pic03 {
+        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/5.png");
+    }
+
+    .pic04 {
+        background-image: url("https://ej2.syncfusion.com/demos/src/grid/images/2.png");
+    }
+
+    #List .e-list-item:nth-child(1) .e-avatar {
+        background-color: #039be5;
+    }
+
+    #List .e-list-item:nth-child(2) .e-avatar {
+        background-color: #e91e63;
+    }
+
+    #List .e-list-item:nth-child(6) .e-avatar {
+        background-color: #009688;
+    }
+
+    #List .e-list-item:nth-child(8) .e-avatar {
+        background-color: #000088;
+    }
+
+    .keyword-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .remove-btn {
+        color: red;
+        cursor: pointer;
     }
 
     .photo,
@@ -223,8 +301,12 @@ else
     public List<QJobs>? JobsList { get; private set; }
     private bool _working;
 
+    private Dictionary<string, object> htmlAttr = new Dictionary<string, object>()
+    {
+        { "type", "button" }
+    };
     private IList<QJobs>? _observableCollection;
-
+    private SfButton? _deleteBtn;
 
     private QJobs QJobAdd { get; set; } = new QJobs();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -264,10 +346,37 @@ else
     {
         if (await _fluentValidationValidator!.ValidateAsync())
         {
-         
-          await  Worker.MakeJob(QJobAdd);
+            QJobAdd.Keywords = _keywords.Select(c=>c?.Text).ToList();
+            await Worker.MakeJob(QJobAdd);
         }
-     
+
+        await OnInitializedAsync();
+        StateHasChanged();
+
     }
 
+    private readonly List<DataModel?> _keywords = new List<DataModel?>();
+
+    public DataModel? NewKeyword { get; set; } = new DataModel();
+
+    void AddKeyword()
+    {
+        if (!string.IsNullOrWhiteSpace(NewKeyword?.Text))
+        {
+            _keywords.Add(NewKeyword);
+            NewKeyword = new DataModel();
+        }
+    }
+
+    void RemoveKeyword(MouseEventArgs args, DataModel keyword)
+    {
+        _keywords.Remove(keyword);
+        
+    }
+    public class DataModel
+    {
+        public string? Id { get; set; }
+        public string? Text { get; set; }
+
+    }
 }

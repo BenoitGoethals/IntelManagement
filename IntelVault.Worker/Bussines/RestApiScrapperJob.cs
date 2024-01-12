@@ -45,6 +45,7 @@ public class RestApiScrapperJob : RequestJob, IJob
                     Q = key,
                     SortBy = SortBys.Popularity,
                     Language = Languages.NL,
+                    
 
                 });
                 if (articlesResponse.Status == Statuses.Ok)
@@ -62,8 +63,10 @@ public class RestApiScrapperJob : RequestJob, IJob
                                 keywords = [key],
                                 Title = article.Title,
                                 IntelType = TypeIntel.NewsArticle,
-                                Content = article.Url
-
+                                Content = article.Content,
+                                Url = article.Url,
+                                CreatedDtg = DateTime.Now,
+                                
                             });
                         }
 

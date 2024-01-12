@@ -53,7 +53,8 @@ namespace IntelVault.Worker
                             
                             .WithDescription(x.Name)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInHours((int)x.Interval)
+                             //   .WithIntervalInHours((int)x.Interval)
+                             .WithIntervalInMinutes(1)
                                 .RepeatForever())
                             
                             .Build();
@@ -72,7 +73,8 @@ namespace IntelVault.Worker
                             .WithDescription(x.Name)
                             .EndAt(x.End)
                             .WithSimpleSchedule(xy => xy
-                                .WithIntervalInHours((int)x.Interval)
+                          //        .WithIntervalInHours((int)x.Interval)
+                          .WithIntervalInMinutes(1)
                                 .RepeatForever())
 
                             .Build();
