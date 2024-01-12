@@ -97,4 +97,6 @@ message NewsItem{
     google.protobuf.Timestamp PublishedDate =3;
     string Content =4;
     string Source =5;
+    string Url =6;
+    string shortContent =7;
 }

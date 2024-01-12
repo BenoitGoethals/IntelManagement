@@ -15,6 +15,7 @@ public class QJobValidator : AbstractValidator<QJobs>
         RuleFor(x => x.Interval).NotEmpty().GreaterThan(1);
         RuleFor(x => x.Url).NotEmpty().MinimumLength(5);
         RuleFor(x => x.StartDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
+        RuleFor(x => x.EndDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
 
 
     }

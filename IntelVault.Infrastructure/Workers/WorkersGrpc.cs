@@ -117,6 +117,10 @@ public class WorkersGrpc : IWorkersGrpc
     public async Task<string?> MakeJob(QJobs request)
     {
         keywordList li = new keywordList();
+        foreach (var key in request.Keywords)
+        {
+            li.Keyword.Add(new keyword(){Name = key});
+        }
         var req = new OpenSourceRequestScan
         {
             

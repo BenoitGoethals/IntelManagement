@@ -2,6 +2,7 @@
 
 public class QJobs
 {
+    public List<string?> Keywords { get; set; } = new List<string?>();
     public Guid Id { get;  set; } = new Guid();
     public string? Name { get; set; }
     public string? Group { get; set; }
