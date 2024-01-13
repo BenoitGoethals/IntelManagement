@@ -14,6 +14,7 @@ public class QJobs
     public int Interval { get; set; }
     public string? Url { get; set; }
     public OpenSourceType OpenSourceType { get; set; } = OpenSourceType.Scrapper;
+    public string? CronTab { get; set; }
 
     protected bool Equals(QJobs other)
     {

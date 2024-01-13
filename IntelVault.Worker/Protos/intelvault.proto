@@ -59,6 +59,7 @@ message Job{
     int32 timetriggerd=5;
     google.protobuf.Timestamp next=6;
     string group =7;
+    string crontab=8;
 }
 
 message keywordList {
