@@ -126,7 +126,7 @@ public class WorkersGrpc : IWorkersGrpc
             
             Start = request.StartDate?.ToUniversalTime().ToTimestamp(),
             End = request.EndDate?.ToUniversalTime().ToTimestamp(),
-            Url = request.Url,
+            Url = request.Url ?? String.Empty,
             Id = Guid.NewGuid().ToString(),
             List = li,
             OpenSourceType = (OpenSourceMediaType)request.OpenSourceType,

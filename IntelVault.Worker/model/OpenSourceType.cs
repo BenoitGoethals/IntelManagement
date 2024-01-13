@@ -12,6 +12,7 @@ namespace IntelVault.Worker.model
         Scrapper,
         Doc,
         LinkNl,
-        Api
+        Api,
+        PDF
     }
 }

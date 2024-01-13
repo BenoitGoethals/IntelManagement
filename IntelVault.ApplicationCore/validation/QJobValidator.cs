@@ -14,14 +14,32 @@ public class QJobValidator : AbstractValidator<QJobs>
 
         RuleFor(x => x.Description).NotEmpty().MinimumLength(5);
         RuleFor(x => x.Group).NotEmpty().MinimumLength(3);
-        RuleFor(x => x.Interval).NotEmpty().GreaterThan(1);
-        RuleFor(x => x.Url).NotEmpty().MinimumLength(5);
-        RuleFor(x => x.StartDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
-        RuleFor(x => x.EndDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
-        RuleFor(x => x.CronTab).Must(IsValidSchedule).WithMessage("Not valid");
 
+        RuleSet("crontab", () =>
+        {
+            RuleFor(x => x.CronTab).Must(IsValidSchedule).WithMessage("Not valid");
+        });
+        RuleSet("scheduled", () =>
+        {
+            RuleFor(x => x.Interval).NotEmpty().GreaterThan(1);
+            RuleFor(x => x.StartDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
+            RuleFor(x => x.EndDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
+        });
+        //When(x => !x.EndDate.HasValue && !x.StartDate.HasValue && x.Interval <= 1, () =>
+        //{
+        //    RuleFor(x => x.CronTab).Must(IsValidSchedule).WithMessage("Not valid");
+        //});
+        //When(x => x.EndDate.HasValue && x.StartDate.HasValue && x.Interval > 0, () =>
+        //{
+        //    RuleFor(x => x.Interval).NotEmpty().GreaterThan(1);
+        //    RuleFor(x => x.Url).NotEmpty().MinimumLength(5);
+        //    RuleFor(x => x.StartDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
+        //    RuleFor(x => x.EndDate).NotEmpty().GreaterThanOrEqualTo(DateTime.Today);
+        //});
 
     }
+
+  
 
     public static bool IsValidSchedule(string? schedule)
     {

@@ -1,6 +1,7 @@
 ﻿@page "/WorkerPage"
 @using IntelVault.Infrastructure.Workers
 @using Blazored.FluentValidation
+@using IntelVault.ApplicationCore.validation
 @using Microsoft.AspNetCore.Authorization
 @using IntelVault.WebAccess.Components.Pages.common
 @rendermode InteractiveServer
@@ -26,11 +27,21 @@
                 <ValidationMessage For="() => QJobAdd.Group" />
             </div>
 
-
+            
             <div class="form-group col-md-6">
                 <label class="form-label">OpenSource Type :</label>
                 <SfDropDownList class="form-control" TValue="OpenSourceType" @bind-Value="QJobAdd.OpenSourceType" Width="300px" TItem="string" Placeholder="Select a Type " DataSource="@OpenSourceTypes"></SfDropDownList>
             </div>
+            @switch (QJobAdd.OpenSourceType)
+            {
+                case OpenSourceType.Scrapper:
+                    <div class="form-group col-md-6">
+                        <label class="form-label">URL</label>
+                        <SfTextBox @bind-Value="QJobAdd.Url" Placeholder="Description" class="form-control" />
+                        <ValidationMessage For="() => QJobAdd.Url" />
+                    </div>
+                    break;
+            }
 
 
             <div class="form-group col-md-6">
@@ -39,11 +50,7 @@
                 <ValidationMessage For="() => QJobAdd.Description" />
             </div>
 
-            <div class="form-group col-md-6">
-                <label class="form-label">URL</label>
-                <SfTextBox @bind-Value="QJobAdd.Url" Placeholder="Description" class="form-control" />
-                <ValidationMessage For="() => QJobAdd.Url" />
-            </div>
+           
             <SfCard>
                 <div class="form-group col-md-6">
                     <label class="form-label">OpenSource Type :</label>
@@ -351,16 +358,40 @@ else
         await Worker.Stop(context?.Name, context?.Group);
     }
 
-    private void Callback()
-    {
-        throw new NotImplementedException();
-    }
+  
 
     private async Task Add()
     {
-        if (await _fluentValidationValidator!.ValidateAsync())
+        if (IsCheckCronTab)
         {
+            QJobAdd.EndDate = null;
+            QJobAdd.StartDate = null;
+            QJobAdd.Interval = 0;
+            if (await _fluentValidationValidator?.ValidateAsync(options => options.IncludeRuleSets("crontab"))==false)
+            {
+                return;
+            }
+        }
+        else
+        {
+            QJobAdd.CronTab = "";
+           if(await _fluentValidationValidator?.ValidateAsync(options => options.IncludeRuleSets("scheduled"))==false)
+           {
+               return;
+           }
+
+        }
+
+        if (QJobAdd.OpenSourceType != OpenSourceType.Scrapper)
+        {
+            QJobAdd.Url = null;
+        }
+        if (await _fluentValidationValidator!.ValidateAsync() )
+        {
+         
             QJobAdd.Keywords = _keywords.Select(c => c?.Text).ToList();
+           
+
             await Worker.MakeJob(QJobAdd);
         }
 

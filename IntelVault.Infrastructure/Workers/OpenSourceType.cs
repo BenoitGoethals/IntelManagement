@@ -6,6 +6,7 @@
         Scrapper,
         Doc,
         LinkNl,
-        Api
+        Api,
+        PDF
     }
 }

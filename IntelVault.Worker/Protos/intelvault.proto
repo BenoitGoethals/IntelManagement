@@ -30,7 +30,7 @@ message HelloRequest {
 
 message OpenSourceRequestScan {
      string id =1;
-     string url = 2;
+     optional string url = 2;
      OpenSourceMediaType openSourceType =3;
      google.protobuf.Timestamp Start=4;
      google.protobuf.Timestamp End=5;
@@ -79,6 +79,7 @@ enum OpenSourceMediaType{
         Doc=2;
         LinkNl=3;
         Api=4;
+        PDF=5;
 }
 
 
@@ -96,8 +97,8 @@ message NewsItem{
     string Title =1;
     string Author =2;
     google.protobuf.Timestamp PublishedDate =3;
-    string Content =4;
-    string Source =5;
-    string Url =6;
+    optional string Content =4;
+   optional  string Source =5;
+    optional string Url =6;
     string shortContent =7;
 }
