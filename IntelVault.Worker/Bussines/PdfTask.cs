@@ -8,48 +8,86 @@ using System.Text;
 using IntelVault.Infrastructure.Workers;
 using Microsoft.Extensions.Logging;
 using NewsAPI;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace IntelVault.Worker.Bussines;
 
 
-public class PdfTask : RequestJob, IJob
+public class PdfTask(ILogger<PdfTask>? logger, PoolRequests? poolRequests, IIntelService<IntelDocument>? intelService)
+    : RequestJob, IJob
 {
+    private PoolRequests? _poolRequests = poolRequests;
 
-    private readonly ILogger<PdfTask>? _logger;
-    private PoolRequests? _poolRequests;
-    private IIntelService<IntelDocument>? _intelService;
-    private FileSystemWatcher watcher;
-    private string folderPath = "c:/temp";
+    private readonly string _folderPath = "c:/temp/pdf";
 
-
-    public PdfTask(ILogger<PdfTask>? logger, PoolRequests? poolRequests, IIntelService<IntelDocument>? intelService)
-    {
-        _logger = logger;
-        _poolRequests = poolRequests;
-        _intelService = intelService;
-
-    }
 
     public override async Task Execute(IJobExecutionContext context)
     {
         CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         CancellationToken token = cancelTokenSource.Token;
         var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
-      
-            await Task.Run(() =>
+
+        await Task.Run(() =>
         {
-            var files = Directory.GetFiles(folderPath);
-            foreach (var file in files)
+            try
             {
-                string? ret = SearchPdfFile(file);
-                
+                var files = Directory.GetFiles(_folderPath);
+                foreach (var file in files)
+                {
+                    string? ret = SearchPdfFile(file);
+                    var doc = Analyse(filePath: file);
+
+                    doc.LongDescription = ret;
+                    doc.Keywords = GetSearchWords(jobDetailJobData?.KeyWords, ret);
+
+                    intelService?.Add(doc);
+                }
             }
-        });
-      
+            catch (Exception ex)
+            {
+               logger?.LogError(ex.Message);
+            }
+        
+           
+        }, token);
+
+    }
+    private  List<string> GetSearchWords(List<string>? text, string? totalText)
+    {
+       var words = new List<string>();
+       if (text == null) return words;
+       foreach (var word in text)
+       {
+           if (totalText != null && totalText.Contains(word))
+           {
+               words.Add(word);
+           }
+       }
+       return words;
     }
 
 
+    private IntelDocument Analyse(string filePath)
+    {
+        var doc = new IntelDocument
+        {
+            TimeCreated = DateTime.Now
+        };
+        using FileStream fsSource = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        doc.Content = UseMemoryStream(fsSource);
+        doc.DocumentType = DocumentType.PDF;
+        doc.FileName = filePath;
+        return doc;
 
+    }
+    public byte[] UseMemoryStream(Stream stream)
+    {
+        using var memoryStream = new MemoryStream();
+        stream.CopyTo(memoryStream);
+        var bytes = memoryStream.ToArray();
+        return bytes;
+    }
 
     private string? SearchPdfFile(string filePath)
     {
@@ -69,7 +107,7 @@ public class PdfTask : RequestJob, IJob
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error processing PDF file: {ex.FullPath}. Error: {ex.Message}");
+            logger?.LogError($"Error processing PDF file: {filePath} Error: {ex.Message}");
         }
 
         return null;
