@@ -5,7 +5,9 @@ using PdfSharp.Pdf;
 using Quartz;
 using PdfSharp.Pdf.Content;
 using System.Text;
+using IntelVault.Infrastructure.Workers;
 using Microsoft.Extensions.Logging;
+using NewsAPI;
 
 namespace IntelVault.Worker.Bussines;
 
@@ -30,12 +32,16 @@ public class PdfTask : RequestJob, IJob
 
     public override async Task Execute(IJobExecutionContext context)
     {
-        await Task.Run(() =>
+        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        CancellationToken token = cancelTokenSource.Token;
+        var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
+      
+            await Task.Run(() =>
         {
             var files = Directory.GetFiles(folderPath);
             foreach (var file in files)
             {
-                string ret = SearchPdfFile(file);
+                string? ret = SearchPdfFile(file);
                 
             }
         });
@@ -45,7 +51,7 @@ public class PdfTask : RequestJob, IJob
 
 
 
-    private string SearchPdfFile(string filePath)
+    private string? SearchPdfFile(string filePath)
     {
         try
         {
@@ -63,8 +69,10 @@ public class PdfTask : RequestJob, IJob
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error processing PDF file: {e.FullPath}. Error: {ex.Message}");
+            Console.WriteLine($"Error processing PDF file: {ex.FullPath}. Error: {ex.Message}");
         }
+
+        return null;
     }
 
 
