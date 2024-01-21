@@ -36,7 +36,7 @@ public class PdfTask(ILogger<PdfTask>? logger, PoolRequests? poolRequests, IInte
                 foreach (var file in files)
                 {
                     string? ret = SearchPdfFile(file);
-                    var doc = Analyse(filePath: file);
+                    var doc = MakeDocument(filePath: file);
 
                     doc.LongDescription = ret;
                     doc.Keywords = GetSearchWords(jobDetailJobData?.KeyWords, ret);
@@ -68,7 +68,7 @@ public class PdfTask(ILogger<PdfTask>? logger, PoolRequests? poolRequests, IInte
     }
 
 
-    private IntelDocument Analyse(string filePath)
+    private IntelDocument MakeDocument(string filePath)
     {
         var doc = new IntelDocument
         {
