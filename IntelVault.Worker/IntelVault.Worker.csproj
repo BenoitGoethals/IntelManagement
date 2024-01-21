@@ -17,6 +17,7 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.60.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
+    <PackageReference Include="linqtotwitter" Version="6.15.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />

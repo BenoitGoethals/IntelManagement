@@ -23,6 +23,7 @@ using NLog;
 using ILogger = NLog.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using static System.Formats.Asn1.AsnWriter;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,8 @@ builder.Services.AddSingleton<NewsArticleValidator>();
 builder.Services.AddSingleton<IMongoDbRepository<NewsArticle>, MongoDbRepository<NewsArticle>>(n => new MongoDbRepository<NewsArticle>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<NewsArticle>>>(), "IntelVault"));
 
 builder.Services.AddSingleton<IIntelService<NewsArticle>, IntelService<NewsArticle>>(n => new IntelService<NewsArticle>(n.GetRequiredService<IMongoDbRepository<NewsArticle>>(), n.GetRequiredService<NewsArticleValidator>()));
+
+builder.Services.AddSingleton<IIntelService<IntelDocument>, IntelService<IntelDocument>>(n => new IntelService<IntelDocument>(n.GetRequiredService<IMongoDbRepository<IntelDocument>>(), n.GetRequiredService<IntelDocumentValidator>()));
 
 builder.Services.AddSingleton<ServiceCountry>();
 
@@ -113,6 +116,7 @@ builder.Services.AddQuartz(q =>
 });
 //builder.Services.AddScoped<WebSiteScrapperJob>();
 builder.Services.AddSingleton<RestApiScrapperJob>();
+builder.Services.AddSingleton<TwitterTask>();
 builder.Services.AddSingleton<WebSiteScrapperJob>();
 builder.Services.AddSingleton<Quartz.IScheduler>((sp) =>
 {

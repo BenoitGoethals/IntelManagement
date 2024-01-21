@@ -40,6 +40,28 @@ namespace IntelVault.Worker
                 m.Put(nameof(OpenSourceRequest), x);
                 switch (x.SourceType)
                 {
+                    case OpenSourceType.Twitter:
+                        var pas = new JobDataMap();
+                        if (x.KeyWords != null) pas.Put("subjects", x.KeyWords);
+                        var jobtwit = JobBuilder.Create<WebSiteScrapperJob>()
+                            .WithIdentity(x.Id.ToString(), "groupScrapper")
+                            .WithDescription(x.Name)
+                            .UsingJobData(pas)
+                            .Build();
+                        var triggertwitt = TriggerBuilder.Create()
+                            .WithIdentity(x.Id.ToString(), "groupScrapper")
+                            .StartAt(x.Start)
+                            .EndAt(x.End)
+
+                            .WithDescription(x.Name)
+                            .WithSimpleSchedule(xy => xy
+                                //   .WithIntervalInHours((int)x.Interval)
+                                .WithIntervalInMinutes(1)
+                                .RepeatForever())
+
+                            .Build();
+                        _scheduler.ScheduleJob(jobtwit, triggertwitt, stoppingToken);
+                        break;
                     case OpenSourceType.Scrapper:
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper") 
