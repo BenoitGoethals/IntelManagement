@@ -18,7 +18,7 @@ public class RestApiScrapperJob : RequestJob, IJob
     private readonly ILogger? _logger;
     private PoolRequests? _poolRequests;
     private IIntelService<NewsArticle>? _intelService;
-    private string? apikeynews;
+    private readonly string? _apikeynews;
     /// <inheritdoc />
     public RestApiScrapperJob(ILogger<RestApiScrapperJob>? logger, PoolRequests? poolRequests, IIntelService<NewsArticle>? intelService)
     {
@@ -26,7 +26,7 @@ public class RestApiScrapperJob : RequestJob, IJob
         _poolRequests = poolRequests;
         _intelService = intelService;
         var pik = new ConfigurationBuilder().AddUserSecrets<SecretApiSetting>().Build();
-        apikeynews = pik["Intelvault:NewsApi"];
+        _apikeynews = pik["Intelvault:NewsApi"];
 
     }
 
@@ -36,7 +36,7 @@ public class RestApiScrapperJob : RequestJob, IJob
         CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         CancellationToken token = cancelTokenSource.Token;
         var jobDetailJobData = context.JobDetail.JobDataMap[nameof(OpenSourceRequest)] as OpenSourceRequest;
-        var newsApiClient = new NewsApiClient(apikeynews);
+        var newsApiClient = new NewsApiClient(_apikeynews);
         if (jobDetailJobData?.KeyWords != null)
             foreach (var key in jobDetailJobData.KeyWords)
             {

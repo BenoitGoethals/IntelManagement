@@ -42,7 +42,7 @@ public class TwitterTask: RequestJob, IJob
     }
 
 
-    private async Task<List<Tweet>> GetTweets(string subject)
+    private Task<List<Tweet>> GetTweets(string subject)
     {
         List<Tweet> tweets = new AutoConstructedList<Tweet>();
                     
@@ -60,7 +60,7 @@ public class TwitterTask: RequestJob, IJob
             _logger?.LogInformation("No tweets found.");
         }
        
-        return tweets;
+        return Task.FromResult(tweets);
     }
     public override async Task Execute(IJobExecutionContext context)
     {

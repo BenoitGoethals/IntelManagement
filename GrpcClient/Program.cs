@@ -50,6 +50,7 @@ namespace GrpcClient
                 Console.WriteLine("(A) API");
                 Console.WriteLine("(W) API");
                 Console.WriteLine("(J) All Jobs");
+                Console.WriteLine("(T) TWEET");
                 Console.WriteLine("(R) running");
 
                 var key = Console.ReadKey().Key;
@@ -109,6 +110,23 @@ namespace GrpcClient
                         };
                         var response2 = client.MakeJob(request2);
                         Console.WriteLine($"Server Response: {response2.Message}");
+                        break;
+              
+                    case ConsoleKey.T:
+                        var request22 = new OpenSourceRequestScan()
+                        {
+                            Start = Timestamp.FromDateTime(DateTime.Now.AddSeconds(1).ToUniversalTime()),
+                            End = Timestamp.FromDateTime(DateTime.Now.AddDays(1).ToUniversalTime()),
+                            Url = "ww.google.be",
+                            Id = Guid.NewGuid().ToString(),
+                            List = li,
+                            OpenSourceType = OpenSourceMediaType.Twitter,
+                            Interval = 10,
+                            Name = "twitter " + Guid.NewGuid().ToString()
+
+                        };
+                        var response22 = client.MakeJob(request22);
+                        Console.WriteLine($"Server Response: {response22.Message}");
                         break;
                     default:
                         return;

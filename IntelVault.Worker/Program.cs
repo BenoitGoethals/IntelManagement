@@ -63,6 +63,7 @@ builder.Services.AddGrpc();
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddTransient<IJobFactory, JobFactory>();
 builder.Services.AddSingleton<PoolRequests>();
+
 builder.Services.AddQuartz(q =>
 {
     // handy when part of cluster or you want to otherwise identify multiple schedulers
@@ -118,6 +119,7 @@ builder.Services.AddQuartz(q =>
 builder.Services.AddSingleton<RestApiScrapperJob>();
 builder.Services.AddSingleton<TwitterTask>();
 builder.Services.AddSingleton<WebSiteScrapperJob>();
+builder.Services.AddSingleton<PdfTask>();
 builder.Services.AddSingleton<Quartz.IScheduler>((sp) =>
 {
     using var scope = sp.CreateScope();

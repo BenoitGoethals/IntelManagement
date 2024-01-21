@@ -8,33 +8,24 @@ using IScheduler = Quartz.IScheduler;
 
 namespace IntelVault.Worker
 {
-    public class Worker : BackgroundService
+    public class Worker(
+        ILogger<Worker> logger,
+        IScheduler scheduler,
+        PoolRequests poolRequests,
+        IServiceProvider serviceProvider)
+        : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
-        private readonly IScheduler _scheduler;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-        public Worker(ILogger<Worker> logger, IScheduler scheduler, PoolRequests poolRequests,IServiceProvider serviceProvider)
-        {
-            _logger = logger;
-            _scheduler = scheduler;
-            _obs=poolRequests;
-            _serviceProvider=serviceProvider;
-            
-        }
-
-       
-
-        private readonly PoolRequests _obs;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
-            _obs.Subscribe( x =>
+            poolRequests.Subscribe( x =>
             {
-                if (!_scheduler.IsStarted)
+                if (!scheduler.IsStarted)
                 {
-                    _scheduler.Start(stoppingToken);
+                    scheduler.Start(stoppingToken);
                 }
                 var m = new JobDataMap();
                 m.Put(nameof(OpenSourceRequest), x);
@@ -43,7 +34,7 @@ namespace IntelVault.Worker
                     case OpenSourceType.Twitter:
                         var pas = new JobDataMap();
                         if (x.KeyWords != null) pas.Put("subjects", x.KeyWords);
-                        var jobtwit = JobBuilder.Create<WebSiteScrapperJob>()
+                        var jobtwit = JobBuilder.Create<TwitterTask>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                             .WithDescription(x.Name)
                             .UsingJobData(pas)
@@ -60,7 +51,7 @@ namespace IntelVault.Worker
                                 .RepeatForever())
 
                             .Build();
-                        _scheduler.ScheduleJob(jobtwit, triggertwitt, stoppingToken);
+                        scheduler.ScheduleJob(jobtwit, triggertwitt, stoppingToken);
                         break;
                     case OpenSourceType.Scrapper:
                         var job = JobBuilder.Create<WebSiteScrapperJob>()
@@ -78,9 +69,8 @@ namespace IntelVault.Worker
                              //   .WithIntervalInHours((int)x.Interval)
                              .WithIntervalInMinutes(1)
                                 .RepeatForever())
-                            
                             .Build();
-                         _scheduler.ScheduleJob(job, trigger, stoppingToken);
+                         scheduler.ScheduleJob(job, trigger, stoppingToken);
                         break;
                     case OpenSourceType.Api:
                   
@@ -100,18 +90,18 @@ namespace IntelVault.Worker
                                 .RepeatForever())
 
                             .Build();
-                        _scheduler.ScheduleJob(jobApi, triggerApi, stoppingToken);
+                        scheduler.ScheduleJob(jobApi, triggerApi, stoppingToken);
                         break;
                 }
             });
           
           
-            _logger.LogInformation("WORKER STARTED");
+            logger.LogInformation("WORKER STARTED");
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);
             }
-            await _scheduler.Shutdown(stoppingToken);
+            await scheduler.Shutdown(stoppingToken);
         }
     }
 }
