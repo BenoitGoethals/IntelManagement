@@ -33,7 +33,10 @@ namespace IntelVault.Worker
                 {
                     case OpenSourceType.Twitter:
                         var pas = new JobDataMap();
-                        if (x.KeyWords != null) pas.Put("subjects", x.KeyWords);
+                        if (x.KeyWords != null)
+                        {
+                            pas.Put("subjects", x.KeyWords);
+                        }
                         var jobtwit = JobBuilder.Create<TwitterTask>()
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                             .WithDescription(x.Name)
@@ -43,13 +46,11 @@ namespace IntelVault.Worker
                             .WithIdentity(x.Id.ToString(), "groupScrapper")
                             .StartAt(x.Start)
                             .EndAt(x.End)
-
                             .WithDescription(x.Name)
                             .WithSimpleSchedule(xy => xy
                                 //   .WithIntervalInHours((int)x.Interval)
                                 .WithIntervalInMinutes(1)
                                 .RepeatForever())
-
                             .Build();
                         scheduler.ScheduleJob(jobtwit, triggertwitt, stoppingToken);
                         break;

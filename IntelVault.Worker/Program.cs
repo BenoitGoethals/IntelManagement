@@ -43,6 +43,9 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
     return new MongoClient(setting);
 });
 builder.Services.AddSingleton<NewsArticleValidator>();
+builder.Services.AddSingleton<IntelDocumentValidator>();
+
+builder.Services.AddSingleton<IMongoDbRepository<IntelDocument>, MongoDbRepository<IntelDocument>>(n => new MongoDbRepository<IntelDocument>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<IntelDocument>>>(), "IntelVault"));
 
 builder.Services.AddSingleton<IMongoDbRepository<NewsArticle>, MongoDbRepository<NewsArticle>>(n => new MongoDbRepository<NewsArticle>(n.GetRequiredService<IMongoClient>(), n.GetRequiredService<ILogger<IMongoDbRepository<NewsArticle>>>(), "IntelVault"));
 

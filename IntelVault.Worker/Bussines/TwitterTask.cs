@@ -36,9 +36,12 @@ public class TwitterTask: RequestJob, IJob
                 ConsumerSecret = _apiSecretKey,
                 AccessToken = _accessToken,
                 AccessTokenSecret = _accessTokenSecret
-            }
+            },
+            ForceLogin = true
         };
+        auth.AuthorizeAsync();
          _twitterContext = new TwitterContext(auth);
+        _twitterContext.Log = Console.Out;
     }
 
 
@@ -64,16 +67,27 @@ public class TwitterTask: RequestJob, IJob
     }
     public override async Task Execute(IJobExecutionContext context)
     {
-
+        
         CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         CancellationToken token = cancelTokenSource.Token;
-        var jobDetailJobData = context.JobDetail.JobDataMap["subjects"] as List<string>;
-        var tweets = await GetTweets("");
-
-        foreach (var tweet in tweets)
+        try
         {
-            Console.WriteLine($"{tweet}: {tweet.Text}");
+            if (context.JobDetail.JobDataMap["subjects"] is List<string> jobDetailJobData)
+                foreach (var keyword in jobDetailJobData)
+                {
+                    var tweets = await GetTweets(keyword);
+
+                    foreach (var tweet in tweets)
+                    {
+                        Console.WriteLine($"{tweet}: {tweet.Text}");
+                    }
+                }
         }
+        catch (Exception e)
+        {
+            _logger?.LogError(e.Message);
+        }
+       
     }
 }
 
